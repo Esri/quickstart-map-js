@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html> 
+<html>  
+	<head> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" />
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+	<title>Cloud</title> 
+	<link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css"/>
+	<link rel="stylesheet" href="../../css/examples.css"/>
+
+	<script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3"></script>
+	<script type="text/javascript"> 
+		dojo.require("esri.map");
+		dojo.require("esri.layers.graphics");
+		dojo.require("esri.layers.FeatureLayer");
+		dojo.require("esri.dijit.Popup");
+
+		var featureLayer;
+
+		function init() {
+			var options = { 
+					basemap: "gray",
+					center: [109.3,34.09],
+					zoom: 3,
+					infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
+			}
+			// Create map
+			map = new esri.Map("mapDiv", options);
+
+			// Listen for map update events
+			dojo.connect(map,"onUpdateStart",function(){
+			   setStyle("progress", "progress");
+			});
+			dojo.connect(map,"onUpdateEnd",function(){
+			   setStyle("progress", "progress hidden");
+			});
+			
+		}
+
+		function AddCities() {
+			if (featureLayer)
+				return;
+				
+			setStyle("progress", "progress");
+
+			// Create a feature layer that accesses cloud data
+			var infoTemplate = new esri.InfoTemplate("City Information", "Name: ${NAME}</br>Country: ${COUNTRY}</br>Population:${POPULATION}");
+			featureLayer = new esri.layers.FeatureLayer("http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0", {
+				mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
+				outFields: ["*"],
+				opacity: .90,
+				infoTemplate: infoTemplate
+			});
+			// Setup symbols for layer
+			var symbol = createPictureSymbol("http://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png", 0, 10, 24);
+			featureLayer.renderer = new esri.renderer.SimpleRenderer(symbol);
+			var selectSymbol = createPictureSymbol("http://static.arcgis.com/images/Symbols/Shapes/RedPin1LargeB.png", 0, 10, 24);
+			featureLayer.setSelectionSymbol(selectSymbol);
+			// Add cloud layer
+			map.addLayer(featureLayer);	
+			
+			// Connect to selection event	
+			dojo.connect(featureLayer,"onSelectionComplete", function (features) {
+				var extent;
+				for (var i = 0; i < features.length; i++) {
+					if (!extent)
+						extent = features[i]._extent;
+					else
+						extent.union(features[i]._extent);
+				}
+				if (extent)
+					map.setExtent(extent);
+
+				setStyle("progress", "progress hidden");				
+			});
+			
+			var element = document.getElementById('searchBySQL');
+			element.disabled = false;
+		}
+
+		// Select features by SQL query
+		function searchBySQL() {
+			if (!featureLayer) {
+				setMessage("Please add the Cities data first!");
+				return;
+			}
+			map.infoWindow.hide();
+
+			setStyle("progress", "progress");
+				
+			// Select features in the layer
+			var element = document.getElementById('searchBySQL');
+			var sql = element.options[element.selectedIndex].value;
+	
+			var query = new esri.tasks.Query();  // Select by sql
+			query.where = sql;
+			featureLayer.selectFeatures(query, esri.layers.FeatureLayer.SELECTION_NEW);
+		}
+		
+		function clearCloudGraphics() {
+			setStyle("progress", "progress hidden");
+			map.infoWindow.hide();
+			if (featureLayer)
+				map.removeLayer(featureLayer);
+				
+			featureLayer = null;			
+		}
+				
+		function createPictureSymbol(url, xOffset, yOffset, size) {
+			return new esri.symbol.PictureMarkerSymbol(
+			{
+				"angle": 0,
+				"xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+				"url": url,  
+				"contentType": "image/png",
+				"width":size, "height": size
+			});
+		}
+		
+		function setMessage(msg) {
+			var element = document.getElementById("userMessage");
+			element.innerHTML = msg;
+		} 
+
+		function setStyle(elementName, className) {
+			var element = document.getElementById(elementName);
+			if (element)
+			element.className = className;
+		}
+
+		dojo.addOnLoad(init);	
+	</script>
+	</head>
+	<body>
+		<div class="message"><span id="userMessage" class="user-message">Add world cities from the ArcGIS cloud</span></div>
+		<div class="panel">
+			<div class="controls">
+				<div class="buttons">
+  					<button class="btn btn-primary" id="addData" onclick="AddCities();">Add World Cities</button>
+					<select class="" id="searchBySQL" onchange="searchBySQL();" disabled>
+						<option selected value="1=0">Select by country</option>
+						<option value="COUNTRY = 'US'">COUNTRY = 'US'</option>
+						<option value="COUNTRY = 'Canada'">COUNTRY = 'Canada'</option>
+						<option value="COUNTRY = 'France'">COUNTRY = 'France'</option>
+						<option value="COUNTRY = 'Australia'">COUNTRY = 'Australia'</option>
+						<option value="COUNTRY = 'Brazil'">COUNTRY = 'Brazil'</option>
+					</select>
+					<button class="btn" id="clearCloudGraphics" onclick="clearCloudGraphics();">Clear</button>
+				</div>
+			</div>
+		</div>
+		<div id="mapDiv"></div>
+		<div id="progress" class="progress hidden"></div>
+	</body>
+</html>

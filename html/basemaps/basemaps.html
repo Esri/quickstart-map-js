@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" >
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+        <title>Basemaps</title>
+		<link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css" />
+        <link rel="stylesheet" href="../../css/examples.css" />
+		
+        <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+        <script type="text/javascript">
+			dojo.require("esri.map");
+            
+			var map;
+            function init() {
+                var options = { 
+                    basemap: "streets",
+                    center: [-79.40, 43.55],
+                    zoom: 9
+                };
+                // Create map
+				map = new esri.Map("mapDiv",options);
+            }
+			
+            dojo.addOnLoad(init);
+        </script>		
+    </head>
+    <body>
+		<div class="message"><span id="userMessage" class="user-message">Select an ArcGIS Online basemap</span></div>
+		<div class="panel">
+			<div class="controls"> 
+				<div class="buttons">
+					<button class="btn btn-primary" onclick="map.setBasemap('streets');">Streets</button>
+					<button class="btn btn-primary" onclick="map.setBasemap('satellite');">Satellite</button>
+					<button class="btn btn-primary" onclick="map.setBasemap('topo');">Topographic</button>
+					<button class="btn btn-primary" onclick="map.setBasemap('gray');">Gray Canvas</button>
+				</div>
+			</div>
+		</div>
+		<div id="mapDiv"></div>
+    </body>
+</html>

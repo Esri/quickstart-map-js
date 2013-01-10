@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Quick Start Map JS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content="Allan Laframboise"/>
+    <link href="css/examples.css" rel="stylesheet"/>
+	<script>
+		function loadSample(link) {
+			document.getElementById('samplesFrame').src = link;
+		}
+	</script>
+	</head>
+	<body>
+		<div class="samples-container">
+			<ul class="samples-nav">
+				<li class="samples-nav-li"><button class="btn btn-inverse btn-square" onclick="loadSample('html/basemaps/basemaps.html');">Basemaps</button></li>
+				<li class="samples-nav-li"><button class="btn btn-inverse btn-square" onclick="loadSample('html/geolocation/geolocation.html');">Geolocation</button></li>
+				<li class="samples-nav-li"><button class="btn btn-inverse btn-square" onclick="loadSample('html/graphics/graphics.html');">Graphics</button></li>
+				<li class="samples-nav-li"><button class="btn btn-inverse btn-square" onclick="loadSample('html/geocode/geosearch.html');">Geosearch</button></li>
+				<li class="samples-nav-li"><button class="btn btn-inverse btn-square" onclick="loadSample('html/directions/directions.html');">Directions</button></li>
+				<li class="samples-nav-li"><button class="btn btn-inverse btn-square" onclick="loadSample('html/cloud/cloud_sql.html');">Cloud SQL</button></li>
+			</ul>			
+		</div>
+		<iframe id="samplesFrame" class="samples-frame" src="html/basemaps/basemaps.html"></iframe>
+	</body>
+</html>

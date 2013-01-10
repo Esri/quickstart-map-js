@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" >
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+        <title>Geolocation</title>
+		<link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css" />
+        <link rel="stylesheet" href="../../css/examples.css" />		
+		
+        <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+        <script type="text/javascript">
+		    dojo.require("esri.map");
+			dojo.require("esri.dijit.Popup");
+            
+			var map;
+			function init() {
+                var options = { 
+                    basemap: "satellite",
+                    center: [-79.40, 43.55],
+                    zoom: 9,
+					infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
+                };
+                // Create map
+				map = new esri.Map("mapDiv",options);
+				autoResize(map);
+			}
+			
+			function showGeolocation() {
+				if (navigator.geolocation){
+					navigator.geolocation.getCurrentPosition(showLocation, errorHandler);
+					setStyle("progress", "progress");
+				} else {
+					alert("Sorry, your browser doesn't support geolocation.");			
+				}
+			}
+
+			function showLocation(position) {
+				// Create a point
+				var pt = new esri.geometry.Point(position.coords.longitude,position.coords.latitude);
+				
+				// Create a symbol and pop-up template and add the graphic to the map
+				var symbol = createPictureSymbol("http://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png", 0, 10, 24);
+				var attributes = {"lat":pt.y.toFixed(2),"lon":pt.x.toFixed(2)};
+				var infoTemplate = new esri.InfoTemplate("My Location","Latitude: ${lat} <br/>Longitude: ${lon}");
+				var graphic = new esri.Graphic(pt,symbol,attributes,infoTemplate);
+				map.graphics.add(graphic);
+			
+				// Position the map
+				map.centerAndZoom(pt,13);
+				
+		        setStyle("progress", "progress hidden");
+			}
+
+			function errorHandler(err) {
+		        setStyle("progress", "progress hidden");
+				if(err.code == 1) {
+					alert("Error: Access is denied!");
+				} else if ( err.code == 2) {
+					alert("Error: Position is unavailable!");
+				} else 
+					alert("Error: " + err);
+			}
+			
+            function createPictureSymbol(url, xOffset, yOffset, size) {
+                return new esri.symbol.PictureMarkerSymbol(
+			    {
+			        "angle": 0,
+			        "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+			        "url": url,  
+			        "contentType": "image/png",
+			        "width":size, "height": size
+			    });
+            }
+			
+			function clearGeolocationGraphics() {
+				map.infoWindow.hide();
+				map.graphics.clear();				
+			}
+			
+			function setStyle(elementName, className) {
+				var element = document.getElementById(elementName);
+				if (element)
+					element.className = className;
+            }
+			
+			function autoResize(map) {
+				dojo.connect(map, 'onLoad', function (map) {
+					dojo.connect(window, 'resize', map, map.resize);
+				});
+				dojo.connect(map, 'onResize',  function(extent, width, height) { 
+					map.__resizeCenter = map.extent.getCenter();
+					setTimeout(function() {
+						map.centerAt(map.__resizeCenter);
+					}, 200);
+				});
+			}
+
+            dojo.addOnLoad(init);
+        </script>
+    </head>
+    <body>
+        <div class="message"><span id="userMessage" class="user-message">Find your web browser geolocation</span></div>
+        <div class="panel">
+            <div class="controls">
+               <div class="buttons"> 
+                <button class="btn btn-primary btn-wide" onclick="showGeolocation();">Find Me!</button>
+                <button class="btn"onclick="clearGeolocationGraphics();">Clear</button>
+              </div>
+            </div>
+        </div>
+		<div id="mapDiv"></div>
+		<div id="progress" class="progress hidden"></div>
+    </body>
+</html>
