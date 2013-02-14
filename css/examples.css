@@ -1,76 +1,78 @@
-html, body
-{
+html, body {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     overflow:hidden; /* Hide bottom overflow of map */
-	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande","Seoge UI","Arial",sans-serif;
 	font-size: 14px;
 	line-height: 20px;
-	color: #CFCFCF;
+	color: #666;
 	background-color: #fff;
 }
 
-/*** Index.html IFrame Page ***/
-.samples-container {
-	width: 100%;
-	background-color: black;
-}
-
-.samples-nav {
-	list-style: none;
-	padding: 5px;
-	margin: 0;
-}
-
-.samples-nav-li {
-	display: inline-block;
-}
-
-.samples-frame {
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	border: none;
-}
-
-
 /*** Map ***/
-.map{
+.map {
 	width: 100%;
 	height: 100%;
-    margin: 69px 0 0 0;
+    margin: 0;
     padding: 0;
 }
 
 /*** Panels ***/
-.panel,.message
-{
+.panel {
 	position: absolute;
-	width:100%;
+	top: 10px;
+	right: 10px;
+	/*width:100%;*/
+	width: 250px;
+	height: auto;
+	padding: 10px;
     text-align: center;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+	border:	1px rgba(150, 150, 150, 0.50) solid;
+	background: rgba(255, 255, 255, 0.90);
 	z-index:100;
 }
 
-.panel 
-{
-	top:24px;
-    height:45px;
-    background: rgba(0, 0, 0, .85);
+.panel-center {
+	position: relative;
+	margin: 10px auto;
 }
 
-.message
-{
-	top:0px;
-    height:22px;
-	min-height: 24px;
-    background-color: rgba(0, 0, 0, 0.90);
+.button-list {
+	display: inline;
+	margin: 10px;
+	list-style: none;
+}
+
+.titlearea {
+    background-color: #C3D2FF;
+}
+
+.message {
+
+}
+
+.title-message,.user-message {
+	vertical-align: middle;  
+	color: #646464;
+}
+
+.title-message {
+	font-size: 20px;
+	line-height: 30px;
+}
+
+.user-message {
+	font-size: 12px;
+	line-height: 14px;
 }
 
 /*** Containers ***/
-.controls
-{
+.controls {
     text-align:center;
 }
 
@@ -78,8 +80,7 @@ html, body
 	display: inline-block;
 }
 
-.buttons
-{
+.buttons {
     display:inline-block;
     margin:8px auto;
 }
@@ -89,66 +90,44 @@ html, body
 	overflow: hidden;
 }
 
-/*** Text ***/
-.user-message
-{
-	vertical-align: middle;  
-	color: #CFCFCF;
-	font-size: 13px;
-	line-height: 25px;
-}
-
 /**** Information panel ***/
-.info-panel
-{
-    position: absolute;
-    right: 0px;
-    top: 0px;
-	margin-top:69px;
-    padding: 5px 5px 5px 5px;
-    width: 30%;
+.info-panel {
+    padding: 5px;
 	height: 100%;
-    background: #1F1F1F;
-	z-index: 99;
+	text-align: left;
 }
 
-.info-label
-{
-    font-size:12px;
-	color: #e3e3e3;
+.info-label {
+	margin-left: 5px;
+    font-size:13px;
 }
 
-.info-totals
-{
-	display: block;
+.info-totals {
+	margin-left: 0px;
 	font-size: 12px;
-	color: #e3e3e3;
 }
 
-.info-list
-{
-	margin-left: -8px;
-    max-height: 67%;
+.info-list {
+	display: inline-block;
+	margin-left: -20px;
+    max-height: 300px;
     overflow-y: auto;
-	overflow-x: hidden;
-	font-size: 11px;
-	line-height: 13px;
+	font-size: 12px;
+	line-height: 14px;
 }
 
-.info-list a:hover 
-{
-    color: #e3e3e3;
+.info-list a:hover {
+    color: #000;
 }
 
-.info-item 
-{
-    margin-left: -10px;
+.info-item {
+    margin-left: 2px;
     padding: 3px 3px;
-	color: #A8A8A8;
     cursor:pointer;    
 }
 
 a {
+  /*color: rgba(227, 227, 227, 0.5);*/
   text-decoration: none;
 }
 
@@ -168,18 +147,18 @@ a:hover {
 }
 
 .map.infoPosition  {
-	width: 70%;
-	margin-top: 69px;
+	width: auto;
+	margin-right: 290px;
 }
 
 .esriSimpleSlider.esriSimpleSliderVertical.infoPosition {
-	top: 5px;
+	top: 2px;
 }
 
-/* Override default map slider - zoom in/out control */
+/*** Zoom In/Out ***/
 .esriSimpleSlider {
-	top: 2px;
-	left: 5px;
+	top: 5px;
+	left: 8px;
 	border: none !important;
 	background-color: transparent !important;
 	color: white !important;
@@ -217,21 +196,18 @@ a:hover {
 	height: 20px;
 }
 
+/*** Pop-up ***/
 .esriPopup, .esriPopup .contentPane {
 	font-size: 10px;
 	line-height: 12px;
-}
-
-.esriPopup .contentPane {
-	padding: 5px;
+	/*padding: 6px;*/  /*offsets pointer!*/
 }
 
 .esriPopup .sizer {
-	width: 150px;
+	width: 200px;
 }
 
-.popupZoom
-{
+.popupZoom {
     float:right;
     cursor:pointer;
     color: rgba(140, 140, 140, 1);
@@ -239,29 +215,76 @@ a:hover {
 
 /*** Basemap Gallery ***/
 .esriBasemapGallery {
-	width: 600px;
-	height: 40px;
+	/*width: 600px;
+	height: 40px;*/
+	padding-top: 5px;
 }
 .esriBasemapGalleryNode {
-	width: 45px;
+	width: 60px;
 }
 
 .esriBasemapGalleryThumbnail {
-	height: 31px;
-	width: 55px;
+	height: 51px;
+	width: 65px;
 }
 
 .esriBasemapGalleryLabelContainer {
 	display: none;
+/*	  -webkit-border-radius: 2px;
+     -moz-border-radius: 2px;
+          border-radius: 2px;
+	color: #000;
+	background-color: #fff;
+	font-size: 10px;*/
+	
 }
 
 .esriBasemapGallerySelectedNode .esriBasemapGalleryThumbnail {
 	border: 2px solid #3C7AFF;
 }
 
+/*** Geocode Widget ***/
+.simpleGeocoder {
+	display: inline-block;
+	height: 20px;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	width: 235px;
+}
+
+.simpleGeocoder .esriGeocoder {
+	height: 20px;
+	border: 1px solid #CCC;
+}
+
+.simpleGeocoder.esriGeocoder, .simpleGeocoder .esriGeocoderIcon{
+	margin-top: 3px;
+	padding-top: 3px;
+}
+
+.simpleGeocoder .esriGeocoder input {
+	padding: 3px;
+}
+
+.simpleGeocoder .esriGeocoder input:focus {
+  border: none;
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+}
+
+.simpleGeocoder .esriGeocoder .esriGeocoderReset {
+	margin: 2px 1px 6px 0;
+}
+
+.simpleGeocoder .esriGeocoderResults {
+	margin: -3px 0 0 -1px;
+	border: 1px rgba(150, 150, 150, 0.50) solid;
+	text-align: left;
+}
+
 /*** Loading image ***/
-.progress
-{
+.progress {
     position: absolute;
 	display: block;
 	margin-left: -16px;
@@ -275,25 +298,21 @@ a:hover {
 }
 
 /*** misc ***/
-.inline 
-{
+.inline {
     display:inline-block;
 }
 
-.selected
-{
+.selected {
     background: #356094;
     border: solid 1px #2A4E77;
     text-decoration: none;
 }
 
-.visible
-{
+.visible {
     display:block;
 }
 
-.hidden
-{
+.hidden {
    display:none;
 }
 
@@ -305,7 +324,8 @@ select,
 textarea {
   font-size: 12px;
   font-weight: normal;
-  line-height: 20px;  
+  line-height: 20px;
+  
 }
 
 input,
@@ -318,6 +338,7 @@ textarea {
 label {
   display: inline-block;
   margin-bottom: 5px;
+  height: 10px;
 }
 
 select,
@@ -353,7 +374,7 @@ input[type="color"],
 input,
 textarea,
 .uneditable-input {
-  width: 206px;
+  width: 225px;
 }
 
 textarea {
@@ -450,6 +471,7 @@ select {
   background-color: #ffffff;
   border: 1px solid #cccccc;
   padding: 2px 4px;
+  margin-top: 5px;
 }
 
 select[multiple],
@@ -899,9 +921,21 @@ input[type="submit"].btn.btn-mini {
 	min-width: 150px;
 }
 
+.btn-extra-wide {
+	min-width: 200px;
+}
+
+.btn-square {
+	margin-left: 0px;
+	margin-right: 0px;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+
 /*** Scrollbar ***/
 ::-webkit-scrollbar{ width: 10px; height: 10px;}
-::-webkit-scrollbar-track-piece{ background-color: #333; -webkit-border-radius: 4px; }
+::-webkit-scrollbar-track-piece{ background-color: #DBDBDB; -webkit-border-radius: 0; }
 ::-webkit-scrollbar-thumb:vertical{ height: 5px; background-color: #666; -webkit-border-radius: 3px; }
 ::-webkit-scrollbar-thumb:vertical:hover{ background-color: #999; }
 ::-webkit-scrollbar-thumb:horizontal{ width: 5px; background-color: #666; -webkit-border-radius: 3px; }
