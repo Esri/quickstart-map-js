@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html> 
+<html>  
+<head> 
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Basemaps</title> 
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <link rel="stylesheet" href="../../css/examples.css">
+  <!-- Load the library references for ArcGIS API for JavaScript -->
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script> 
+    dojo.require("esri.map");
+    dojo.require("esri.dijit.BasemapGallery");
+      
+    var map;
+    
+    function init() {
+      var options = {
+        basemap: "streets",
+        center: [-122.69, 45.52],
+        zoom: 12,
+      };
+      // Create map
+      map = new esri.Map("mapDiv", options);
+      createBasemapGallery();
+    }
+    
+    // Adds the maps listed in the basemap gallery from ArcGIS.com  
+    function createBasemapGallery() {
+    var basemapGallery = new esri.dijit.BasemapGallery({
+      showArcGISBasemaps: true,
+      map: map
+    }, "basemapGallery");
+    basemapGallery.startup();
+    // Listen to the basemap selection and set the title
+    dojo.connect(basemapGallery, "onSelectionChange", function() {
+      document.getElementById("userMessage").innerHTML = basemapGallery.getSelected().title;
+      });
+    }
+
+    dojo.addOnLoad(init);
+  </script> 
+</head> 
+<body>
+  <div class="panel">
+    <div class="titlearea"><span id="titleMessage" class="title-message">Basemaps Widget</span></div>
+    <div class="message"><span id="userMessage" class="user-message">Streets</span></div>
+    <div class="basemap-container">
+      <div id="basemapGallery"></div>
+    </div>
+  </div>
+  <div id="mapDiv"></div>
+</body> 
+</html>

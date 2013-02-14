@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+  <title>Simple Routing</title>
+  <!-- Load style sheets-->
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" />
+  <link rel="stylesheet" type="text/css" href="http://edn1.esri.com/samples/routing/jsrouting.css" />
+  <!-- Load the Dojo parser to load border container and content pane  -->
+  <script>
+    var djConfig = {
+      parseOnLoad: true
+    };
+  </script>
+
+<!-- Load the library references and the library references and Dojo components-->
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2"></script>
+  <script>
+    dojo.require("esri.map");
+    dojo.require("esri.tasks.route");
+    dojo.require("dijit.layout.BorderContainer");
+    dojo.require("dijit.layout.ContentPane");
+    //Variables for the map, routing service, and route parameters
+    var map, routeTask, routeParams;
+    //Variables for the stp 
+    var stopSymbol, routeSymbol, lastStop;
+    //Initialize map
+    function init() {
+      //Setup a bounding box that defines the initial map display extent, in Web Mercator projected coordinate values
+      var boundingBox= new esri.geometry.Extent({"xmin":-13048995,"ymin":4034503,"xmax":-13043262,"ymax":4038325,"spatialReference":{"wkid":102100}});
+      //Create the map with the value "map" which is the name of the DIV element that will contain the map. Also, add the bounding box in the map's constuctor.
+      map = new esri.Map("map", { extent: boundingBox });
+      //Resize the map when the browser resizes
+      dojo.connect(map, 'onLoad', function(map) {
+          dojo.connect(dijit.byId('map'), 'resize', map,map.resize);
+      });
+      //Include map tiles that contain streets
+      var streetMap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer");
+      //Add the layer to map using the map's addLayer method.
+      map.addLayer(streetMap);
+      //Listen for the click event on the map then call addStop function.
+      dojo.connect(map, "onClick", addStop);
+      //Here is the routing service that perform the route calculations. This service finds a least-cost path between multiple locations.
+      routeTask = new esri.tasks.RouteTask("http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route");
+        
+      //Setup the route parameters to get the results back from the routing service. This could be stop locations, barrier locations etc.
+      routeParams = new esri.tasks.RouteParameters();
+      //The parameters for the stops 
+      routeParams.stops = new esri.tasks.FeatureSet();
+      //This makes sure the route parameters uses the Web mercator projection
+      routeParams.outSpatialReference = {"wkid":102100};
+      //Event for the showRoute function
+      dojo.connect(routeTask, "onSolveComplete", showRoute);
+      //Event for the errorHandler function
+      dojo.connect(routeTask, "onError", errorHandler);
+
+      //Symbology used to display the stopped locations and route
+      stopSymbol = new esri.symbol.SimpleMarkerSymbol().setStyle(esri.symbol.SimpleMarkerSymbol.STYLE_X).setSize(12);
+      stopSymbol.outline.setWidth(4);
+      routeSymbol = new esri.symbol.SimpleLineSymbol().setColor(new dojo.Color([0,0,255,0.5])).setWidth(5);
+    }
+    //Show map on load
+    dojo.addOnLoad(init);
+
+    //Adds a graphic when the user clicks the map. If 2 or more points exist, route is solved.
+    function addStop(evt) {
+      var stop = map.graphics.add(new esri.Graphic(evt.mapPoint, stopSymbol));
+      routeParams.stops.features.push(stop);
+
+      if (routeParams.stops.features.length >= 2) {
+        routeTask.solve(routeParams);
+        lastStop = routeParams.stops.features.splice(0, 1)[0];
+      }
+    }
+
+    //Adds the solved route to the map as a graphic
+    function showRoute(solveResult) {
+      map.graphics.add(solveResult.routeResults[0].route.setSymbol(routeSymbol));
+    }
+
+    //Displays any error returned by the Route Task
+    function errorHandler(err) {
+      alert("An error occured\n" + err.message + "\n" + err.details.join("\n"));
+
+      routeParams.stops.features.splice(0, 0, lastStop);
+      map.graphics.remove(routeParams.stops.features.splice(1, 1)[0]);
+    }
+  </script>
+</head>
+<body class="claro">
+  <div id="mainWindow" dojotype="dijit.layout.BorderContainer" design="headline" gutters="false" style="width:100%; height:100%;">
+    <div id="header" class="shadow roundedCorners" dojotype="dijit.layout.ContentPane" region="top">
+      <span>Click on the map to add stops for your route.</span>     
+    </div>
+    <div id="map" class="roundedCorners" dojotype="dijit.layout.ContentPane" region="center">
+    </div>
+  </div>
+</body>
+</html>
+ 
