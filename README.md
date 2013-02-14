@@ -1,6 +1,6 @@
 # quickstart-map-js
 
-Here are a set of quick start samples that show you how to accomplish different mapping and GIS tasks with the ArcGIS API for Javascript. The samples use ArcGIS Online basemaps and services.  Learn more [here](http://www.arcgis.com/about/).
+These are a set of quick start samples that show you how to accomplish different mapping and GIS tasks with the ArcGIS API for Javascript. The samples use ArcGIS Online basemaps and services.  Learn more [here](http://www.arcgis.com/about/).
 
 [View it live](http://edn1.esri.com/quickstart-map-js/)
 
@@ -12,6 +12,7 @@ Here are a set of quick start samples that show you how to accomplish different 
 * Place Finding - Find places or geocode an address
 * Directions - Get directions
 * Graphics - Draw points, lines and polygons
+* Maps - Load and resize/recenter maps
 * Cloud - Draw and query features stored in the ArcGIS Online cloud
 
 ## Instructions

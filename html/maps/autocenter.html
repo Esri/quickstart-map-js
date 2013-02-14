@@ -4,26 +4,31 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  <title>Geolocation</title>
+  <title>Auto Center</title>
   <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">		
-  <!-- Load the library references for ArcGIS API for JavaScript -->
+  <!-- Load the library references for ArcGIS API for JavaScript-->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
   <script>
     dojo.require("esri.map");
     dojo.require("esri.dijit.Popup");
           
     var map;
+    var recenterConnection;
+    
     function init() {
-      var options = { 
-        basemap: "satellite",
-        center: [-100, 53],
-        zoom: 3,
+              var options = { 
+                  basemap: "streets",
+                  center: [-100, 53],
+                  zoom: 3,
         infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
-      };
-      // Create map
+              };
+              // Create map
       map = new esri.Map("mapDiv",options);
       autoResize(map);
+      dojo.connect(map, 'onLoad', function () {
+        showGeolocation();
+      });
     }
     
     function showGeolocation() {
@@ -36,19 +41,27 @@
     }
 
     function showLocation(position) {
+      clearGeolocationGraphics();
+      
       // Create a point
       var pt = new esri.geometry.Point(position.coords.longitude,position.coords.latitude);
       
       // Create a symbol and pop-up template and add the graphic to the map
       var symbol = createPictureSymbol("../../images/blue-pin.png", 0, 10, 24); //0, 10, 24
       var attributes = {"lat":pt.y.toFixed(2),"lon":pt.x.toFixed(2)};
-      var infoTemplate = new esri.InfoTemplate("My Location","Latitude: ${lat} <br/>Longitude: ${lon}");
+      var infoTemplate = new esri.InfoTemplate("My Geolocation","Latitude: ${lat} <br/>Longitude: ${lon}");
       var graphic = new esri.Graphic(pt,symbol,attributes,infoTemplate);
       map.graphics.add(graphic);
+      
+      // Show pop-up
+      map.infoWindow.setTitle("My Geolocation");
+      map.infoWindow.setContent(graphic.getContent());
+      map.infoWindow.show(pt);
     
       // Position the map
       map.centerAndZoom(pt,13);
-      setStyle("progress", "progress hidden");
+      
+          setStyle("progress", "progress hidden");
     }
 
     function errorHandler(err) {
@@ -60,16 +73,16 @@
       } else 
         alert("Error: " + err);
     }
-    
+
     function createPictureSymbol(url, xOffset, yOffset, size) {
       return new esri.symbol.PictureMarkerSymbol(
-        {
-            "angle": 0,
-            "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
-            "url": url,  
-            "contentType": "image/png",
-            "width":size, "height": size
-        });
+      {
+          "angle": 0,
+          "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+          "url": url,  
+          "contentType": "image/png",
+          "width":size, "height": size
+      });
     }
     
     function clearGeolocationGraphics() {
@@ -88,10 +101,12 @@
         dojo.connect(window, 'resize', map, map.resize);
       });
       dojo.connect(map, 'onResize',  function(extent, width, height) { 
-        map.__resizeCenter = map.extent.getCenter();
-        setTimeout(function() {
-          map.centerAt(map.__resizeCenter);
-        }, 200);
+        if (document.getElementById("useAutoCenter").checked) {
+          map.__resizeCenter = map.extent.getCenter();
+          setTimeout(function() {
+            map.centerAt(map.__resizeCenter);
+          }, 200);
+        }
       });
     }
 
@@ -99,14 +114,19 @@
   </script>
 </head>
 <body>
-  <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Display your Geolocation</span></div>
-      <div class="controls">
-         <div class="buttons"> 
-          <button class="btn btn-primary btn-wide" onclick="showGeolocation();">Go</button>
-          <button class="btn"onclick="clearGeolocationGraphics();">Clear</button>
-        </div>
+<div>
+	<div class="panel">
+  <div class="titlearea"><span id="titleMessage" class="title-message">Map with Auto-centering</span></div>
+    <div class="controls">
+       <div class="buttons"> 
+        <label><input id="useAutoCenter" type="checkbox" checked/>Use Auto-center</label> 
+        <button class="btn btn-primary" onclick="showGeolocation();">Center Map</button>
       </div>
+    </div>
+  <div class="message"><span id="userMessage" class="user-message">Try resizing the web browser.</span></div>
+
+  </div>
+
   </div>
   <div id="mapDiv"></div>
   <div id="progress" class="progress hidden"></div>

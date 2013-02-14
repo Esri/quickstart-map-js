@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Drive Times</title>
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <link rel="stylesheet" href="../../css/examples.css">
+  <!-- Load the library references for ArcGIS API for JavaScript-->
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script>
+    dojo.require("esri.map");
+    dojo.require("esri.tasks.gp");
+
+    var map, gp, pointGraphic;
+    var driveTimes = "1 2 3";
+
+    // Initialize map
+    function init() {
+      var options = {
+            basemap: "topo",
+            center: [-122.31, 47.67],
+            zoom: 12,
+        };
+      // Create map
+      map = new esri.Map("mapDiv", options);
+
+      //Here is the spatial analysis service that creates the drive time polygons. 
+      gp = new esri.tasks.Geoprocessor("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Network/ESRI_DriveTime_US/GPServer/CreateDriveTimePolygons");
+      gp.setOutputSpatialReference(map.spatialReference); //Set the coordinate system to match the map which is Web Mercator.
+
+      //Listen for the click event on the map then call computeServiceArea function.
+      dojo.connect(map, "onClick", onClickComputeServiceArea);
+    }
+
+    // Returns the map coordinates where the user clicked, it draws the point, and sets the two parameters for the service.   
+    function onClickComputeServiceArea(evt) {
+      computeServiceArea(evt.mapPoint);
+    }
+
+    function computeServiceArea(ptServiceArea) {
+      map.graphics.clear();
+
+      // Add point to the map based on click event which returns the evt point
+      var pointSymbol = createPictureSymbol("../../images/blue-pin.png", 0, 10, 24);
+      pointGraphic = new esri.Graphic(ptServiceArea, pointSymbol);
+      map.graphics.add(pointGraphic);
+
+      //Here we use the FeautureSet class as an input for the graphic location which is then used as a parameter for variable param.
+      var features = [];
+      features.push(pointGraphic);
+      var featureSet = new esri.tasks.FeatureSet();
+      featureSet.features = features;
+
+      //Set the parameters. The first parameter is the clicked point and second is the drive times based on variable driveTimes. 
+      var params = { "Input_Location": featureSet, "Drive_Times": driveTimes };
+
+      //The spatial analysis service is a synchronous so you only need to supply the input parameters and callback function to handle the results.
+      gp.execute(params, getDriveTimePolys, errorHandler);
+      setStyle("progress", "progress");
+    }
+
+    //Function for the results of the service are returned as an array. It loops through one FeatureSet returned by the service and add the features to the map. 
+    function getDriveTimePolys(results, messages) {
+      var features = results[0].value.features;
+      for (var f = 0, fl = features.length; f < fl; f++) {
+        var feature = features[f];
+        if (f == 0) {
+          //Symbology for how the 3 minute polygon will draw 
+          var polySymbolBlue = new esri.symbol.SimpleFillSymbol();
+          polySymbolBlue.setOutline(new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([0, 0, 0, 0.5]), 1));
+          polySymbolBlue.setColor(new dojo.Color([39, 64, 139, 0.6]));
+          feature.setSymbol(polySymbolBlue);
+        }
+        else if (f == 1) {
+          //Symbology for how the 2 minute polygon will draw 
+          var polySymbolGreen = new esri.symbol.SimpleFillSymbol();
+          polySymbolGreen.setOutline(new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([0, 0, 0, 0.5]), 1));
+          polySymbolGreen.setColor(new dojo.Color([34, 139, 34, 0.6]));
+          feature.setSymbol(polySymbolGreen);
+        }
+        else if (f == 2) {
+          //Symbology for how the 1 minute polygon will draw 
+          var polySymbolRed = new esri.symbol.SimpleFillSymbol();
+          polySymbolRed.setOutline(new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([0, 0, 0, 0.5]), 1));
+          polySymbolRed.setColor(new dojo.Color([205, 0, 0, 0.6]));
+          feature.setSymbol(polySymbolRed);
+        }
+        //Add the features (polygons)to the map based on 1,2, and 3 minutes from the center of the point. 
+        map.graphics.add(feature);
+      }
+      //if (pointGraphic.getDojoShape()) // - TODO
+      //	pointGraphic.getDojoShape().moveToTop();
+          
+      map.graphics.remove(pointGraphic);
+      map.graphics.add(pointGraphic);
+      setStyle("progress", "progress hidden");
+    }
+            
+    function errorHandler(error) {
+      setStyle("progress", "progress hidden");
+    }
+    
+    function clearGraphics() {
+      map.graphics.clear();
+      setStyle("progress", "progress hidden");
+    }
+    
+    function createPictureSymbol(url, xOffset, yOffset, size) {
+      return new esri.symbol.PictureMarkerSymbol(
+      {
+        "angle": 0,
+        "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+        "url": url,  
+        "contentType": "image/png",
+        "width":size, "height": size
+      });
+    }
+    
+    function setStyle(elementName, className) {
+      var element = document.getElementById(elementName);
+      if (element)
+        element.className = className;
+    }
+    
+    dojo.addOnLoad(init);
+  </script>
+</head>
+<body>
+  <div class="panel">
+    <div class="titlearea"><span id="titleMessage" class="title-message">Find Drive Times</span></div>
+    <div class="controls">
+      <div class="buttons"> 
+        <button class="btn btn-primary" onclick="computeServiceArea(map.extent.getCenter());">Go</button>
+        <button class="btn" onclick="clearGraphics();">Clear</button>
+      </div>
+    </div>
+    <div class="message"><span id="userMessage" class="user-message">Click on the map to calculate 1,2 and 3 minute drive times.</span></div>
+    </div>
+  <div id="mapDiv"></div>
+  <div id="progress" class="progress hidden"></div>
+</body>
+</html>
