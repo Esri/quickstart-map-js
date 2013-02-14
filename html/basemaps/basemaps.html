@@ -1,43 +1,47 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" >
-		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-        <title>Basemaps</title>
-		<link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css" />
-        <link rel="stylesheet" href="../../css/examples.css" />
-		
-        <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
-        <script type="text/javascript">
-			dojo.require("esri.map");
-            
-			var map;
-            function init() {
-                var options = { 
-                    basemap: "streets",
-                    center: [-79.40, 43.55],
-                    zoom: 9
-                };
-                // Create map
-				map = new esri.Map("mapDiv",options);
-            }
-			
-            dojo.addOnLoad(init);
-        </script>		
-    </head>
-    <body>
-		<div class="message"><span id="userMessage" class="user-message">Select an ArcGIS Online basemap</span></div>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">		
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Basemaps</title>
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <link rel="stylesheet" href="../../css/examples.css">
+  <!-- Load the library references for ArcGIS API for JavaScript -->
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script>
+    dojo.require("esri.map");
+          
+    var map;
+    
+    function init() {
+      var options = { 
+        basemap: "gray",
+        center: [-122.69, 45.52],
+        zoom: 3
+      };
+      // Create map
+      map = new esri.Map("mapDiv",options);
+    }
+
+    dojo.addOnLoad(init);
+  </script>		
+</head>
+  <body>
 		<div class="panel">
+			<div class="titlearea"><span id="titleMessage" class="title-message">Basemaps</span></div>
 			<div class="controls"> 
 				<div class="buttons">
-					<button class="btn btn-primary" onclick="map.setBasemap('streets');">Streets</button>
-					<button class="btn btn-primary" onclick="map.setBasemap('satellite');">Satellite</button>
-					<button class="btn btn-primary" onclick="map.setBasemap('topo');">Topographic</button>
-					<button class="btn btn-primary" onclick="map.setBasemap('gray');">Gray Canvas</button>
+					<button class="btn btn-primary btn-wide" onclick="map.setBasemap('streets');">Streets</button>
+					<button class="btn btn-primary btn-wide" onclick="map.setBasemap('satellite');">Satellite</button>
+					<button class="btn btn-primary btn-wide" onclick="map.setBasemap('hybrid');">Hybrid</button>
+					<button class="btn btn-primary btn-wide" onclick="map.setBasemap('topo');">Topo</button>
+					<button class="btn btn-primary btn-wide" onclick="map.setBasemap('gray');">Gray</button>
+					<button class="btn btn-primary btn-wide" onclick="map.setBasemap('national-geographic');">National Geographic</button>
 				</div>
 			</div>
+			<div class="message"><span id="userMessage" class="user-message"></span></div>
 		</div>
 		<div id="mapDiv"></div>
-    </body>
+  </body>
 </html>

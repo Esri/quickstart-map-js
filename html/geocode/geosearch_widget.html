@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Find Address</title>
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css"> 
+  <link rel="stylesheet" href="../../css/examples.css">	
+  <!-- Load the library references for ArcGIS API for JavaScript -->
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script>
+    dojo.require("esri.map");
+    dojo.require("esri.dijit.Geocoder");
+    dojo.require("esri.dijit.Popup");
+
+    var map,geocoder;
+    
+    function init() {
+      map = new esri.Map("mapDiv", {
+        basemap: "streets",
+        center: [-122.69, 45.52], //long, lat
+        zoom: 13,
+        infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
+      });
+      autoResize(map);
+
+      dojo.connect(map, 'onLoad', function (map) {
+        geocoder = new esri.dijit.Geocoder({
+        value: 'starbucks',
+        autoNavigate: false,
+        showResults: true,
+        maxLocations: 25,
+        minCharacters: 3,
+        searchDelay: 150,
+        autoComplete: true,
+        arcgisGeocoder: true,
+        map: map
+      },"search");
+      
+      geocoder.startup();
+      dojo.connect(geocoder, "onSelect", geocodeSelect);
+      dojo.connect(geocoder, "onFindResults", geocodeResults);
+      });
+    }
+    
+    // Set search scope - TODO
+    function setSearchExtent() {
+      if (useMapExtent.checked)
+        geocoder.activeGeocoder.searchExtent = map.extent;
+      else
+        geocoder.activeGeocoder.searchExtent = null;
+    }
+    
+    function geocodeSelect(item) {
+      // Create and add a selected graphic with pop-up
+      var symbol = createPictureSymbol("../../images/red-pin.png", 0, 10, 24);			
+      addPlaceGraphic(item, symbol);
+      var pt = item.feature.geometry;
+      zoomToPlace(pt.getLongitude(), pt.getLatitude(), map.getLevel());
+    }
+    
+    function geosearch() {
+      // setSearchExtent(); //- TODO
+      geocoder.find();
+    }
+    
+    function geocodeResults(places) {
+      // Translate features to places...
+      places = places.results;
+      if (places.length > 0) {
+        clearFindGraphics();
+        // Objects for the graphic
+        var symbol = createPictureSymbol("../../images/blue-pin.png", 0, 10, 24);
+        // Create and add graphics with pop-ups
+        for (var i = 0; i < places.length; i++) {
+          addPlaceGraphic(places[i], symbol);
+        }
+        // Zoom to results
+        zoomToPlaces(places);
+      } else {
+        alert("Sorry, address or place not found.");
+      }
+      setStyle("progress", "progress hidden");
+    }
+      
+    function addPlaceGraphic(item,symbol)  {
+      var place = {};
+      var attributes,infoTemplate,pt,graphic;
+      pt = item.feature.geometry;
+      place.address = item.name;
+      place.score = item.feature.attributes.Score;
+      // Graphic components
+      attributes = { address:place.address, score:place.score, lat:pt.getLatitude().toFixed(2), lon:pt.getLongitude().toFixed(2) };   
+      infoTemplate = new esri.InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='zoomToPlace(" + pt.getLongitude() + "," + pt.getLatitude() + ",15)';>Zoom To</span>");
+      graphic = new esri.Graphic(pt,symbol,attributes,infoTemplate);
+      // Add to map
+      map.graphics.add(graphic);	
+    }
+      
+    function createPictureSymbol(url, xOffset, yOffset, size) {
+      return new esri.symbol.PictureMarkerSymbol(
+      {
+        "angle": 0,
+        "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+        "url": url,  
+        "contentType": "image/png",
+        "width":size, "height": size
+      });
+    }
+    
+    function zoomToPlaces(places) {
+      var multiPoint = new esri.geometry.Multipoint(map.spatialReference);
+      for (var i = 0; i < places.length; i++) {
+        //multiPoint.addPoint(places[i].location);
+        multiPoint.addPoint(places[i].feature.geometry);
+      }
+      map.setExtent(multiPoint.getExtent().expand(2.0));
+    }
+
+    function zoomToPlace(lon,lat,scale) {
+      map.centerAndZoom([lon,lat],scale);
+    }
+
+    function clearFindGraphics() {
+      map.infoWindow.hide();
+      map.graphics.clear();
+    }
+
+    function setStyle(elementName, className) {
+      var element = document.getElementById(elementName);
+      if (element)
+        element.className = className;
+    }
+    
+    function autoResize(map) {
+      dojo.connect(map, 'onLoad', function (map) {
+        dojo.connect(window, 'resize', map, map.resize);
+      });
+      dojo.connect(map, 'onResize',  function(extent, width, height) { 
+        map.__resizeCenter = map.extent.getCenter();
+        setTimeout(function() {
+          map.centerAt(map.__resizeCenter);
+        }, 200);
+      });
+    }
+    
+    dojo.addOnLoad(init);
+  </script>
+</head>
+<body>
+  <div class="panel">
+    <div class="titlearea"><span id="titleMessage" class="title-message">Find a Place Widget</span></div>
+    <div class="controls">
+      <div class="buttons"> 			
+        <span class="controls-inner">
+        <div id="search"></div>
+        <!--label><input id="useMapExtent" type="checkbox" checked/>Search in map only</label--> 
+        <button class="btn btn-primary" id="search" onclick="geosearch();">Go</button>
+        <button class="btn" id="clear" onclick="clearFindGraphics();">Clear</button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div id="progress" class="progress hidden"></div>
+  <div id="mapDiv"></div>  
+</body>
+</html>
