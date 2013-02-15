@@ -17,7 +17,7 @@ These are a set of quick start samples that show you how to accomplish different
 
 ## Instructions
 
-1. Clone the repo ([Github for Windows] (http://windows.github.com/) or [Github for Mac] (http://mac.github.com/)) or download the .zip file. 
+1. Fork and then clone the repo or download the .zip file. 
 2. Run and try the examples.
 
 ## Requirements
