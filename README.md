@@ -57,4 +57,4 @@ limitations under the License.
 A copy of the license is available in the repository's [license.txt]( https://raw.github.com/Esri/quickstart-map-js/master/license.txt) file.
 
 [](Esri Tags: ArcGIS Web Mapping QuickStart)
-[](Esri Language: JavaScript,C-Sharp)
+[](Esri Language: JavaScript)
