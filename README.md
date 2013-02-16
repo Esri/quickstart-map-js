@@ -10,6 +10,7 @@ These are a set of simple samples that show you how to accomplish different mapp
 * Basemaps - Set different basemaps interactively
 * Geolocation - Find and display your geolocation
 * Place Finding - Find places or geocode an address
+* Geocode - Forward and reverse geocoding
 * Directions - Get directions
 * Graphics - Draw points, lines and polygons
 * Maps - Load and resize/recenter maps
