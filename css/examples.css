@@ -612,6 +612,7 @@ input,
 textarea,
 .uneditable-input {
   margin-left: 0;
+  margin-bottom: 4px;
 }
 
 input[disabled],
