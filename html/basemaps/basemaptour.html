@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">   
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Basemap Tour</title>
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <!-- Load my JavaScript and CSS -->
+  <link rel="stylesheet" type="text/css" href="../../css/examples.css">
+  <script>
+		dojo.require("esri.map");
+
+		var index;
+		var mapLocations; 
+		var timerHandle;
+		var map;    
+
+		dojo.ready(init);
+
+// Init dojo here
+		function init() {    
+			// Create map
+			var options = { 
+				basemap: "gray",
+				center: [-100, 50],
+				zoom: 3
+			};
+			map = new esri.Map("mapDiv",options);
+			initBasemaps();  
+		}
+//Load basemaps with an array here
+		function initBasemaps() {
+			index = 0;
+			// Setup map locations
+			mapLocations = [
+				["gray",[-100,45],3], // World
+				["streets",[-0.13,51.50],11], // London
+				["hybrid",[151.21,-33.87],14], // Sydney
+				["topo",[-77.017,38.943],17], // D.C.
+				["national-geographic",[-84.0,10],9], // Costa Rica        
+				["oceans",[-40,30],4], // Atlantic   
+				["gray",[135,-25],4], // Australia
+				["streets",[-117.20,32.73],13], // San Diego
+				["hybrid",[-77.65,24.20],9], // Bahamas
+				["topo",[139.75,35.69],17], // Tokyo
+				["national-geographic",[-74,40.74],12], // New York
+				["oceans",[-160,30],3] // Pacific
+			];   
+
+			autoResize(map);        
+		 }
+ 
+		function setBasemap(type) {
+			// Disable playmode
+			document.getElementById("tour").checked = false;
+			clearInterval(timerHandle);
+			map.setBasemap(type);
+		}
+
+		function showBasemap(index,moveLocation) {
+			// set map and location
+			map.setBasemap(mapLocations[index][0]);
+			if (moveLocation)
+				map.centerAndZoom(mapLocations[index][1],mapLocations[index][2]);
+		}
+
+		function move(forward) {
+			var i = index;
+			if (forward)
+				index = index < (mapLocations.length - 1) ? (index + 1) : index;
+			else
+				index = index > 0 ? (index - 1) : 0;
+			if (i != index)
+				showBasemap(index,true);
+		}
+		
+		function playTour() {
+			if (document.getElementById("tour").checked) {
+				// Start immediately
+				setTimeout(function() {
+					index = (index < (mapLocations.length - 1) ? (index + 1) : 0);
+					showBasemap(index,true);
+					},700);
+				// Start timer
+				timerHandle = setInterval ( function () { 
+					if (map.loaded) {
+						index = (index < (mapLocations.length - 1) ? (index + 1) : 0);
+						showBasemap(index, true);
+					}
+				}, 5000 );
+			} else {
+				clearInterval(timerHandle);
+			}
+		}
+
+		function autoResize(map) {
+			dojo.connect(map, 'onLoad', function (map) {
+				dojo.connect(window, 'resize', map, map.resize);
+			});
+			dojo.connect(map, 'onResize',  function(extent, width, height) { 
+				map.__resizeCenter = map.extent.getCenter();
+				setTimeout(function() {
+					map.centerAt(map.__resizeCenter);
+				}, 200);
+			});
+		}
+
+		function setStyle(elementName, className) {
+				var element = document.getElementById(elementName);
+				if (element)
+						element.className = className;
+		}
+	
+  </script>
+</head>
+  <body>
+    <div class="panel">
+      <div class="titlearea"><span id="titleMessage" class="title-message">Basemap Tour</span></div>
+      <div class="controls"> 
+        <div class="buttons">
+          <button class="btn-icon move-left" onclick="move(false);"><</button>
+          <button id="basemap0" class="btn btn-primary btn-inverse" onclick="map.setBasemap('gray');">Gray</button>
+          <button id="basemap1" class="btn btn-primary btn-inverse" onclick="map.setBasemap('streets');">Streets</button>
+          <button id="basemap2" class="btn btn-primary btn-inverse" onclick="map.setBasemap('hybrid');">Satellite</button>
+          <button id="basemap3" class="btn btn-primary btn-inverse" onclick="map.setBasemap('topo');">Topo</button>
+          <button id="basemap4" class="btn btn-primary btn-inverse" onclick="map.setBasemap('national-geographic');">Nat Geo</button>
+          <button id="basemap5" class="btn btn-primary btn-inverse" onclick="map.setBasemap('oceans');">Oceans</button>
+          <button class="btn-icon move-right" onclick="move(true);">></button>     
+        </div>
+      </div>
+      <label><input type="checkbox" id="tour" onclick="playTour();">Take the world tour</label>
+      <div class="message"><span id="userMessage" class="user-message"></span></div>
+    </div>
+    <div id="mapDiv"></div>
+  </body>
+</html>
