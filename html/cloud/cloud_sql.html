@@ -5,129 +5,108 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Cloud</title> 
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script> 
-    dojo.require("esri.map");
-    dojo.require("esri.layers.graphics");
-    dojo.require("esri.layers.FeatureLayer");
-    dojo.require("esri.dijit.Popup");
+    define("app",["../../js/utils.js", "esri/layers/graphics","esri/layers/FeatureLayer","esri/symbols/SimpleMarkerSymbol", "esri/renderers/SimpleRenderer", "esri/InfoTemplate", "esri/tasks/query", "dojo/dom", "dojo/_base/connect"], 
+      function(utils, Graphics, FeatureLayer, SimpleMarkerSymbol, SimpleRenderer, InfoTemplate, Query, dom, conn) { 
+        "use strict"
 
-    var featureLayer;
-
-    function init() {
-        var options = { 
+        var featureLayer; 
+        
+        var m = { 
+          map: null,
+          utils: utils, 
+          // Access feature service and add to map
+          AddCities:function() {
+            if (featureLayer)
+                return;   
+            utils.setStyle("progress", "progress");
+            // Create a feature layer
+            var infoTemplate = new InfoTemplate("City Info", "Name: ${NAME}</br>Country: ${COUNTRY}</br>Population:${POPULATION}");
+            featureLayer = new FeatureLayer("http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0", {
+                mode: FeatureLayer.MODE_ONDEMAND,
+                outFields: ["*"],
+                opacity: .90,
+                infoTemplate: infoTemplate
+            });
+            // Setup symbols for layer
+            var symbol = utils.createPictureSymbol("../../images/blue-dot-small.png", 0, 1, 12);
+            featureLayer.renderer = new SimpleRenderer(symbol);
+            var selectSymbol = utils.createPictureSymbol("../../images/red-dot-small.png", 0, 1, 12);
+            featureLayer.setSelectionSymbol(selectSymbol);
+            // Add cloud layer
+            m.map.addLayer(featureLayer);	
+            // Connect to selection event	
+            conn.connect(featureLayer,"onSelectionComplete", function (features) {
+                var extent;
+                for (var i = 0; i < features.length; i++) {
+                    if (!extent)
+                        extent = features[i]._extent;
+                    else
+                        extent.union(features[i]._extent);
+                }
+                if (extent)
+                    m.map.setExtent(extent);		
+            });
+            var element = dom.byId('selCountry');
+            element.disabled = false;
+          },
+          // Select features by SQL query
+          searchBySQL:function() {
+            if (!featureLayer) {
+                setMessage("Please add the Cities data first!");
+                return;
+            }
+            m.map.infoWindow.hide();
+            // Select features in the layer
+            var element = dom.byId('selCountry');
+            var sql = element.options[element.selectedIndex].value;
+            var query = new Query();  // Select by sql
+            query.where = sql;
+            featureLayer.selectFeatures(query, FeatureLayer.SELECTION_NEW);
+          },
+          // Clear selected graphics
+          clearCloudGraphics:function() {
+            utils.setStyle("progress", "progress hidden");
+            m.map.infoWindow.hide();
+            if (featureLayer)
+              m.map.removeLayer(featureLayer);
+            featureLayer = null;			
+          }
+        }
+        return m;
+      }
+    );
+    
+    require(["app", "esri/map", "dojo/dom", "dojo/on", "dojo/_base/connect", "dojo/domReady!"], 
+      function(app, Map, dom, on, conn) {
+        "use strict"
+        // Create map
+        var map = new Map("mapDiv", { 
                 basemap: "gray",
                 center: [-28,40],
-                zoom: 3,
-                infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
-        }
-        // Create map
-        map = new esri.Map("mapDiv", options);
-
-        // Listen for map update events
-        dojo.connect(map,"onUpdateStart",function(){
-           setStyle("progress", "progress");
+                zoom: 3
         });
-        dojo.connect(map,"onUpdateEnd",function(){
-           setStyle("progress", "progress hidden");
-        });        
-    }
+        app.map = map;
+        app.utils.autoRecenter(map);
 
-    function AddCities() {
-      if (featureLayer)
-          return;
-          
-      setStyle("progress", "progress");
-
-      // Create a feature layer that accesses cloud data
-      var infoTemplate = new esri.InfoTemplate("City Info", "Name: ${NAME}</br>Country: ${COUNTRY}</br>Population:${POPULATION}");
-      featureLayer = new esri.layers.FeatureLayer("http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0", {
-          mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
-          outFields: ["*"],
-          opacity: .90,
-          infoTemplate: infoTemplate
-      });
-      // Setup symbols for layer
-      var symbol = createPictureSymbol("../../images/blue-dot-small.png", 0, 1, 12);
-      featureLayer.renderer = new esri.renderer.SimpleRenderer(symbol);
-      var selectSymbol = createPictureSymbol("../../images/red-dot-small.png", 0, 1, 12);
-      featureLayer.setSelectionSymbol(selectSymbol);
-      // Add cloud layer
-      map.addLayer(featureLayer);	
-      
-      // Connect to selection event	
-      dojo.connect(featureLayer,"onSelectionComplete", function (features) {
-          var extent;
-          for (var i = 0; i < features.length; i++) {
-              if (!extent)
-                  extent = features[i]._extent;
-              else
-                  extent.union(features[i]._extent);
-          }
-          if (extent)
-              map.setExtent(extent);
-
-          setStyle("progress", "progress hidden");				
-      });
-      
-      var element = document.getElementById('searchBySQL');
-      element.disabled = false;
-    }
-
-    // Select features by SQL query
-    function searchBySQL() {
-      if (!featureLayer) {
-          setMessage("Please add the Cities data first!");
-          return;
+        // Wire map events
+        conn.connect(map,"onUpdateStart",function(){
+           app.utils.setStyle("progress", "progress");
+        });
+        conn.connect(map,"onUpdateEnd",function(){
+           app.utils.setStyle("progress", "progress hidden");
+        });  
+        
+        // Wire UI events
+        on(dom.byId("btnClear"), "click", app.clearCloudGraphics);
+        on(dom.byId("btnAddCities"), "click", app.AddCities);
+        on(dom.byId("selCountry"), "change", app.searchBySQL);
       }
-      map.infoWindow.hide();
-
-      setStyle("progress", "progress");
-          
-      // Select features in the layer
-      var element = document.getElementById('searchBySQL');
-      var sql = element.options[element.selectedIndex].value;
-
-      var query = new esri.tasks.Query();  // Select by sql
-      query.where = sql;
-      featureLayer.selectFeatures(query, esri.layers.FeatureLayer.SELECTION_NEW);
-    }
-    
-    function clearCloudGraphics() {
-      setStyle("progress", "progress hidden");
-      map.infoWindow.hide();
-      if (featureLayer)
-          map.removeLayer(featureLayer);
-          
-      featureLayer = null;			
-    }
-            
-    function createPictureSymbol(url, xOffset, yOffset, size) {
-      return new esri.symbol.PictureMarkerSymbol(
-      {
-          "angle": 0,
-          "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
-          "url": url,  
-          "contentType": "image/png",
-          "width":size, "height": size
-      });
-    }
-    
-    function setMessage(msg) {
-      var element = document.getElementById("userMessage");
-      element.innerHTML = msg;
-    } 
-
-    function setStyle(elementName, className) {
-      var element = document.getElementById(elementName);
-      if (element)
-      element.className = className;
-    }
-    
-    dojo.addOnLoad(init);	
+    );  
   </script>
 </head>
 <body>
@@ -135,8 +114,8 @@
     <div class="titlearea"><span id="titleMessage" class="title-message">Access the ArcGIS Cloud</span></div>
       <div class="controls">
         <div class="buttons">
-          <button class="btn btn-primary" id="addData" onclick="AddCities();">Add World Cities</button>
-          <select class="" id="searchBySQL" onchange="searchBySQL();" disabled>
+          <button class="btn btn-primary" id="btnAddCities">Add World Cities</button>
+          <select class="" id="selCountry" disabled>
             <option selected value="1=0">Select by country</option>
             <option value="COUNTRY = 'US'">COUNTRY = 'US'</option>
             <option value="COUNTRY = 'Canada'">COUNTRY = 'Canada'</option>
@@ -144,7 +123,7 @@
             <option value="COUNTRY = 'Australia'">COUNTRY = 'Australia'</option>
             <option value="COUNTRY = 'Brazil'">COUNTRY = 'Brazil'</option>
           </select>
-          <button class="btn" id="clearCloudGraphics" onclick="clearCloudGraphics();">Clear</button>
+          <button class="btn" id="btnClear">Clear</button>
         </div>
       </div>
       <div class="message"><span id="userMessage" class="user-message"></span></div>

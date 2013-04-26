@@ -5,89 +5,96 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Graphics Toolbar</title>	
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script>
-    dojo.require("esri.map");
-    dojo.require("esri.toolbars.draw");
+    require(["esri/map", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/CartographicLineSymbol", "esri/graphic", "../../js/utils.js", "dojo/_base/Color", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
+      function(Map, Draw, SimpleMarkerSymbol, SimpleLineSymbol, CartographicLineSymbol, Graphic, utils, color, on, conn, dom) {
+        "use strict"
 
-    var map, tb;   
+        var tb; 
+        
+        // Create map
+        var map = new Map("mapDiv", {
+          basemap: "streets",
+          center: [-122.31, 47.67],
+          zoom: 8
+        });
+        utils.autoRecenter(map);
 
-    function init() {
-    var options = {
-        basemap: "topo",
-        center: [-122.31, 47.67],
-        zoom: 12
-      };
-      // Create map
-      map = new esri.Map("mapDiv", options);
-      //Load the drawing toolbar widget
-      dojo.connect(map, "onLoad", initToolbar);
-      autoResize(map);
-    }
+        // Wire events
+        on(map, "Load", initToolbar);
+        // Wire UI events
+        on(dom.byId("btnAddPoint"),"click", setActiveTool);
+        on(dom.byId("btnAddLine"),"click", setActiveTool);
+        on(dom.byId("btnAddPolygon"),"click", setActiveTool);
+        on(dom.byId("btnClear"),"click", setActiveTool);
+        
+        // Load the drawing toolbar widget
+        function initToolbar() {
+          tb = new Draw(map);
+          // Do something after graphics are sketched on the map 
+          conn.connect(tb, "onDrawEnd", addGraphic);
+          // Override the default marker symbol
+          tb.markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 7, 
+            new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new color([255,0,0]), 1), 
+            new color([255,0,0,1]));
+        }
 
-    function initToolbar(map) {
-      tb = new esri.toolbars.Draw(map);
-      // Do something after graphics are sketched on the map 
-      dojo.connect(tb, "onDrawEnd", addGraphic);
-      // Override the default marker symbol
-      tb.markerSymbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_SQUARE, 7, 
-        new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 1), 
-        new dojo.Color([255,0,0,1]));
-    }
+        // Set the active draw tool and lock the map
+        function setActiveTool(btn) {
+          var esriToolType = btn.currentTarget.id;
+          switch (esriToolType) {
+            case "btnAddPoint":
+              esriToolType = Draw.POINT;
+              break;
+            case "btnAddLine":
+              esriToolType = Draw.POLYLINE;
+              break;
+            case "btnAddPolygon":
+              esriToolType = Draw.POLYGON;
+              break;
+            default:
+              esriToolType = null;
+          }
 
-    // Set the active draw tool and lock the map
-    function setActiveTool(esriToolType) {
-      if (esriToolType) {
-        tb.activate(esriToolType);  // Example type - esri.toolbars.Draw.POINT
-        map.disablePan();
-        map.disableDoubleClickZoom();
-      } else {
-        tb.deactivate();  
-        map.enablePan();
-        map.enableDoubleClickZoom();
-        map.graphics.clear(); 
-      }
-    }
+          if (esriToolType) {
+            tb.activate(esriToolType);  // Example type - Draw.POINT
+            map.disablePan();
+            map.disableDoubleClickZoom();
+          } else {
+            tb.deactivate();  
+            map.enablePan();
+            map.enableDoubleClickZoom();
+            map.graphics.clear(); 
+          }
+        }
 
-    // Add the graphic with symbol
-    function addGraphic(geometry) {
-      var symbol = dojo.byId("symbol").value;
-      
-      if (symbol) {
-        symbol = eval(symbol);
-      } else {
-        switch (geometry.type) {
-          case 'point':
-            symbol = tb.markerSymbol;
-            break;
-          case 'polyline':
-            symbol = tb.lineSymbol;
-            break;
-          case 'polygon':
-            symbol = tb.fillSymbol;
-            break;
-          default:
+        // Add the graphic with symbol
+        function addGraphic(geometry) {
+          var symbol = dom.byId("symbol").value;
+          if (symbol) {
+            symbol = eval(symbol);
+          } else {
+            switch (geometry.type) {
+              case 'point':
+                symbol = tb.markerSymbol;
+                break;
+              case 'polyline':
+                symbol = tb.lineSymbol;
+                break;
+              case 'polygon':
+                symbol = tb.fillSymbol;
+                break;
+              default:
+            }
+          }
+          map.graphics.add(new Graphic(geometry, symbol));
         }
       }
-      map.graphics.add(new esri.Graphic(geometry, symbol));
-    }
-
-    function autoResize(map) {
-      dojo.connect(map, 'onLoad', function (map) {
-        dojo.connect(window, 'resize', map, map.resize);
-      });
-      dojo.connect(map, 'onResize',  function(extent, width, height) { 
-        map.__resizeCenter = map.extent.getCenter();
-        setTimeout(function() {
-          map.centerAt(map.__resizeCenter);
-        }, 200);
-      });
-    }
-
-    dojo.addOnLoad(init);
+    );
   </script>
 </head>
 <body>
@@ -95,26 +102,25 @@
     <div class="titlearea"><span id="titleMessage" class="title-message">Draw Graphics Widget</span></div>
       <div class="controls">
         <div class="buttons">
-        <button class="btn btn-primary" onclick="setActiveTool(esri.toolbars.Draw.POINT);">Add Point</button>
-        <button class="btn btn-primary" onclick="setActiveTool(esri.toolbars.Draw.POLYLINE);">Add Line</button>
-        <button class="btn btn-primary" onclick="setActiveTool(esri.toolbars.Draw.POLYGON);">Add Poly</button>
+        <button id="btnAddPoint" class="btn btn-primary">Add Point</button>
+        <button id="btnAddLine" class="btn btn-primary">Add Line</button>
+        <button id="btnAddPolygon" class="btn btn-primary">Add Poly</button>
         <select class="select-medium" id="symbol">
-        
           <option value="">--- Symbol Options ---</option>
           <option value="">--- Point ---</option>
-          <option value="new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_SQUARE, 7, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 1), new dojo.Color([255,0,0,1]))">Default</option>
-          <option value="new esri.symbol.SimpleMarkerSymbol().setColor(new dojo.Color([0, 0, 255]))">Circle</option>
-          <option value="new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_DIAMOND, 20, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([0,0,0]), 1), new dojo.Color([255,255,0,0.5]))">Diamond</option>
+          <option value="new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 7, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new color([255,0,0]), 1), new color([255,0,0,1]))">Default</option>
+          <option value="new SimpleMarkerSymbol().setColor(new color([0, 0, 255]))">Circle</option>
+          <option value="new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_DIAMOND, 20, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new color([0,0,0]), 1), new color([255,255,0,0.5]))">Diamond</option>
           <option value="">--- Simple Line ---</option>
-          <option value="new esri.symbol.SimpleLineSymbol()">Default</option>
-          <option value="new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASH, new dojo.Color([255,0,0]), 3)">Dash</option>
-          <option value="new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DOT, new dojo.Color([255,0,0]), 5)">Dot</option>
+          <option value="new SimpleLineSymbol()">Default</option>
+          <option value="new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASH, new color([255,0,0]), 3)">Dash</option>
+          <option value="new SimpleLineSymbol(SimpleLineSymbol.STYLE_DOT, new color([255,0,0]), 5)">Dot</option>
           <option value="">--- Cartographic Line Symbols ---</option>
-          <option value="new esri.symbol.CartographicLineSymbol()">Default</option>
-          <option value="new esri.symbol.CartographicLineSymbol(esri.symbol.CartographicLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 10, esri.symbol.CartographicLineSymbol.CAP_ROUND, esri.symbol.CartographicLineSymbol.JOIN_ROUND)">Solid, round cap, round join</option>
-          <option value="new esri.symbol.CartographicLineSymbol(esri.symbol.CartographicLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 10, esri.symbol.CartographicLineSymbol.CAP_SQUARE, esri.symbol.CartographicLineSymbol.JOIN_BEVEL)">Solid, square cap, bevel join</option>
+          <option value="new CartographicLineSymbol()">Default</option>
+          <option value="new CartographicLineSymbol(CartographicLineSymbol.STYLE_SOLID, new color([255,0,0]), 10, CartographicLineSymbol.CAP_ROUND, CartographicLineSymbol.JOIN_ROUND)">Solid, round cap, round join</option>
+          <option value="new CartographicLineSymbol(CartographicLineSymbol.STYLE_SOLID, new color([255,0,0]), 10, CartographicLineSymbol.CAP_SQUARE, CartographicLineSymbol.JOIN_BEVEL)">Solid, square cap, bevel join</option>
         </select>
-        <button class="btn" onclick="setActiveTool(null);">Clear</button>
+        <button id="btnClear" class="btn">Clear</button>
       </div>
     </div>
   </div>
