@@ -4,149 +4,131 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  <title>Geosearch</title>
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <title>Find Places</title>
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script>
-    dojo.require("esri.map");
-    dojo.require("esri.tasks.locator");
-    dojo.require("esri.dijit.Popup");
-    
-    var map;
-    var geocodeService;
+    require(["esri/map", "esri/tasks/locator", "esri/InfoTemplate", "esri/graphic", "esri/geometry/Multipoint", "../../js/utils.js", "dojo/dom", "dojo/on", "dojo/domReady!"], 
+      function(Map, Geocoder, InfoTemplate, Graphic, Multipoint, utils, dom, on) {  
+        "use strict"      
+               
+        // Create map
+        var map = new Map("mapDiv", {
+          basemap: "streets",
+          center: [-122.69, 45.52], //long, lat
+          zoom: 3
+        });
+        utils.autoRecenter(map);
 
-    function init() {
-      var options = { 
-          basemap: "gray",
-          center: [-122.69, 45.52],
-          zoom: 3,
-          infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
-        };
-      // Create map
-      map = new esri.Map("mapDiv",options);
-      autoResize(map);
-
-      // Create geoservice
-      geocodeService = new esri.tasks.Locator("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
-      dojo.connect(geocodeService, "onAddressToLocationsComplete", geocodeResults);
-      dojo.connect(geocodeService, "onError", geocodeError);
-    }
-			
-    // Listen for enter key
-    function placeInput_onKeyPress(e) {
-      if (e.keyCode == 13 || e.keyCode == "13") {
-        geoSearch();
-      }
-    }
-
-    // Geocode against the user input
-    function geoSearch() {
-      var searchString = document.getElementById('placeInput').value;
-      var boundingBox;
-
-      if (document.getElementById('useMapExtent').checked)
-        boundingBox = map.extent;
+        // Create geoservice
+        var geocodeService = new Geocoder("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
         
-      // Set geocode options
-      var options = {
-        address:{"SingleLine":searchString},
-        outFields:["Loc_name"],
-        searchExtent: boundingBox
-      }
-      // Execute geosearch
-      geocodeService.addressToLocations(options);
-      setStyle("progress", "progress visible");
-    }
-    
-    // Geocode results
-    function geocodeResults(places) {
-      if (places.length > 0) {
-        clearFindGraphics();
-        // Objects for the graphic
-        var symbol = createPictureSymbol("../../images/blue-pin.png", 0, 10, 24);
-        var place,attributes,infoTemplate,pt,graphic;
-        
-        // Create and add graphics with pop-ups
-        for (var i = 0; i < places.length; i++) {
-          place = places[i];
-          pt = place.location;
-          attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
-          infoTemplate = new esri.InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='zoomToPlace(" + pt.x + "," + pt.y + ",15)';>Zoom To</span>");
-          graphic = new esri.Graphic(pt,symbol,attributes,infoTemplate);
-          map.graphics.add(graphic);	
+        // Wire events
+        on(map, "load", function() {
+          dojo.connect(geocodeService, "onAddressToLocationsComplete", geocodeResults);
+          dojo.connect(geocodeService, "onError", geocodeError);
+          dojo.connect(map.graphics,"onClick", geocodeSelect);
+          on(dom.byId("placeInput"), "keypress", placeInput_onKeyPress);
+          on(dom.byId("btnSearch"),"click", geoSearch);
+          on(dom.byId("btnClear"),"click", clearFindGraphics);
+        });
+
+        // Geocode against the user input
+        function geoSearch() {
+          var searchString = dom.byId('placeInput').value;
+          var boundingBox;
+          if (dom.byId('useMapExtent').checked)
+            boundingBox = map.extent;
+          // Set geocode options
+          var options = {
+            address:{"SingleLine":searchString},
+            outFields:["Loc_name"],
+            searchExtent: boundingBox
+          }
+          // Execute geosearch
+          geocodeService.addressToLocations(options);
+          utils.setStyle("progress", "progress visible");
         }
-        zoomToPlaces(places);
-      } else {
-        alert("Sorry, address or place not found.");
+        
+        // Geocode results
+        function geocodeResults(places) {
+          if (places.length > 0) {
+            clearFindGraphics();
+            // Objects for the graphic
+            var place,attributes,infoTemplate,pt,graphic;
+            // Create and add graphics with pop-ups
+            for (var i = 0; i < places.length; i++) {
+              place = places[i];
+              pt = place.location;
+              attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
+              infoTemplate = new InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='window.zoomToPlace(" + pt.x + "," + pt.y + ",15)';>Zoom To</span>");
+              graphic = new Graphic(pt,sym,attributes,infoTemplate);
+              map.graphics.add(graphic);	
+            }
+            zoomToPlaces(places);
+          } else {
+            alert("Sorry, address or place not found.");
+          }
+          utils.setStyle("progress", "progress hidden");
+        }
+      
+        function geocodeError(errorInfo) {
+          utils.setStyle("progress", "progress hidden");
+          alert("Sorry, place or address not found!");
+        }
+
+        var sym = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24);
+        var selSym = utils.createPictureSymbol("../../images/red-pin.png", 0, 0, 24);
+        var lastSel;
+
+        function geocodeSelect(item) {
+          // Create and add a selected graphic with pop-up
+          item = (item.graphic ? item.graphic : item.feature);
+          if (lastSel) {
+            lastSel.setSymbol(sym);
+          }
+          item.setSymbol(selSym);
+          lastSel = item;
+        }
+
+        // Listen for enter key
+        function placeInput_onKeyPress(e) {
+          if (e.keyCode == 13 || e.keyCode == "13") {
+            geoSearch();
+          }
+        }
+
+        function zoomToPlaces(places) {
+          var multiPoint = new Multipoint();
+          for (var i = 0; i < places.length; i++) {
+              multiPoint.addPoint(places[i].location);
+          }
+          map.setExtent(multiPoint.getExtent().expand(2.0));
+        }
+
+        window.zoomToPlace = function zoomToPlace(lon,lat,scale) {
+          map.centerAndZoom([lon,lat],scale);
+        }
+
+        function clearFindGraphics() {
+          map.infoWindow.hide();
+          map.graphics.clear();
+        }
       }
-      setStyle("progress", "progress hidden");
-    }
-  
-    function geocodeError(errorInfo) {
-      setStyle("progress", "progress hidden");
-      alert("Sorry, place or address not found!");
-    }
-
-    function createPictureSymbol(url, xOffset, yOffset, size) {
-      return new esri.symbol.PictureMarkerSymbol(
-      {
-        "angle": 0,
-        "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
-        "url": url,  
-        "contentType": "image/png",
-        "width":size, "height": size
-      });
-    }
-  
-    function zoomToPlaces(places) {
-      var multiPoint = new esri.geometry.Multipoint();
-      for (var i = 0; i < places.length; i++) {
-          multiPoint.addPoint(places[i].location);
-      }
-      map.setExtent(multiPoint.getExtent().expand(2.0));
-    }
-
-    function zoomToPlace(lon,lat,scale) {
-      map.centerAndZoom([lon,lat],scale);
-    }
-
-    function clearFindGraphics() {
-      map.infoWindow.hide();
-      map.graphics.clear();
-    }
-
-    function setStyle(elementName, className) {
-      var element = document.getElementById(elementName);
-      if (element)
-        element.className = className;
-    }
-    
-    function autoResize(map) {
-      dojo.connect(map, 'onLoad', function (map) {
-        dojo.connect(window, 'resize', map, map.resize);
-      });
-      dojo.connect(map, 'onResize',  function(extent, width, height) { 
-        map.__resizeCenter = map.extent.getCenter();
-        setTimeout(function() {
-          map.centerAt(map.__resizeCenter);
-        }, 200);
-      });
-    }
-
-	dojo.addOnLoad(init);	
+    );
 	</script>
 </head>
 <body>
   <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Find a Place</span></div>
+    <div class="titlearea"><span id="titleMessage" class="title-message">Find Places</span></div>
     <div class="controls">
       <div class="buttons"> 
-        <input id="placeInput" class="" onkeypress="placeInput_onKeyPress(event);" type="text" value="San Diego, CA" placeholder="San Diego, CA"/>
+        <input id="placeInput" class="" type="text" value="San Diego, CA" placeholder="San Diego, CA"/>
         <label><input id="useMapExtent" type="checkbox"/>Search in map only</label> 
-        <button class="btn btn-primary" id="search" onclick="geoSearch(document.getElementById('placeInput').value);">Go</button>
-        <button class="btn" id="clear" onclick="clearFindGraphics();">Clear</button>
+        <button class="btn btn-primary" id="btnSearch">Go</button>
+        <button class="btn" id="btnClear">Clear</button>
       </div>
     </div>
   </div>
