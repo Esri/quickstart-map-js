@@ -5,81 +5,132 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Load Webmap</title>
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">		
   <!-- Load the library references for ArcGIS API for JavaScript-->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script>
-    dojo.require("esri.map");
-    dojo.require("esri.arcgis.utils");
-    dojo.require("esri.dijit.Legend");
-    dojo.require("esri.dijit.Scalebar");
+    require(["esri/map", "esri/dijit/Scalebar", "esri/dijit/Legend", "esri/arcgis/utils", "../../js/utils.js", "dojo/dom", "dojo/on", "dojo/query", "dojo/domReady!"], 
+      function(Map, Scalebar, Legend, esriUtils, utils, dom, on, query) {  
+        "use strict"
+        
+        var map;
+        var scalebar;
+        var legend;
 
-    var map;
-
-    function init() {
-      
-      var mapDeferred = esri.arcgis.utils.createMap("085648dddb0e41baa898b5e0b3afc902", "mapDiv", {
-        mapOptions: {
-          slider: true,
-          nav:false
+        function loadBasemap(){
+          resetMap();
+          // Create new map
+          map = new Map("mapDiv",{ 
+            basemap: "gray",
+            center: [-122.69, 45.52],
+            zoom: 3
+          });
+          utils.autoRecenter(map);
         }
-      });
-      mapDeferred.then(function(response) {
-        
-        dojo.byId("title").innerHTML = response.itemInfo.item.title;
-        //dojo.byId("subtitle").innerHTML = response.itemInfo.item.snippet;
-        
-        map = response.map;
-        
-        //add the legend
-        var layers = response.itemInfo.itemData.operationalLayers;   
-        if(map.loaded){
-          initMap(layers);
-        }
-        else{
-        dojo.connect(map,"onLoad",function(){
-          initMap(layers);
-        });
-      }
-      },function(error){
-        console.log("Map creation failed: ", dojo.toJson(error));        
-      });
 
-    }
+        // Load basemap map when page loads
+        loadBasemap();
     
-    function initMap(layers){
-     //add a scalebar
-      var scalebar = new esri.dijit.Scalebar({
-        map:map,
-        scalebarUnit: 'english'
-      });
-      //add a legend
-      var layerInfo = dojo.map(layers, function(layer,index){
-        return {layer:layer.layerObject,title:layer.title};
-      });
-      if(layerInfo.length > 0){
-        var legendDijit = new esri.dijit.Legend({
-          map:map,
-          layerInfos:layerInfo
-        },"legend");
+        // Wire events
+        on(dom.byId("btnWebmap"),"click", loadWebmap);
+        on(dom.byId("webmapInput"),"keypress", loadWebmap);
+        on(dom.byId("btnClear"),"click", loadBasemap);
+        
+        // Load webmap
+        function loadWebmap(e) {
+          if ((e.keyCode != 13 || e.keyCode != "13") && e.keyCode != 0) {
+            return;
+          }
+          // Clear old map
+          resetMap();
 
-        legendDijit.startup();
-      }
-      else{
-        dojo.byId('legend').innerHTML = 'No operational layers';
-      }
-    }
+          // Get new webmap and extract map and map parts
+          var mapDeferred = esriUtils.createMap(dom.byId("webmapInput").value.trim(), "mapDiv", {
+            mapOptions: {
+              slider: true,
+              nav:false
+            }
+          });
 
-    dojo.addOnLoad(init);
+          mapDeferred.then(function(response) {   
+            map = response.map;
+            utils.autoRecenter(map);
+            // Add titles
+            dom.byId("mapTitle").innerHTML = response.itemInfo.item.title;
+            dom.byId("mapSubTitle").innerHTML = response.itemInfo.item.snippet;
+            // Add scalebar and legend
+            var layers = esri.arcgis.utils.getLegendLayers(response);  
+            if(map.loaded){
+              initMapParts(layers);
+            }
+            else{
+              on(map,"load",function(){
+                initMapParts(layers);
+              });
+            }
+          },function(error){
+            console.log("Map creation failed: ", dojo.toJson(error));        
+          });
+        }
+        
+        function initMapParts(layers){
+         //add a scalebar
+          scalebar = new Scalebar({
+            map:map,
+            scalebarUnit: 'english'
+          });
+          //add a legend
+          if (legend) {
+            legend.map = map;
+            legend.refresh(layers);
+          }
+          else {
+            legend = new Legend({
+                map:map,
+                layerInfos:layers
+              },"mapLegend");
+            legend.startup();
+          }
+        }
+
+        // Clean up map
+        function resetMap() {
+          if (map) { 
+            map.removeAllLayers();
+            map.spatialReference = null;
+            map.destroy();
+          }
+          if (scalebar)
+           scalebar.destroy();
+          if (legend) {
+            dom.byId("mapLegend").innerHTML = "";
+          }        
+          dom.byId("mapTitle").innerHTML = "";
+          dom.byId("mapSubTitle").innerHTML = "";
+        }
+      }
+    );
   </script>
 </head>
 <body class="claro">
   <div class="panel">
-    <div id="title" class="titlearea"><span id="subtitle" class="title-message">Webmap</span></div>
-    <div id="infoPanel" class="info-panel">
-      <div id="legend"></div>
-    </div>
+    <div id="title" class="titlearea"><span id="subtitle" class="title-message">Load Webmap by ID</span></div>
+      <controls>
+        <div class="buttons">
+          <input id="webmapInput" rows="3" 
+            placeholder="81b55c7a90384fda8fed5a8332309a66"
+            value="81b55c7a90384fda8fed5a8332309a66">          
+          </input>
+          <button id="btnWebmap" class="btn btn-primary">Add</button>
+          <button id="btnClear" class="btn">Reset</button>
+        </div>
+      </controls>
+      <div id="infoPanel" class="info-panel">
+        <div id="mapTitle" lass="map-title"></div>
+        <div id="mapSubTitle" class="map-subtitle"></div>
+        <div id="mapLegend"></div>
+      </div>
   </div>
   <div id="mapDiv"></div>
   <div id="progress" class="progress hidden"></div>

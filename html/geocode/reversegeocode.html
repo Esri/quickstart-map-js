@@ -5,142 +5,111 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" >
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Find Address</title>
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css" />
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css" />
   <link rel="stylesheet" href="../../css/examples.css" />
   <!-- Load the library references for ArcGIS API for JavaScript -->    
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script>
-    dojo.require("esri.map");
-    dojo.require("esri.tasks.locator");
-    dojo.require("esri.dijit.Popup");
-    
-    var map;
-    var geocodeService;
+   require(["esri/map", "esri/tasks/locator", "esri/InfoTemplate", "esri/graphic", "esri/geometry/Multipoint", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
+      function(Map, Geocoder, InfoTemplate, Graphic, Multipoint, utils, on, conn, dom) {  
+        "use strict"             
 
-    function init() {
-      var options = { 
-        basemap: "gray",
-        center: [-79.40, 43.65],
-        zoom: 13,
-        infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
-      };
-      // Create map
-      map = new esri.Map("mapDiv",options);
-      dojo.connect(map, "onClick", onClickReverseGeocode);
-      autoResize(map);
+        // Create map
+        var map = new Map("mapDiv", {
+          basemap: "streets",
+          center: [-79.40, 43.65],
+          zoom: 13,
+        });
+        utils.autoRecenter(map);
 
-      // Create geoservice
-      geocodeService = new esri.tasks.Locator("http://geocodedev.arcgis.com/arcgis/rest/services/World/GeocodeServer");
-      dojo.connect(geocodeService, "onLocationToAddressComplete", reverseGeocodeResults); 
-      dojo.connect(geocodeService, "onError", geocodeError);
-    }
-    
-    function findCenter() {
-      var evt = {};
-      evt.mapPoint = map.extent.getCenter();
-      onClickReverseGeocode(evt);
-    }
-    
-    // Reverse geocode when user clicks on the map
-    function onClickReverseGeocode(evt) {
-      geocodeService.locationToAddress(evt.mapPoint, 100);
-      setStyle("progress", "progress visible");
+        // Wire events
+        on(map, "click", onClickReverseGeocode);
+        on(dom.byId("btnFindCenter"),"click",findCenter);
+        on(dom.byId("btnClear"),"click",clearFindGraphics);
+
+        // Create geoservice
+        var geocodeService = new Geocoder("http://geocodedev.arcgis.com/arcgis/rest/services/World/GeocodeServer");
+        dojo.connect(geocodeService, "onLocationToAddressComplete", reverseGeocodeResults); 
+        dojo.connect(geocodeService, "onError", geocodeError);
+
+        // Get center of the map
+        function findCenter() {
+          var evt = {};
+          evt.mapPoint = map.extent.getCenter();
+          onClickReverseGeocode(evt);
+        }
+        
+        // Reverse geocode when user clicks on the map
+        function onClickReverseGeocode(evt) {
+          geocodeService.locationToAddress(evt.mapPoint, 100);
+          utils.setStyle("progress", "progress visible");
+          }
+        
+        // Reverse geocode result
+        function reverseGeocodeResults(place) {
+          if (place) {
+            //clearFindGraphics();
+            // Objects for the graphic
+            var symbol = utils.createPictureSymbol("../../images/orange-pin.png", 0, 10, 24);
+            var place,attributes,infoTemplate,pt,graphic;
+            // Create and add graphics with pop-ups
+            pt = place.location;
+            place.address = standardizeAddress(place);
+            attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
+            infoTemplate = new InfoTemplate("Reverse Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score:${score}<span class='popupZoom' onclick='zoomToPlace(" + pt.x + "," + pt.y + ",16)';>Zoom To</span>");
+            graphic = new Graphic(pt,symbol,attributes,infoTemplate);
+            map.graphics.add(graphic);	
+            // Show pop-up
+            map.infoWindow.setTitle("Reverse Geocode Result");
+            map.infoWindow.setContent(graphic.getContent());
+            map.infoWindow.show(pt);
+            zoomToPlace(pt.x,pt.y, 16);
+          } else {
+            alert("Sorry, address or place not found.");
+          }
+            utils.setStyle("progress", "progress hidden");
+        }
+        
+        function standardizeAddress(place) {
+          var addressIn = place.address;
+          
+          var address = addressIn.Address;
+          var city = addressIn.City;  // Admin1
+          var state = addressIn.Region; //Admin2;
+          //var country = addressIn.Admin3;
+          var zip = addressIn.Postal;
+          var country = addressIn.CountryCode;
+
+          var str = "";
+          if (address)
+            str = address;
+          if (city)
+            str = str + (address ? ", " : "") + city;
+          if (state)
+            str = str + (city ? ", " : "") + state;
+          if (zip)
+            str = str + (state ? ", " : "") + zip;
+          if (country)
+            str = str + (zip ? ", " : "") + country;
+
+          return str;
+        }
+
+        function geocodeError(errorInfo) {
+          utils.setStyle("progress", "progress hidden");
+          alert("Sorry, place or address not found!");
+        }
+
+        function zoomToPlace(lon,lat,scale) {
+          map.centerAndZoom([lon,lat],scale);
+        }
+
+        function clearFindGraphics() {
+          map.infoWindow.hide();
+          map.graphics.clear();
+        }
       }
-    
-    // Reverse geocode result
-    function reverseGeocodeResults(place) {
-      if (place) {
-        //clearFindGraphics();
-        // Objects for the graphic
-        var symbol = createPictureSymbol("../../images/orange-pin.png", 0, 10, 24);
-        var place,attributes,infoTemplate,pt,graphic;
-        // Create and add graphics with pop-ups
-        pt = place.location;
-        place.address = standardizeAddress(place);
-        attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
-        infoTemplate = new esri.InfoTemplate("Reverse Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score:${score}<span class='popupZoom' onclick='zoomToPlace(" + pt.x + "," + pt.y + ",16)';>Zoom To</span>");
-        graphic = new esri.Graphic(pt,symbol,attributes,infoTemplate);
-        map.graphics.add(graphic);	
-        // Show pop-up
-        map.infoWindow.setTitle("Reverse Geocode Result");
-        map.infoWindow.setContent(graphic.getContent());
-        map.infoWindow.show(pt);
-        zoomToPlace(pt.x,pt.y, 16);
-      } else {
-        alert("Sorry, address or place not found.");
-      }
-        setStyle("progress", "progress hidden");
-    }
-    
-    function standardizeAddress(place) {
-      var addressIn = place.address;
-      
-      var address = addressIn.Address;
-      var city = addressIn.City;  // Admin1
-      var state = addressIn.Region; //Admin2;
-      //var country = addressIn.Admin3;
-      var zip = addressIn.Postal;
-      var country = addressIn.CountryCode;
-
-      var str = "";
-      if (address)
-        str = address;
-      if (city)
-        str = str + (address ? ", " : "") + city;
-      if (state)
-        str = str + (city ? ", " : "") + state;
-      if (zip)
-        str = str + (state ? ", " : "") + zip;
-      if (country)
-        str = str + (zip ? ", " : "") + country;
-
-      return str;
-    }
-
-    function geocodeError(errorInfo) {
-      setStyle("progress", "progress hidden");
-      alert("Sorry, place or address not found!");
-    }
-
-    function createPictureSymbol(url, xOffset, yOffset, size) {
-      return new esri.symbol.PictureMarkerSymbol(
-      {
-          "angle": 0,
-          "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
-          "url": url,  
-          "contentType": "image/png",
-          "width":size, "height": size
-      });
-    }
-    
-    function zoomToPlace(lon,lat,scale) {
-      map.centerAndZoom([lon,lat],scale);
-    }
-
-    function clearFindGraphics() {
-      map.infoWindow.hide();
-      map.graphics.clear();
-    }
-
-    function setStyle(elementName, className) {
-      var element = document.getElementById(elementName);
-      if (element)
-        element.className = className;
-    }
-    
-    function autoResize(map) {
-      dojo.connect(map, 'onLoad', function (map) {
-        dojo.connect(window, 'resize', map, map.resize);
-      });
-      dojo.connect(map, 'onResize',  function(extent, width, height) { 
-        map.__resizeCenter = map.extent.getCenter();
-        setTimeout(function() {
-          map.centerAt(map.__resizeCenter);
-        }, 200);
-      });
-    }
-
-    dojo.addOnLoad(init);	
+    );
   </script>
 </head>
 <body>
@@ -148,8 +117,8 @@
     <div class="titlearea"><span id="titleMessage" class="title-message">Find an Address</span></div>
     <div class="controls">
       <div class="buttons"> 
-        <button class="btn btn-primary btn-wide" onclick="findCenter();">Go</button>
-        <button class="btn"onclick="clearFindGraphics();">Clear</button>
+        <button id="btnFindCenter" class="btn btn-primary btn-wide">Go</button>
+        <button id="btnClear" class="btn">Clear</button>
       </div>
     </div>
     <div class="message"><span id="userMessage" class="user-message">Click the map to geocode other locations.</span></div>
