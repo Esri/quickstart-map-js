@@ -5,125 +5,93 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Auto Center</title>
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">		
   <!-- Load the library references for ArcGIS API for JavaScript-->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script>
-    dojo.require("esri.map");
-    dojo.require("esri.dijit.Popup");
-          
-    var map;
-    var recenterConnection;
-    
-    function init() {
-              var options = { 
-                  basemap: "streets",
-                  center: [-100, 53],
-                  zoom: 3,
-        infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
-              };
-              // Create map
-      map = new esri.Map("mapDiv",options);
-      autoResize(map);
-      dojo.connect(map, 'onLoad', function () {
-        showGeolocation();
-      });
-    }
-    
-    function showGeolocation() {
-      if (navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(showLocation, errorHandler);
-        setStyle("progress", "progress");
-      } else {
-        alert("Sorry, your browser doesn't support geolocation.");			
-      }
-    }
+    require(["esri/map","esri/InfoTemplate", "esri/geometry/Point", "esri/graphic", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom"], 
+      function(Map, InfoTemplate, Point, Graphic, utils, on, conn, dom) {
+        "use strict"
+        // Create map
+        var map = new Map("mapDiv",{ 
+            basemap: "streets",
+            center: [-100, 53],
+            zoom: 3
+        });
+        autoRecenter(map);
+        // Wire events
+        on(map, 'load', showGeolocation);
 
-    function showLocation(position) {
-      clearGeolocationGraphics();
-      
-      // Create a point
-      var pt = new esri.geometry.Point(position.coords.longitude,position.coords.latitude);
-      
-      // Create a symbol and pop-up template and add the graphic to the map
-      var symbol = createPictureSymbol("../../images/blue-pin.png", 0, 10, 24); //0, 10, 24
-      var attributes = {"lat":pt.y.toFixed(2),"lon":pt.x.toFixed(2)};
-      var infoTemplate = new esri.InfoTemplate("My Geolocation","Latitude: ${lat} <br/>Longitude: ${lon}");
-      var graphic = new esri.Graphic(pt,symbol,attributes,infoTemplate);
-      map.graphics.add(graphic);
-      
-      // Show pop-up
-      map.infoWindow.setTitle("My Geolocation");
-      map.infoWindow.setContent(graphic.getContent());
-      map.infoWindow.show(pt);
-    
-      // Position the map
-      map.centerAndZoom(pt,13);
-      
-          setStyle("progress", "progress hidden");
-    }
-
-    function errorHandler(err) {
-      setStyle("progress", "progress hidden");
-      if(err.code == 1) {
-        alert("Error: Access is denied!");
-      } else if ( err.code == 2) {
-        alert("Error: Position is unavailable!");
-      } else 
-        alert("Error: " + err);
-    }
-
-    function createPictureSymbol(url, xOffset, yOffset, size) {
-      return new esri.symbol.PictureMarkerSymbol(
-      {
-          "angle": 0,
-          "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
-          "url": url,  
-          "contentType": "image/png",
-          "width":size, "height": size
-      });
-    }
-    
-    function clearGeolocationGraphics() {
-      map.infoWindow.hide();
-      map.graphics.clear();				
-    }
-    
-    function setStyle(elementName, className) {
-      var element = document.getElementById(elementName);
-      if (element)
-        element.className = className;
-    }
-    
-    function autoResize(map) {
-      dojo.connect(map, 'onLoad', function (map) {
-        dojo.connect(window, 'resize', map, map.resize);
-      });
-      dojo.connect(map, 'onResize',  function(extent, width, height) { 
-        if (document.getElementById("useAutoCenter").checked) {
-          map.__resizeCenter = map.extent.getCenter();
-          setTimeout(function() {
-            map.centerAt(map.__resizeCenter);
-          }, 200);
+        function showGeolocation() {
+          if (navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(showLocation, errorHandler);
+          } else {
+            alert("Sorry, your browser doesn't support geolocation.");			
+          }
         }
-      });
-    }
 
-    dojo.addOnLoad(init);
+        function showLocation(position) {
+          clearGeolocationGraphics();
+          // Create a point
+          var pt = new Point(position.coords.longitude,position.coords.latitude);
+          // Create a symbol and pop-up template and add the graphic to the map
+          var symbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 10, 24); //0, 10, 24
+          var attributes = {"lat":pt.y.toFixed(2),"lon":pt.x.toFixed(2)};
+          var infoTemplate = new InfoTemplate("My Geolocation","Latitude: ${lat} <br/>Longitude: ${lon}");
+          var graphic = new Graphic(pt,symbol,attributes,infoTemplate);
+          map.graphics.add(graphic);
+          // Show pop-up
+          map.infoWindow.setTitle("My Geolocation");
+          map.infoWindow.setContent(graphic.getContent());
+          map.infoWindow.show(pt);
+          // Position the map
+          map.centerAndZoom(pt,13);
+        }
+
+        function errorHandler(err) {
+          if(err.code == 1) {
+            alert("Error: Access is denied!");
+          } else if ( err.code == 2) {
+            alert("Error: Position is unavailable!");
+          } else 
+            alert("Error: " + err);
+        }
+      
+        function clearGeolocationGraphics() {
+          map.infoWindow.hide();
+          map.graphics.clear();				
+        }
+
+        // Recenter the map when the window changes size
+        function autoRecenter(map) {
+          var resizeDelay = 100;
+          conn.connect(map, 'onLoad', function (map) {
+              on(window, 'resize', map, map.resize);
+          });
+          conn.connect(map, 'onResize',  function(extent, width, height) { 
+            map.__resizeCenter = map.extent.getCenter();
+            setTimeout(function() {
+              if (document.getElementById("useAutoCenter").checked) {
+                map.centerAt(map.__resizeCenter);                
+              }
+            }, resizeDelay);
+          });
+        }
+      }
+    );
   </script>
 </head>
 <body>
 <div>
 	<div class="panel">
-  <div class="titlearea"><span id="titleMessage" class="title-message">Map with Auto-centering</span></div>
+  <div class="titlearea"><span id="titleMessage" class="title-message">Map with Auto Centering</span></div>
     <div class="controls">
        <div class="buttons"> 
-        <label><input id="useAutoCenter" type="checkbox" checked/>Use Auto-center</label> 
-        <button class="btn btn-primary" onclick="showGeolocation();">Center Map</button>
+        <label><input id="useAutoCenter" type="checkbox" checked/>Use Auto Center</label> 
       </div>
     </div>
-  <div class="message"><span id="userMessage" class="user-message">Try resizing the web browser.</span></div>
+  <div class="message"><span id="userMessage" class="user-message">Resize the browser. Try without centering.</span></div>
 
   </div>
 

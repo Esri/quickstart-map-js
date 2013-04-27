@@ -5,104 +5,105 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Get Feature Service</title> 
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.3compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script> 
-    dojo.require("esri.map");
-    dojo.require("esri.layers.graphics");
-    dojo.require("esri.layers.FeatureLayer");
-    dojo.require("esri.dijit.Popup");
-    dojo.require("esri.tasks.geometry");
+    define("app", ["esri/map","esri/layers/graphics", "esri/layers/FeatureLayer", "esri/InfoTemplate", "esri/tasks/ProjectParameters", "../../js/utils.js", "dojo/dom"], 
+      function(Map, Graphics, FeatureLayer, InfoTemplate, ProjectParameters, utils, dom) {
+        "use strict"
+        
+        var featureLayer, oldFeatureLayer;
+        var geometryService;
 
-    var featureLayer, oldFeatureLayer;
-    var geometryService;
+        var m = {
+          map: null,
+          utils: utils,
+          // Create a feature layer to get feature service
+          addFeatureService:function() {
+            m.removeFeatureService();
+            utils.setStyle("progress", "progress");
+            var infoTemplate = new InfoTemplate("Fields", "");
+            var url = dom.byId("textUrl").value.trim();    
+              featureLayer = new FeatureLayer(url, {
+              mode: FeatureLayer.MODE_ONDEMAND,
+              outFields: ["*"],
+              opacity: .80,
+              infoTemplate: infoTemplate
+            });
+            m.map.addLayer(featureLayer);
+          },
+          // Remove existing service
+          removeFeatureService:function() {
+            utils.setStyle("progress", "progress hidden");
+            if (featureLayer) {  
+              m.map.removeLayer(featureLayer);
+              m.map.infoWindow.hide();
+            }
+          },
+          // Listen for enter key
+          addService_onKeyPress:function(e) {
+            if (e.keyCode == 13 || e.keyCode == "13") {
+              m.addFeatureService();
+            }
+          },
+          // Zoom to layer and update url
+          layerAdded:function(layer, error) {
+            if (featureLayer) {
+              if (typeof error == 'undefined') {
+                m.zoomToLayer(featureLayer);  
+              } else {
+                m.utils.setStyle("progress", "progress hidden");
+                alert("Feature service could not be loaded. Check URL.");
+              } 
+              dom.byId("textUrl").value = layer.url; 
+            }
 
-    function init() {
-        var options = { 
+          },
+          // Zoom to features regardless of the projection
+          zoomToLayer:function(layer) {
+            var params = new ProjectParameters();
+              params.geometries = [layer.fullExtent];
+              params.outSR = m.map.spatialReference;
+              geometryService.project(params, function(geometries) {
+                m.map.setExtent(geometries[0]);   
+            });
+          }
+        };
+        return m;
+      }
+    );
+
+    require(["app","esri/map","esri/tasks/GeometryService", "dojo/dom", "dojo/on", "dojo/_base/connect", "dojo/domReady!"], 
+      function(app, Map, GeometryService, dom, on, conn) {
+        "use strict"
+        // Create map
+        var map = new Map("mapDiv", { 
                 basemap: "gray",
                 center: [-28,40],
-                zoom: 3,
-                infoWindow: new esri.dijit.Popup(null, dojo.create("div"))  // Define a popup
-        }
-        // Create map
-        map = new esri.Map("mapDiv", options); 
-        geometryService = new esri.tasks.GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
-				// Zoom to layer
-				dojo.connect(map, "onLayerAddResult", layerAdded);
-        // Listen for map update events
-        dojo.connect(map,"onUpdateStart",function(){
-           setStyle("progress", "progress");
+                zoom: 3
+        }); 
+        app.map = map;
+        
+        // Create geometry service
+        var geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+        
+        // Wire events
+        conn.connect(map, "onLayerAddResult", app.layerAdded);
+        conn.connect(map, "onUpdateStart",function(){
+           app.utils.setStyle("progress", "progress");
         });
-        dojo.connect(map,"onUpdateEnd",function(){
-           setStyle("progress", "progress hidden");
-        });        
-    }
+        conn.connect(map, "onUpdateEnd",function(){
+            app.utils.setStyle("progress", "progress hidden");
+        });
 
- 	  // Listen for enter key
-		function addService_onKeyPress(e) {
-			if (e.keyCode == 13 || e.keyCode == "13") {
-				addFeatureService();
-			}
-		}
-
-    function addFeatureService() {
-      // Create a feature layer to get feature service
-      setStyle("progress", "progress");
-      removeFeatureService();
-      var infoTemplate = new esri.InfoTemplate("Fields", "");
-      var url = document.getElementById("featureServiceUrl").value.trim();    
-      	featureLayer = new esri.layers.FeatureLayer(url, {
-      	mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
-        outFields: ["*"],
-        opacity: .80,
-        infoTemplate: infoTemplate
-      });
-	    map.addLayer(featureLayer);
- 		}
-
-		function removeFeatureService() {
-			setStyle("progress", "progress hidden");
-			if (featureLayer) {  
-				map.removeLayer(featureLayer);
-				map.infoWindow.hide();
-			}
-		}
-
-		function layerAdded(layer, error) {
-			if (featureLayer) {
-				if (typeof error == 'undefined') {
-					zoomToLayer(featureLayer);	
-				} else {
-					setStyle("progress", "progress hidden");
-					alert("Feature service could not be loaded. Check URL.");
-				}	
-				document.getElementById("featureServiceUrl").value = layer.url;	
-			}
-		}
-		
- 		function zoomToLayer(layer) {
- 		 	var params = new esri.tasks.ProjectParameters();
-				params.geometries = [layer.fullExtent];
-				params.outSR = map.spatialReference;
-				geometryService.project(params, function(geometries) {
-					map.setExtent(geometries[0]); 	
-			});
- 		}
-
-    function setMessage(msg) {
-      var element = document.getElementById("userMessage");
-      element.innerHTML = msg;
-    } 
-
-    function setStyle(elementName, className) {
-      var element = document.getElementById(elementName);
-      if (element)
-      element.className = className;
-    }
-    
-    dojo.addOnLoad(init);	
+        // Wire UI events
+        on(dom.byId("btnAddSvc"), "click", app.addFeatureService);        
+        on(dom.byId("btnRemoveSvc"), "click", app.removeFeatureService);      
+        on(dom.byId("textUrl"), "keypress", app.addService_onKeyPress);  
+      }
+    );
   </script>
 </head>
 <body>
@@ -111,13 +112,12 @@
       <div class="controls">
         <div class="buttons">
         	ArcGIS REST endpoint URL:
-         	<textarea id="featureServiceUrl" rows="3" 
+         	<textarea id="textUrl" rows="3" 
          		placeholder="http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0"  
-         		value="http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0"
-         		onkeypress="addService_onKeyPress(event);">http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0
+         		value="http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0">http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0
          	</textarea>
-          <button class="btn btn-primary" onclick="addFeatureService();">Add</button>
-          <button class="btn" onclick="removeFeatureService();">Remove</button>
+          <button id="btnAddSvc" class="btn btn-primary">Add</button>
+          <button id="btnRemoveSvc" class="btn" >Remove</button>
         </div>
       </div>
       <div class="message"><span id="userMessage" class="user-message"></span></div>

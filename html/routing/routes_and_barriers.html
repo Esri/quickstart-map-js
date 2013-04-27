@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Multiple Routing</title>
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+  <link rel="stylesheet" href="../../css/examples.css">
+  <!-- Load the library references for ArcGIS API for JavaScript-->
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/"></script>
+  <script>
+     require(["esri/map", "esri/tasks/RouteTask", "esri/tasks/RouteParameters", "esri/tasks/FeatureSet", "esri/SpatialReference",
+        "esri/units", "esri/symbols/SimpleLineSymbol", "esri/graphic", "esri/config", "../../js/utils.js", "dojo/_base/Color", "dojo/_base/array", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"],   
+        function(Map, RouteTask, RouteParameters, FeatureSet, SpatialReference, Units, SimpleLineSymbol, Graphic, config, utils, Color, array, on, conn, dom) {  
+          "use strict"
+          
+          var routeTask, routeParams, routes = [];
+          var stopSymbol, barrierSymbol, routeSymbols;
+          var mapOnClick_addStops_connect, mapOnClick_addBarriers_connect;
+
+          config.defaults.io.proxyUrl = "http://developers.arcgis.com/sproxy";
+          //config.defaults.io.proxyUrl = "/proxy";
+
+          // Create map
+          var map = new Map("mapDiv", {
+            basemap: "streets",
+            center: [-122.416, 37.802],
+            zoom: 15
+          });
+
+          // Create route task
+          routeTask = new RouteTask("http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route");
+          routeParams = new RouteParameters();
+          routeParams.stops = new FeatureSet();
+          routeParams.barriers = new FeatureSet();
+          routeParams.outSpatialReference = {"wkid":102100};
+          conn.connect(routeTask, "onSolveComplete", showRoute);
+          conn.connect(routeTask, "onError", errorHandler);
+
+          // Wire UI events
+          on(dom.byId("btnAddStops"), "click", addStops);
+          on(dom.byId("btnAddBarriers"), "click", addBarriers);
+          on(dom.byId("btnSolveRoute"), "click", solveRoute);
+          on(dom.byId("btnClearRoutes"), "click", clearAll);
+
+          // Create symbols
+          stopSymbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24); 
+          barrierSymbol = utils.createPictureSymbol("../../images/red-dot-small", 0, 0, 16);  
+          routeSymbols = {
+            "Route 1": new SimpleLineSymbol().setColor(new Color([0,0,255,0.5])).setWidth(5),
+            "Route 2": new SimpleLineSymbol().setColor(new Color([0,255,0,0.5])).setWidth(5),
+            "Route 3": new SimpleLineSymbol().setColor(new Color([255,0,255,0.5])).setWidth(5)
+          };
+
+          //Begins listening for click events to add stops
+          function addStops() {
+            removeEventHandlers();
+            mapOnClick_addStops_connect = conn.connect(map, "onClick", addStop);
+          }
+
+          //Clears all stops
+          function clearStops() {
+            removeEventHandlers();
+            for (var i=routeParams.stops.features.length-1; i>=0; i--) {
+              map.graphics.remove(routeParams.stops.features.splice(i, 1)[0]);
+            }
+          }
+
+          //Adds a stop. The stop is associated with the route currently displayed in the dropdown
+          function addStop(evt) {
+            routeParams.stops.features.push(
+              map.graphics.add(
+                new Graphic(
+                  evt.mapPoint,
+                  stopSymbol,
+                  { RouteName:dom.byId("routeName").value }
+                )
+              )
+            );
+          }
+
+          //Begins listening for click events to add barriers
+          function addBarriers() {
+            removeEventHandlers();
+            mapOnClick_addBarriers_connect = conn.connect(map, "onClick", addBarrier);
+          }
+
+          //Clears all barriers
+          function clearBarriers() {
+            removeEventHandlers();
+            for (var i=routeParams.barriers.features.length-1; i>=0; i--) {
+              map.graphics.remove(routeParams.barriers.features.splice(i, 1)[0]);
+            }
+          }
+
+          //Adds a barrier
+          function addBarrier(evt) {
+            routeParams.barriers.features.push(
+              map.graphics.add(
+                new Graphic(
+                  evt.mapPoint,
+                  barrierSymbol
+                )
+              )
+            );
+          }
+
+          //Stops listening for click events to add barriers and stops
+          function removeEventHandlers() {
+            conn.disconnect(mapOnClick_addStops_connect);
+            conn.disconnect(mapOnClick_addBarriers_connect);
+          }
+
+          //Solves the routes. Any errors will trigger the errorHandler function.
+          function solveRoute() {
+            removeEventHandlers();
+            routeTask.solve(routeParams);
+            utils.setStyle("progress", "progress");
+          }
+
+          //Clears all routes
+          function clearRoutes() {
+            for (var i=routes.length-1; i>=0; i--) {
+              map.graphics.remove(routes.splice(i, 1)[0]);
+            }
+            routes = [];
+          }
+
+          //Clear all
+          function clearAll() {
+            clearRoutes();
+            clearBarriers();
+            clearStops();
+          }
+
+          //Draws the resulting routes on the map
+          function showRoute(solveResult) {
+            clearRoutes();
+            utils.setStyle("progress", "progress hidden");
+            array.forEach(solveResult.routeResults, function(routeResult, i) {
+              routes.push(
+                map.graphics.add(
+                  routeResult.route.setSymbol(routeSymbols[routeResult.routeName])
+                )
+              );
+              routeResult.route.getDojoShape().moveToBack();
+            });
+
+            var msgs = ["Server messages:"];
+            array.forEach(solveResult.messages, function(message) {
+              msgs.push(message.type + " : " + message.description);
+            });
+            if (msgs.length > 1) {
+              alert(msgs.join("\n - "));
+            }
+          }
+
+          //Reports any errors that occurred during the solve
+          function errorHandler(err) {
+            utils.setStyle("progress", "progress hidden");
+            alert("An error occured\n" + err.message + "\n" + err.details.join("\n"));
+          }
+        }
+      );
+    </script>
+  </head>
+  <body>
+    <div class="panel">
+      <div class="titlearea"><span id="titleMessage" class="title-message">Routes and Barriers</span></div>
+      <div class="controls">
+        <select id="routeName">
+          <option value="Route 1">Route 1</option>
+          <option value="Route 2">Route 2</option>
+          <option value="Route 3">Route 3</option>
+        </select> 
+        <div class="buttons"> 
+          <button id="btnAddStops" class="btn btn-primary">Add Stops</button><button id="btnAddBarriers" class="btn btn-primary">Add Barriers</button></br>
+          <button id="btnSolveRoute" class="btn btn-primary">Go</button><button id="btnClearRoutes" class="btn">Clear</button>
+        </div>
+      </div>
+      <div class="message"><span id="userMessage" class="user-message">Select a button and click on the map.</span></div>
+    </div>
+    <div id="mapDiv"></div>
+    <div id="progress" class="progress hidden"></div>
+  </body>
+</html>

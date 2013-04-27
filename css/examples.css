@@ -91,6 +91,13 @@ html, body {
 }
 
 /**** Information panel ***/
+.map-title {
+
+}
+.map-subtitle {
+  font-size: 10px;
+}
+
 .info-panel {
     padding: 5px;
 	height: 100%;
