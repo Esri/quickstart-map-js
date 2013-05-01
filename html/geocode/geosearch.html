@@ -65,7 +65,7 @@
               attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
               infoTemplate = new InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='window.zoomToPlace(" + pt.x + "," + pt.y + ",15)';>Zoom To</span>");
               graphic = new Graphic(pt,sym,attributes,infoTemplate);
-              map.graphics.add(graphic);	
+              map.graphics.add(graphic);  
             }
             zoomToPlaces(places);
           } else {
@@ -118,7 +118,7 @@
         }
       }
     );
-	</script>
+  </script>
 </head>
 <body>
   <div class="panel">
@@ -126,7 +126,7 @@
     <div class="controls">
       <div class="buttons"> 
         <input id="placeInput" class="" type="text" value="San Diego, CA" placeholder="San Diego, CA"/>
-        <label><input id="useMapExtent" type="checkbox"/>Search in map only</label> 
+        <label><input id="useMapExtent" type="checkbox"/>Search map only</label> 
         <button class="btn btn-primary" id="btnSearch">Go</button>
         <button class="btn" id="btnClear">Clear</button>
       </div>

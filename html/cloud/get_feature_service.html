@@ -10,7 +10,7 @@
   <!-- Load the library references for ArcGIS API for JavaScript -->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script> 
-    define("app", ["esri/map","esri/layers/graphics", "esri/layers/FeatureLayer", "esri/InfoTemplate", "esri/tasks/ProjectParameters", "../../js/utils.js", "dojo/dom"], 
+    define("app", ["esri/map","esri/layers/graphics", "esri/layers/FeatureLayer", "esri/InfoTemplate", "esri/tasks/ProjectParameters", "../../js/utils.js", "dojo/dom", "dojo/domReady!"], 
       function(Map, Graphics, FeatureLayer, InfoTemplate, ProjectParameters, utils, dom) {
         "use strict"
         
@@ -111,11 +111,11 @@
     <div class="titlearea"><span id="titleMessage" class="title-message">Get Feature Service</span></div>
       <div class="controls">
         <div class="buttons">
-        	ArcGIS REST endpoint URL:
-         	<textarea id="textUrl" rows="3" 
-         		placeholder="http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0"  
-         		value="http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0">http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0
-         	</textarea>
+          ArcGIS REST endpoint URL:
+          <textarea id="textUrl" rows="3" 
+            placeholder="http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0"  
+            value="http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0">http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0
+          </textarea>
           <button id="btnAddSvc" class="btn btn-primary">Add</button>
           <button id="btnRemoveSvc" class="btn" >Remove</button>
         </div>

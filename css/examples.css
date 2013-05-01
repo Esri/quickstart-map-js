@@ -1,9 +1,9 @@
 html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow:hidden; /* Hide bottom overflow of map */
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow:hidden; /* Hide bottom overflow of map */
 	font-family: "Lucida Grande","Seoge UI","Arial",sans-serif;
 	font-size: 14px;
 	line-height: 20px;
@@ -15,8 +15,8 @@ html, body {
 .map {
 	width: 100%;
 	height: 100%;
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /*** Panels ***/
@@ -49,11 +49,11 @@ html, body {
 }
 
 .titlearea {
-    background-color: #C3D2FF;
+  background-color: rgba(0, 112, 255, 0.17);
 }
 
 .message {
-
+  padding-top: 4px;
 }
 
 .title-message,.user-message {
@@ -73,7 +73,8 @@ html, body {
 
 /*** Containers ***/
 .controls {
-    text-align:center;
+  padding-top: 10px;
+  text-align:center;
 }
 
 .controls-inner {
@@ -81,8 +82,9 @@ html, body {
 }
 
 .buttons {
-    display:inline-block;
-    margin:8px auto;
+  display:inline-block;
+  /*margin:10px 10px auto;*/
+  /*padding-top: 5px;*/
 }
 
 .basemap-container {
@@ -94,6 +96,7 @@ html, body {
 .map-title {
 
 }
+
 .map-subtitle {
   font-size: 10px;
 }
@@ -215,9 +218,9 @@ a:hover {
 }
 
 .popupZoom {
-    float:right;
-    cursor:pointer;
-    color: rgba(140, 140, 140, 1);
+  float:right;
+  cursor:pointer;
+  color: rgba(140, 140, 140, 1);
 }
 
 /*** Basemap Gallery ***/
@@ -292,7 +295,7 @@ a:hover {
 
 /*** Loading image ***/
 .progress {
-    position: absolute;
+  position: absolute;
 	display: block;
 	margin-left: -16px;
 	margin-top: -16px;
@@ -310,17 +313,17 @@ a:hover {
 }
 
 .selected {
-    background: #356094;
-    border: solid 1px #2A4E77;
-    text-decoration: none;
+  background: #356094;
+  border: solid 1px #2A4E77;
+  text-decoration: none;
 }
 
 .visible {
-    display:block;
+  display:block;
 }
 
 .hidden {
-   display:none;
+ display:none;
 }
 
 /*** Buttons and Input***/
@@ -332,7 +335,6 @@ textarea {
   font-size: 12px;
   font-weight: normal;
   line-height: 20px;
-  
 }
 
 input,
@@ -344,7 +346,7 @@ textarea {
 
 label {
   display: inline-block;
-  margin-bottom: 5px;
+  margin: 5px;
   height: 10px;
 }
 
