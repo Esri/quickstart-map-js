@@ -24,7 +24,6 @@
 
         // Wire events
         on(map, "click", onClickReverseGeocode);
-        on(dom.byId("btnFindCenter"),"click",findCenter);
         on(dom.byId("btnClear"),"click",clearFindGraphics);
 
         // Create geoservice
@@ -58,7 +57,7 @@
             attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
             infoTemplate = new InfoTemplate("Reverse Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score:${score}<span class='popupZoom' onclick='zoomToPlace(" + pt.x + "," + pt.y + ",16)';>Zoom To</span>");
             graphic = new Graphic(pt,symbol,attributes,infoTemplate);
-            map.graphics.add(graphic);	
+            map.graphics.add(graphic);  
             // Show pop-up
             map.infoWindow.setTitle("Reverse Geocode Result");
             map.infoWindow.setContent(graphic.getContent());
@@ -117,11 +116,10 @@
     <div class="titlearea"><span id="titleMessage" class="title-message">Find an Address</span></div>
     <div class="controls">
       <div class="buttons"> 
-        <button id="btnFindCenter" class="btn btn-primary btn-wide">Go</button>
-        <button id="btnClear" class="btn">Clear</button>
+        <button id="btnClear" class="btn btn-wide">Clear</button>
       </div>
     </div>
-    <div class="message"><span id="userMessage" class="user-message">Click the map to geocode other locations.</span></div>
+    <div class="message"><span id="userMessage" class="user-message">Click the map to geocode locations.</span></div>
   </div>
   <div id="progress" class="progress hidden"></div>
   <div id="mapDiv"></div>  

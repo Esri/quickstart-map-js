@@ -10,7 +10,7 @@
   <!-- Load the library references for ArcGIS API for JavaScript-->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script>
-    require(["esri/map","esri/tasks/Geoprocessor", "esri/graphic", "esri/tasks/FeatureSet", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom"], 
+    require(["esri/map","esri/tasks/Geoprocessor", "esri/graphic", "esri/tasks/FeatureSet", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
       function(Map, Geoprocessor, Graphic, FeatureSet, SimpleLineSymbol, SimpleFillSymbol, utils, on, conn, dom) {
         "use strict"
         var gp, pointGraphic;
@@ -97,7 +97,7 @@
             map.graphics.add(feature);
           }
           //if (pointGraphic.getDojoShape()) // - TODO
-          //	pointGraphic.getDojoShape().moveToTop();
+          //  pointGraphic.getDojoShape().moveToTop();
               
           map.graphics.remove(pointGraphic);
           map.graphics.add(pointGraphic);

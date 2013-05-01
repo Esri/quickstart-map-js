@@ -6,11 +6,11 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Geolocation</title>
   <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">		
+  <link rel="stylesheet" href="../../css/examples.css">   
   <!-- Load the library references for ArcGIS API for JavaScript -->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script>
-    require(["esri/map", "esri/InfoTemplate", "esri/geometry/Point", "esri/graphic", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom"], 
+    require(["esri/map", "esri/InfoTemplate", "esri/geometry/Point", "esri/graphic", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
       function(Map, InfoTemplate, Point, Graphic, utils, on, conn, dom) {
         "use strict"
 
@@ -31,7 +31,7 @@
             navigator.geolocation.getCurrentPosition(showLocation, errorHandler);
             utils.setStyle("progress", "progress");
           } else {
-            alert("Sorry, your browser doesn't support geolocation.");			
+            alert("Sorry, your browser doesn't support geolocation.");      
           }
         }
 
@@ -61,7 +61,7 @@
  
         function clearGeolocationGraphics() {
           map.infoWindow.hide();
-          map.graphics.clear();				
+          map.graphics.clear();       
         }
       }
     );
@@ -72,7 +72,7 @@
     <div class="titlearea"><span id="titleMessage" class="title-message">Display your Geolocation</span></div>
       <div class="controls">
          <div class="buttons"> 
-          <button id="btnGeolocation" class="btn btn-primary btn-wide">Go</button>
+          <button id="btnGeolocation" class="btn btn-primary">Go</button>
           <button id="btnClear" class="btn">Clear</button>
         </div>
       </div>
