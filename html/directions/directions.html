@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -55,7 +56,7 @@
         function geocodeAddresses() {
           // Geocode address A and B
           var options = {address:{"SingleLine":dom.byId('addressInputA').value}};
-          var geocodeAddressACallback = geocodeService.addressToLocations(options);				
+          var geocodeAddressACallback = geocodeService.addressToLocations(options);       
           options = {address:{"SingleLine":dom.byId('addressInputB').value}};
           var geocodeAddressBCallback = geocodeService.addressToLocations(options);
           // When A and B come back, create the route
@@ -126,11 +127,11 @@
               symbol = utils.createPictureSymbol("../../images/green-pin.png", 0, 10, 24);
           else
               symbol = utils.createPictureSymbol("../../images/red-pin.png", 0, 10, 24);
-          // Add graphic to map	
+          // Add graphic to map 
           var attributes = { address:place.address, score:place.score, lat:place.location.y.toFixed(2), lon:place.location.x.toFixed(2) };   
           var infoTemplate = new InfoTemplate(type,"${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='zoomToPlace(" + place.location.x.toFixed(2) + "," + place.location.y.toFixed(2) + ",15)';>Zoom To</span>");
           var graphic = new Graphic(place.location,symbol,attributes,infoTemplate);
-          map.graphics.add(graphic);				
+          map.graphics.add(graphic);        
           if (graphic.getDojoShape()){
               graphic.getDojoShape().moveToFront();
           }
@@ -143,7 +144,7 @@
           if (title && text)
             infoTemplate = new InfoTemplate(title,text);
           var graphic = new Graphic(line,symbol,null,infoTemplate);
-          map.graphics.add(graphic);	
+          map.graphics.add(graphic);  
           
           if (graphic.getDojoShape()){
             if (graphic && moveToBack)

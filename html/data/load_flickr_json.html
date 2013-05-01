@@ -1,87 +1,87 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">		
-	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-	<title>Flickr JSON</title>
-	<link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
-	<link rel="stylesheet" href="../../css/examples.css">
-	<!-- Load the library references for ArcGIS API for JavaScript -->
-	<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
-	<script>
-	  require(["esri/map","esri/dijit/PopupTemplate", "esri/geometry/Point", "esri/graphic", "esri/request", "../../js/utils.js", "dojo/on", "dojo/dom"], 
-	  	function(Map, PopupTemplate, Point, Graphic, Request, utils, on, dom) {
-				"use strict"
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">   
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Flickr JSON</title>
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+  <link rel="stylesheet" href="../../css/examples.css">
+  <!-- Load the library references for ArcGIS API for JavaScript -->
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
+  <script>
+    require(["esri/map","esri/dijit/PopupTemplate", "esri/geometry/Point", "esri/graphic", "esri/request", "../../js/utils.js", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(Map, PopupTemplate, Point, Graphic, Request, utils, on, dom) {
+        "use strict"
 
-				var symbol;
-				
-				// Create map
-				var map = new Map("mapDiv",{ 
-					basemap: "gray",
-					center: [-40.69, 45.52],
-					zoom: 3
-				});
-				utils.autoRecenter(map);
+        var symbol;
+        
+        // Create map
+        var map = new Map("mapDiv",{ 
+          basemap: "gray",
+          center: [-40.69, 45.52],
+          zoom: 3
+        });
+        utils.autoRecenter(map);
 
-				// Wire UI Events
-				on(dom.byId("btnLoadFlickr"), "click", loadPhotos);
-	      on(dom.byId("btnClear"), "click", clearGraphics);
+        // Wire UI Events
+        on(dom.byId("btnLoadFlickr"), "click", loadPhotos);
+        on(dom.byId("btnClear"), "click", clearGraphics);
 
-				// Get symbol
-				symbol = new utils.createPictureSymbol("http://dl.dropbox.com/u/52777651/flickr.png", 0, 0, 24);
+        // Get symbol
+        symbol = new utils.createPictureSymbol("http://dl.dropbox.com/u/52777651/flickr.png", 0, 0, 24);
 
-				// Request to Flickr service
-				function loadPhotos(){
-	        var flickrPhotos = Request({
-	          url: "http://api.flickr.com/services/feeds/geo",
-	          content:{
-	              format:"json",
-	              tagmode: "any",
-	              tags: "mountain"
-	          },
-	          callbackParamName: "jsoncallback"
-	        });
-	        flickrPhotos.then(addPhotos);
-	        utils.setStyle("progress", "progress");
-	      }
+        // Request to Flickr service
+        function loadPhotos(){
+          var flickrPhotos = Request({
+            url: "http://api.flickr.com/services/feeds/geo",
+            content:{
+                format:"json",
+                tagmode: "any",
+                tags: "mountain"
+            },
+            callbackParamName: "jsoncallback"
+          });
+          flickrPhotos.then(addPhotos);
+          utils.setStyle("progress", "progress");
+        }
 
-	      // Create graphics for each Flickr item
-	      function addPhotos(data){
-	      	utils.setStyle("progress", "progress hidden");
-	       	var template = new PopupTemplate({
-	          title: "{title}",
-	          description:"{description}"
-	        });
+        // Create graphics for each Flickr item
+        function addPhotos(data){
+          utils.setStyle("progress", "progress hidden");
+          var template = new PopupTemplate({
+            title: "{title}",
+            description:"{description}"
+          });
 
-	        dojo.forEach(data.items, function(item){
-	          var loc = new Point(item.longitude, item.latitude);
-	          map.graphics.add(new Graphic(loc, symbol, item, template));
-	        });
-	      }
+          dojo.forEach(data.items, function(item){
+            var loc = new Point(item.longitude, item.latitude);
+            map.graphics.add(new Graphic(loc, symbol, item, template));
+          });
+        }
 
-	      function clearGraphics() {
-	      	map.graphics.clear();
-	      	map.infoWindow.hide();
-	      }
+        function clearGraphics() {
+          map.graphics.clear();
+          map.infoWindow.hide();
+        }
 
-			}
-		);
-  </script>		
+      }
+    );
+  </script>   
 </head>
   <body>
-		<div class="panel">
-			<div class="titlearea"><span id="titleMessage" class="title-message">Load Flickr JSON</span></div>
-			<div class="controls"> 
-				<div class="buttons"> 
-					<button id="btnLoadFlickr" class="btn btn-primary">Load Graphics</button>
-					<button id="btnClear" class="btn">Clear</button>
-				</div>
-				<div class="message"><span id="userMessage" class="user-message">Add images to map as graphics.</span></div>
-			</div>
-			<div class="message"><span id="userMessage" class="user-message"></span></div>
-		</div>
-		<div id="mapDiv"></div>
-	  <div id="progress" class="progress hidden"></div>
+    <div class="panel">
+      <div class="titlearea"><span id="titleMessage" class="title-message">Load Flickr JSON</span></div>
+      <div class="controls"> 
+        <div class="buttons"> 
+          <button id="btnLoadFlickr" class="btn btn-primary">Load Graphics</button>
+          <button id="btnClear" class="btn">Clear</button>
+        </div>
+        <div class="message"><span id="userMessage" class="user-message">Add images to map as graphics.</span></div>
+      </div>
+      <div class="message"><span id="userMessage" class="user-message"></span></div>
+    </div>
+    <div id="mapDiv"></div>
+    <div id="progress" class="progress hidden"></div>
   </body>
 </html>
