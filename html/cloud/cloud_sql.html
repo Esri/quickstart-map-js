@@ -10,7 +10,7 @@
   <!-- Load the library references for ArcGIS API for JavaScript -->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script> 
-    define("app",["../../js/utils.js", "esri/layers/graphics","esri/layers/FeatureLayer","esri/symbols/SimpleMarkerSymbol", "esri/renderers/SimpleRenderer", "esri/InfoTemplate", "esri/tasks/query", "dojo/dom", "dojo/_base/connect"], 
+    define("app",["../../js/utils.js", "esri/layers/graphics","esri/layers/FeatureLayer","esri/symbols/SimpleMarkerSymbol", "esri/renderers/SimpleRenderer", "esri/InfoTemplate", "esri/tasks/query", "dojo/dom", "dojo/_base/connect","dojo/domReady!"], 
       function(utils, Graphics, FeatureLayer, SimpleMarkerSymbol, SimpleRenderer, InfoTemplate, Query, dom, conn) { 
         "use strict"
 
@@ -38,8 +38,8 @@
             var selectSymbol = utils.createPictureSymbol("../../images/red-dot-small.png", 0, 1, 12);
             featureLayer.setSelectionSymbol(selectSymbol);
             // Add cloud layer
-            m.map.addLayer(featureLayer);	
-            // Connect to selection event	
+            m.map.addLayer(featureLayer); 
+            // Connect to selection event 
             conn.connect(featureLayer,"onSelectionComplete", function (features) {
                 var extent;
                 for (var i = 0; i < features.length; i++) {
@@ -49,7 +49,7 @@
                         extent.union(features[i]._extent);
                 }
                 if (extent)
-                    m.map.setExtent(extent);		
+                    m.map.setExtent(extent);    
             });
             var element = dom.byId('selCountry');
             element.disabled = false;
@@ -74,7 +74,7 @@
             m.map.infoWindow.hide();
             if (featureLayer)
               m.map.removeLayer(featureLayer);
-            featureLayer = null;			
+            featureLayer = null;      
           }
         }
         return m;

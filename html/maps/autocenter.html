@@ -6,11 +6,11 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Auto Center</title>
   <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">		
+  <link rel="stylesheet" href="../../css/examples.css">   
   <!-- Load the library references for ArcGIS API for JavaScript-->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
   <script>
-    require(["esri/map","esri/InfoTemplate", "esri/geometry/Point", "esri/graphic", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom"], 
+    require(["esri/map","esri/InfoTemplate", "esri/geometry/Point", "esri/graphic", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
       function(Map, InfoTemplate, Point, Graphic, utils, on, conn, dom) {
         "use strict"
         // Create map
@@ -27,7 +27,7 @@
           if (navigator.geolocation){
             navigator.geolocation.getCurrentPosition(showLocation, errorHandler);
           } else {
-            alert("Sorry, your browser doesn't support geolocation.");			
+            alert("Sorry, your browser doesn't support geolocation.");      
           }
         }
 
@@ -60,7 +60,7 @@
       
         function clearGeolocationGraphics() {
           map.infoWindow.hide();
-          map.graphics.clear();				
+          map.graphics.clear();       
         }
 
         // Recenter the map when the window changes size
@@ -84,7 +84,7 @@
 </head>
 <body>
 <div>
-	<div class="panel">
+  <div class="panel">
   <div class="titlearea"><span id="titleMessage" class="title-message">Map with Auto Centering</span></div>
     <div class="controls">
        <div class="buttons"> 
