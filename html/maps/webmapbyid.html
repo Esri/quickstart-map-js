@@ -70,7 +70,8 @@
               });
             }
           },function(error){
-            console.log("Map creation failed: ", dojo.toJson(error));        
+            alert("Sorry, couldn't load webmap!");
+            console.log("Error loading webmap: " & dojo.toJson(error));           
           });
         }
         
@@ -113,7 +114,7 @@
     );
   </script>
 </head>
-<body class="claro">
+<body>
   <div class="panel">
     <div id="title" class="titlearea"><span id="subtitle" class="title-message">Load Webmap by ID</span></div>
       <controls>
