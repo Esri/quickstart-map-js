@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Traffic</title>
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+  <link rel="stylesheet" href="../../css/examples.css">
+  <!-- Load the library references for ArcGIS API for JavaScript-->
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
+  <script>
+    require(["esri/map", "esri/dijit/Legend", "esri/dijit/Scalebar", "esri/arcgis/utils", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"],   
+      function(Map, Legend, Scalebar, esriUtils, utils, on, conn, dom) {  
+        "use strict"
+
+        //all requests to traffic.arcgis.com will proxy to the proxyUrl defined in this object.
+        esri.addProxyRule({
+          urlPrefix: "traffic.arcgis.com",  
+          //proxyUrl: "/sproxy"
+          proxyUrl: "http://developers.arcgis.com/sproxy"
+        });
+        var map = new Map("mapDiv",{ 
+          basemap: "gray",
+          center: [-122.69, 45.52],
+          zoom: 3
+        });
+        utils.autoRecenter(map);
+
+        on(dom.byId("btnWebmap"),"click", createMap);
+
+        function createMap() {
+          var mapDeferred = esri.arcgis.utils.createMap("327687e9b2664d65aa7a7f5c85398cff", "map");
+          mapDeferred.then(function(response) {
+            map.removeAllLayers();
+            map.spatialReference = null;
+            map.destroy();
+
+            dom.byId("mapTitle").innerHTML = response.itemInfo.item.title;
+            dom.byId("mapSubTitle").innerHTML = response.itemInfo.item.snippet;
+            
+            map = response.map;
+            
+            //get the layers that will display in the legend. 
+            var layers = esriUtils.getLegendLayers(response);  
+
+            if (map.loaded) {
+              initMap(layers);
+            } else {
+              on(map, "load", function() {
+                initMap(layers);
+              });
+            }
+
+          },function(error){
+            alert("Sorry, couldn't load webmap!");
+            console.log(dojo.toJson(error));     
+          });
+        }
+        
+        function initMap(layers){
+          //add a scalebar
+          var scalebar = new esri.dijit.Scalebar({
+            map:map,
+            scalebarUnit: "english"
+          });
+
+          //add a legend
+          var legendDijit = new esri.dijit.Legend({
+            map:map,
+            layerInfos: layers
+          },"mapLegend");
+
+          legendDijit.startup();
+        }
+      }
+    );
+  </script>
+  </head>
+  <body>
+      <div class="panel">
+      <div id="title" class="titlearea"><span id="subtitle" class="title-message">World Traffic</span></div>
+        <controls>
+          <div class="buttons">
+            <input id="webmapInput" rows="3" 
+              placeholder="327687e9b2664d65aa7a7f5c85398cff"
+              value="327687e9b2664d65aa7a7f5c85398cff">          
+            </input>
+            <button id="btnWebmap" class="btn btn-primary">Add</button>
+            <button id="btnClear" class="btn">Reset</button>
+          </div>
+        </controls>
+        <div id="infoPanel" class="info-panel">
+          <div id="mapTitle" lass="map-title"></div>
+          <div id="mapSubTitle" class="map-subtitle"></div>
+          <div id="mapLegend"></div>
+        </div>
+    </div>
+    <div id="mapDiv"></div>
+    <div id="progress" class="progress hidden"></div>
+  </body>
+</html>
