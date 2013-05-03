@@ -10,8 +10,8 @@
   <!-- Load the library references for ArcGIS API for JavaScript-->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
-    require(["esri/map","esri/InfoTemplate", "esri/geometry/Point", "esri/graphic", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
-      function(Map, InfoTemplate, Point, Graphic, utils, on, conn, dom) {
+    require(["esri/map","esri/InfoTemplate", "esri/geometry/Point", "esri/graphic", "../../js/utils.js", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(Map, InfoTemplate, Point, Graphic, utils, on, dom) {
         "use strict"
         // Create map
         var map = new Map("mapDiv",{ 
@@ -66,10 +66,10 @@
         // Recenter the map when the window changes size
         function autoRecenter(map) {
           var resizeDelay = 100;
-          conn.connect(map, 'onLoad', function (map) {
-              on(window, 'resize', map, map.resize);
+          on(map, 'load', function (map) {
+            on(window, 'resize', map, map.resize);
           });
-          conn.connect(map, 'onResize',  function(extent, width, height) { 
+          on(map, 'resize',  function(extent, width, height) { 
             map.__resizeCenter = map.extent.getCenter();
             setTimeout(function() {
               if (document.getElementById("useAutoCenter").checked) {

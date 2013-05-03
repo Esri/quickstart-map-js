@@ -19,7 +19,7 @@
           var stopSymbol, barrierSymbol, routeSymbols;
           var mapOnClick_addStops_connect, mapOnClick_addBarriers_connect;
 
-          config.defaults.io.proxyUrl = "http://developers.arcgis.com/sproxy";
+          //config.defaults.io.proxyUrl = "http://developers.arcgis.com/sproxy";
           //config.defaults.io.proxyUrl = "/proxy";
 
           // Create map
@@ -35,8 +35,9 @@
           routeParams.stops = new FeatureSet();
           routeParams.barriers = new FeatureSet();
           routeParams.outSpatialReference = {"wkid":102100};
-          conn.connect(routeTask, "onSolveComplete", showRoute);
-          conn.connect(routeTask, "onError", errorHandler);
+          // Wire events
+          on(routeTask, "solve-complete", showRoute);
+          on(routeTask, "error", errorHandler);
 
           // Wire UI events
           on(dom.byId("btnAddStops"), "click", addStops);
@@ -83,7 +84,7 @@
           //Begins listening for click events to add barriers
           function addBarriers() {
             removeEventHandlers();
-            mapOnClick_addBarriers_connect = conn.connect(map, "onClick", addBarrier);
+            mapOnClick_addBarriers_connect = on(map, "click", addBarrier);
           }
 
           //Clears all barriers
@@ -136,6 +137,7 @@
 
           //Draws the resulting routes on the map
           function showRoute(solveResult) {
+            solveResult = solveResult.result; // 3.5
             clearRoutes();
             utils.setStyle("progress", "progress hidden");
             array.forEach(solveResult.routeResults, function(routeResult, i) {

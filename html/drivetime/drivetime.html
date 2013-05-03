@@ -10,8 +10,8 @@
   <!-- Load the library references for ArcGIS API for JavaScript-->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
-    require(["esri/map","esri/tasks/Geoprocessor", "esri/graphic", "esri/tasks/FeatureSet", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
-      function(Map, Geoprocessor, Graphic, FeatureSet, SimpleLineSymbol, SimpleFillSymbol, utils, on, conn, dom) {
+    require(["esri/map","esri/tasks/Geoprocessor", "esri/graphic", "esri/tasks/FeatureSet", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "../../js/utils.js", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(Map, Geoprocessor, Graphic, FeatureSet, SimpleLineSymbol, SimpleFillSymbol, utils, on, dom) {
         "use strict"
         var gp, pointGraphic;
         var driveTimes = "1 2 3";
@@ -27,7 +27,7 @@
         gp = new Geoprocessor("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Network/ESRI_DriveTime_US/GPServer/CreateDriveTimePolygons");
         gp.setOutputSpatialReference(map.spatialReference); //Set the coordinate system to match the map which is Web Mercator
         //Listen for the click event on the map then call computeServiceArea function
-        conn.connect(map, "onClick", onClickComputeServiceArea);
+        on(map, "click", onClickComputeServiceArea);
         // Wire UI events
         on(dom.byId("btnClear"), "click", clearGraphics);
 
