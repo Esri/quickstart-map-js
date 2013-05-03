@@ -5,13 +5,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Find Places</title>
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
-    require(["esri/map", "esri/tasks/locator", "esri/InfoTemplate", "esri/graphic", "esri/geometry/Multipoint", "../../js/utils.js", "dojo/dom", "dojo/on", "dojo/domReady!"], 
-      function(Map, Geocoder, InfoTemplate, Graphic, Multipoint, utils, dom, on) {  
+    require(["esri/map", "esri/tasks/locator", "esri/InfoTemplate", "esri/graphic", "esri/geometry/Multipoint", "../../js/utils.js", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(Map, Geocoder, InfoTemplate, Graphic, Multipoint, utils, on, dom) {  
         "use strict"      
                
         // Create map
@@ -27,9 +27,9 @@
         
         // Wire events
         on(map, "load", function() {
-          dojo.connect(geocodeService, "onAddressToLocationsComplete", geocodeResults);
-          dojo.connect(geocodeService, "onError", geocodeError);
-          dojo.connect(map.graphics,"onClick", geocodeSelect);
+          on(geocodeService, "address-to-locations-complete", geocodeResults);
+          on(geocodeService, "error", geocodeError);
+          on(map.graphics,"click", geocodeSelect);          
           on(dom.byId("placeInput"), "keypress", placeInput_onKeyPress);
           on(dom.byId("btnSearch"),"click", geoSearch);
           on(dom.byId("btnClear"),"click", clearFindGraphics);
@@ -44,7 +44,7 @@
           // Set geocode options
           var options = {
             address:{"SingleLine":searchString},
-            outFields:["Loc_name"],
+            outFields:["Loc_name, place_addr"],
             searchExtent: boundingBox
           }
           // Execute geosearch
@@ -54,20 +54,20 @@
         
         // Geocode results
         function geocodeResults(places) {
-          if (places.length > 0) {
+          if (places.addresses.length > 0) {
             clearFindGraphics();
             // Objects for the graphic
             var place,attributes,infoTemplate,pt,graphic;
             // Create and add graphics with pop-ups
-            for (var i = 0; i < places.length; i++) {
-              place = places[i];
+            for (var i = 0; i < places.addresses.length; i++) {
+              place = places.addresses[i];
               pt = place.location;
               attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
               infoTemplate = new InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='window.zoomToPlace(" + pt.x + "," + pt.y + ",15)';>Zoom To</span>");
               graphic = new Graphic(pt,sym,attributes,infoTemplate);
               map.graphics.add(graphic);  
             }
-            zoomToPlaces(places);
+            zoomToPlaces(places.addresses);
           } else {
             alert("Sorry, address or place not found.");
           }
