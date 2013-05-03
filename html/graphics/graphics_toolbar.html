@@ -25,7 +25,7 @@
         utils.autoRecenter(map);
 
         // Wire events
-        on(map, "Load", initToolbar);
+        on(map, "load", initToolbar);
         // Wire UI events
         on(dom.byId("btnAddPoint"),"click", setActiveTool);
         on(dom.byId("btnAddLine"),"click", setActiveTool);

@@ -11,8 +11,8 @@
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
     require(["esri/map", "esri/geometry/Point", "esri/geometry/Multipoint", "esri/geometry/Polyline","esri/geometry/Polygon","esri/graphic", 
-      "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "esri/InfoTemplate", "../../js/utils.js", "dojo/_base/Color", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
-      function(Map, Point, Multipoint, Polyline, Polygon, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, InfoTemplate, utils, Color, on, conn, dom) {
+      "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "esri/InfoTemplate", "../../js/utils.js", "dojo/_base/Color", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(Map, Point, Multipoint, Polyline, Polygon, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, InfoTemplate, utils, Color, on, dom) {
         "use strict"
 
         var pointSymbol,lineSymbol,polygonSymbol;
@@ -33,8 +33,8 @@
         polygonSymbol = createPolygonSymbol();
 
         // Wire events
-        conn.connect(map,"onClick", addGraphicCallback);
-        conn.connect(map,"onDblClick", addGraphicCallback);
+        on(map,"click", addGraphicCallback);
+        on(map,"dbl-click", addGraphicCallback);  // double-click?
         // Wire UI events
         on(dom.byId("addPoint"),"click", setActiveTool);
         on(dom.byId("addLine"),"click", setActiveTool);
