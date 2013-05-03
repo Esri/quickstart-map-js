@@ -5,13 +5,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Cloud</title> 
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script> 
-    define("app",["../../js/utils.js", "esri/layers/graphics","esri/layers/FeatureLayer","esri/symbols/SimpleMarkerSymbol", "esri/renderers/SimpleRenderer", "esri/InfoTemplate", "esri/tasks/query", "dojo/dom", "dojo/_base/connect","dojo/domReady!"], 
-      function(utils, Graphics, FeatureLayer, SimpleMarkerSymbol, SimpleRenderer, InfoTemplate, Query, dom, conn) { 
+    define("app",["../../js/utils.js", "esri/layers/graphics","esri/layers/FeatureLayer","esri/symbols/SimpleMarkerSymbol", "esri/renderers/SimpleRenderer", "esri/InfoTemplate", "esri/tasks/query", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(utils, Graphics, FeatureLayer, SimpleMarkerSymbol, SimpleRenderer, InfoTemplate, Query, on, dom) { 
         "use strict"
 
         var featureLayer; 
@@ -40,16 +40,18 @@
             // Add cloud layer
             m.map.addLayer(featureLayer); 
             // Connect to selection event 
-            conn.connect(featureLayer,"onSelectionComplete", function (features) {
+            on(featureLayer,"selection-complete", function (results) {
+                var features = results.features;
                 var extent;
                 for (var i = 0; i < features.length; i++) {
-                    if (!extent)
-                        extent = features[i]._extent;
-                    else
-                        extent.union(features[i]._extent);
+                  if (!extent)
+                      extent = features[i]._extent;
+                  else
+                      extent.union(features[i]._extent);
                 }
-                if (extent)
-                    m.map.setExtent(extent);    
+                if (extent) {
+                  m.map.setExtent(extent); 
+                }   
             });
             var element = dom.byId('selCountry');
             element.disabled = false;
@@ -72,8 +74,9 @@
           clearCloudGraphics:function() {
             utils.setStyle("progress", "progress hidden");
             m.map.infoWindow.hide();
-            if (featureLayer)
+            if (featureLayer) {
               m.map.removeLayer(featureLayer);
+            }
             featureLayer = null;      
           }
         }
@@ -81,8 +84,8 @@
       }
     );
     
-    require(["app", "esri/map", "dojo/dom", "dojo/on", "dojo/_base/connect", "dojo/domReady!"], 
-      function(app, Map, dom, on, conn) {
+    require(["app", "esri/map", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(app, Map, on, dom) {
         "use strict"
         // Create map
         var map = new Map("mapDiv", { 
@@ -94,10 +97,10 @@
         app.utils.autoRecenter(map);
 
         // Wire map events
-        conn.connect(map,"onUpdateStart",function(){
+        on(map,"update-start",function(){
            app.utils.setStyle("progress", "progress");
         });
-        conn.connect(map,"onUpdateEnd",function(){
+        on(map,"update-end",function(){
            app.utils.setStyle("progress", "progress hidden");
         });  
         
@@ -111,7 +114,7 @@
 </head>
 <body>
   <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Access the ArcGIS Cloud</span></div>
+    <div class="titlearea"><span id="titleMessage" class="title-message">Query Feature Service</span></div>
       <div class="controls">
         <div class="buttons">
           <button class="btn btn-primary" id="btnAddCities">Add World Cities</button>

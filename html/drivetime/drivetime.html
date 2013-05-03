@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Drive Times</title>
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript-->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
     require(["esri/map","esri/tasks/Geoprocessor", "esri/graphic", "esri/tasks/FeatureSet", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
       function(Map, Geoprocessor, Graphic, FeatureSet, SimpleLineSymbol, SimpleFillSymbol, utils, on, conn, dom) {
@@ -29,7 +29,6 @@
         //Listen for the click event on the map then call computeServiceArea function
         conn.connect(map, "onClick", onClickComputeServiceArea);
         // Wire UI events
-        on(dom.byId("btnGetDrivetimes"), "click", computeServiceArea); //();"
         on(dom.byId("btnClear"), "click", clearGraphics);
 
         // Returns the map coordinates where the user clicked, it draws the point, and sets the two parameters for the service.   
@@ -121,7 +120,6 @@
     <div class="titlearea"><span id="titleMessage" class="title-message">Find Drive Times</span></div>
     <div class="controls">
       <div class="buttons"> 
-        <button id="btnGetDrivetimes" class="btn btn-primary">Go</button>
         <button id="btnClear" class="btn">Clear</button>
       </div>
     </div>
