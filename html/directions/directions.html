@@ -12,8 +12,8 @@
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
     require(["esri/map", "esri/tasks/locator", "esri/tasks/RouteTask", "esri/tasks/RouteParameters", "esri/tasks/FeatureSet", "esri/SpatialReference",
-      "esri/units", "esri/graphic", "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "../../js/utils.js", "dojo/promise/all","dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"], 
-      function(Map, Geocode, Directions, RouteParameters, FeatureSet, SpatialReference, Units, Graphic, SimpleLineSymbol, InfoTemplate, utils, all, on, conn, dom) {     
+      "esri/units", "esri/graphic", "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "../../js/utils.js", "dojo/promise/all","dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(Map, Geocode, Directions, RouteParameters, FeatureSet, SpatialReference, Units, Graphic, SimpleLineSymbol, InfoTemplate, utils, all, on, dom) {     
         "use strict"    
         var geocodeService;
         var directionsService;
@@ -31,12 +31,12 @@
         
         // Create geocode service
         geocodeService = new Geocode("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
-        conn.connect(geocodeService, "onError", errorHandler);
+        on(geocodeService, "error", errorHandler);
         
         // Create directions service
         directionsService = new Directions("http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route");
-        conn.connect(directionsService, "onSolveComplete", showRoute);
-        conn.connect(directionsService, "onError", errorHandler);
+        on(directionsService, "solve-complete", showRoute);
+        on(directionsService, "error", errorHandler);
         
         // Container for directions
         directionsList = dom.byId('directionsList')
@@ -98,7 +98,8 @@
         }
         
         // Draw the route on the map and show directions
-        function showRoute(routeInfo) {
+        function showRoute(results) {
+          var routeInfo = results.result;  // 3.5
           if (routeInfo) {
             if (routeInfo.routeResults && routeInfo.routeResults.length > 0) {
               directions = routeInfo.routeResults[0].directions;

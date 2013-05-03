@@ -75,8 +75,8 @@
       }
     );
 
-    require(["app","esri/map","esri/tasks/GeometryService", "dojo/dom", "dojo/on", "dojo/_base/connect", "dojo/domReady!"], 
-      function(app, Map, GeometryService, dom, on, conn) {
+    require(["app","esri/map","esri/tasks/GeometryService", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(app, Map, GeometryService, on, dom) {
         "use strict"
         // Create map
         var map = new Map("mapDiv", { 
@@ -90,11 +90,11 @@
         var geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
         
         // Wire events
-        conn.connect(map, "onLayerAddResult", app.layerAdded);
-        conn.connect(map, "onUpdateStart",function(){
+        on(map, "layer-add-result", app.layerAdded);
+        on(map, "update-start",function(){
            app.utils.setStyle("progress", "progress");
         });
-        conn.connect(map, "onUpdateEnd",function(){
+        on(map, "update-end",function(){
             app.utils.setStyle("progress", "progress hidden");
         });
 

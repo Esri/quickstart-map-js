@@ -1,13 +1,13 @@
-define(["esri/map","esri/symbols/PictureMarkerSymbol","dojo/on", "dojo/_base/connect"], 
-	function(Map,PictureMarkerSymbol, on, conn) {
+define(["esri/map","esri/symbols/PictureMarkerSymbol","dojo/on"], 
+	function(Map,PictureMarkerSymbol, on) {
       "use strict"
       var resizeDelay = 200;
       return {
 			 autoRecenter:function(map) {
-	      conn.connect(map, 'onLoad', function (map) {
+	      on(map, 'load', function (map) {
 	        on(window, 'resize', map, map.resize);
 	      });
-	      conn.connect(map, 'onResize',  function(extent, width, height) { 
+	      on(map, 'resize',  function(extent, width, height) { 
 	        map.__resizeCenter = map.extent.getCenter();
 	        setTimeout(function() {
 	          map.centerAt(map.__resizeCenter);
