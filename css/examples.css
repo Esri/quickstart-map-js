@@ -165,7 +165,7 @@ a:hover {
 	top: 2px;
 }
 
-/*** Zoom In/Out ***/
+/*** Esri Zoom In/Out ***/
 .esriSimpleSlider {
 	top: 5px;
 	left: 8px;
@@ -206,7 +206,7 @@ a:hover {
 	height: 20px;
 }
 
-/*** Pop-up ***/
+/*** Esri Pop-up ***/
 .esriPopup, .esriPopup .contentPane {
 	font-size: 10px;
 	line-height: 12px;
@@ -223,7 +223,7 @@ a:hover {
   color: rgba(140, 140, 140, 1);
 }
 
-/*** Basemap Gallery ***/
+/*** Esri Basemap Gallery ***/
 .esriBasemapGallery {
 	/*width: 600px;
 	height: 40px;*/
@@ -253,7 +253,7 @@ a:hover {
 	border: 2px solid #3C7AFF;
 }
 
-/*** Geocode Widget ***/
+/*** Esri Geocode Widget ***/
 .simpleGeocoder {
 	display: inline-block;
 	height: 20px;
@@ -291,6 +291,12 @@ a:hover {
 	margin: -3px 0 0 -1px;
 	border: 1px rgba(150, 150, 150, 0.50) solid;
 	text-align: left;
+}
+
+/*** Esri Directions Widget ***/
+.esriRoutes {
+  max-height: 350px;
+  overflow-y: scroll;
 }
 
 /*** Loading image ***/
