@@ -9,17 +9,10 @@
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
-  <!--script>var dojoConfig = { parseOnLoad: true };</script-->
   <script>
     require(["esri/map", "esri/dijit/Directions", "../../js/utils.js", "dojo/domReady!"], 
       function(Map, Directions, utils) {         
-        //all requests to route.arcgis.com will proxy to the proxyUrl defined in this object.
-        esri.addProxyRule({
-         urlPrefix: "route.arcgis.com",  
-         proxyUrl: "/sproxy"
-         //proxyUrl: "http://developers.arcgis.com/sproxy"  
-        });
-
+       
         // Create map
         var map = new Map("mapDiv", {
           basemap: "streets",
@@ -28,9 +21,11 @@
         });
         utils.autoRecenter(map);
 
-        // Create Directions widget
+        // Create Directions widget - NOTE: The routeTaskUrl service will be expiring at the end of 2013 and should be replaced 
+        // with the world network service that requires an ArcGIS account to access
         var directions = new Directions({
-          map: map
+          map: map,
+          routeTaskUrl: "http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route"
         },"dir");
         directions.startup();
       }
