@@ -1,8 +1,8 @@
 # quickstart-map-js
 
-These are a set of simple samples that show you how to accomplish different mapping and GIS tasks with the ArcGIS API for JavaScript. The samples use ArcGIS Online basemaps and services.  Learn more [here](http://resources.arcgis.com/en/home/).
+A set of simple samples that show you how to accomplish different mapping and GIS tasks with the ArcGIS API for JavaScript. The samples use ArcGIS Online basemaps and services.  Learn more [here](http://resources.arcgis.com/en/home/).
 
-[View it live](http://esri.github.com/quickstart-map-js/index.html)
+[View the samples live here](http://esri.github.com/quickstart-map-js/index.html)
 
 ![App](https://raw.github.com/Esri/quickstart-map-js/master/quickstart-map-js.png)
 
