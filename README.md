@@ -24,6 +24,7 @@ A set of simple samples that show you how to accomplish different mapping and GI
 ## Requirements
 
 * Notepad or your favorite HTML editor
+* [Web server] (http://help.arcgis.com/en/webapi/javascript/arcgis/jshelp/intro_devenv.html)
 * Web browser with access to the Internet
 
 ## Resources
