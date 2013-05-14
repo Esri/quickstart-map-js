@@ -44,7 +44,7 @@
           // Set geocode options
           var options = {
             address:{"SingleLine":searchString},
-            outFields:["Loc_name, place_addr"],
+            outFields:["Loc_name", "Place_addr"],  // Coming soon: Place_addr will contain full address for POI locations!
             searchExtent: boundingBox
           }
           // Execute geosearch
