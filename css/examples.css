@@ -710,7 +710,7 @@ button.close {
   /*padding: 4px 14px;*/
   padding: 2px 12px; /* small */
   *margin-left: .3em;*/
-  margin: 5px 5px 5px 0; /* small */
+  margin: 5px 5px 5px 5px; /* small */
   font-size: 12px;  /* small */
   /*line-height: 20px;*/
   line-height: 18px;  /* small */
