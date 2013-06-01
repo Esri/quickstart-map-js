@@ -2,18 +2,18 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">   
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  <title>Watercooler Basemap</title>
+  <title>Watercolor Basemap</title>
   <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
-    require(["esri/map","esri/layers/WebTiledLayer","../../js/utils.js","dojo/domReady!"], 
+    require(["esri/map","esri/layers/WebTiledLayer","../../js/utils.js","dojo/domReady!"],
       function(Map, WebTiledLayer, utils) {
         // Create map
-        var map = new Map("mapDiv",{ 
+        var map = new Map("mapDiv",{
           //basemap: "gray",  // Do not specify default basemap
           center: [-122.69, 45.52],
           zoom: 3
@@ -31,12 +31,12 @@
         map.addLayer(lyr);
       }
     );
-  </script>   
+  </script>
 </head>
   <body>
     <div class="panel">
-      <div class="titlearea"><span id="titleMessage" class="title-message">Watercooler Basemap</span></div>
-      <div class="message"><span id="userMessage" class="user-message">Stamen Watercooler tile set as a custom basemap.</span></div>
+      <div class="titlearea"><span id="titleMessage" class="title-message">Watercolor Basemap</span></div>
+      <div class="message"><span id="userMessage" class="user-message">Stamen Watercolor tile set as a custom basemap.</span></div>
     </div>
     <div id="mapDiv"></div>
   </body>
