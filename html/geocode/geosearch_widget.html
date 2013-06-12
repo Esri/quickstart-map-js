@@ -90,7 +90,7 @@
           place.score = item.feature.attributes.Score;
           // Graphic components
           attributes = { address:place.address, score:place.score, lat:pt.getLatitude().toFixed(2), lon:pt.getLongitude().toFixed(2) };   
-          infoTemplate = new InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='zoomToPlace(" + pt.getLongitude() + "," + pt.getLatitude() + ",15)';>Zoom To</span>");
+          infoTemplate = new InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}");
           graphic = new Graphic(pt,symbol,attributes,infoTemplate);
           // Add to map
           map.graphics.add(graphic);  
@@ -103,10 +103,6 @@
             multiPoint.addPoint(places[i].feature.geometry);
           }
           map.setExtent(multiPoint.getExtent().expand(2.0));
-        }
-
-        window.zoomToPlace = function zoomToPlace(lon,lat,scale) {
-          map.centerAndZoom([lon,lat],scale);
         }
 
         function clearFindGraphics() {

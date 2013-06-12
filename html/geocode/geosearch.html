@@ -63,7 +63,7 @@
               place = places.addresses[i];
               pt = place.location;
               attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
-              infoTemplate = new InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='window.zoomToPlace(" + pt.x + "," + pt.y + ",15)';>Zoom To</span>");
+              infoTemplate = new InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}");
               graphic = new Graphic(pt,sym,attributes,infoTemplate);
               map.graphics.add(graphic);  
             }
@@ -108,11 +108,8 @@
           map.setExtent(multiPoint.getExtent().expand(2.0));
         }
 
-        window.zoomToPlace = function zoomToPlace(lon,lat,scale) {
-          map.centerAndZoom([lon,lat],scale);
-        }
-
         function clearFindGraphics() {
+          utils.setStyle("progress", "progress hidden");
           map.infoWindow.hide();
           map.graphics.clear();
         }
