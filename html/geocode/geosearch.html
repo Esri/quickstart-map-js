@@ -62,8 +62,8 @@
             for (var i = 0; i < places.addresses.length; i++) {
               place = places.addresses[i];
               pt = place.location;
-              attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
-              infoTemplate = new InfoTemplate("Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}");
+              attributes = { address:place.address, address2:place.attributes.Place_addr, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
+              infoTemplate = new InfoTemplate("Geocode Result","${address} ${address2}<br/>Lat/Lon: ${lat},${lon}<br/>Score: ${score}");
               graphic = new Graphic(pt,sym,attributes,infoTemplate);
               map.graphics.add(graphic);  
             }
@@ -122,7 +122,7 @@
     <div class="titlearea"><span id="titleMessage" class="title-message">Find Places</span></div>
     <div class="controls">
       <div class="buttons"> 
-        <input id="placeInput" class="" type="text" value="San Diego, CA" placeholder="San Diego, CA"/>
+        <input id="placeInput" class="" type="text" value="San Diego Starbucks" placeholder="San Diego, CA"/>
         <label><input id="useMapExtent" type="checkbox"/>Search map only</label> 
         <button class="btn btn-primary" id="btnSearch">Go</button>
         <button class="btn" id="btnClear">Clear</button>
