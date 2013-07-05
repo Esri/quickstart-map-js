@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>OAuth Popup Callback</title>
+  
+  <style>
+    html, body {
+      height: 100%; 
+      width: 100%;
+      margin: 0px;
+      padding: 0px;
+      font-family: Lucida Sans,Lucida Grande,Arial !important;
+      font-size: 14px;
+    }
+  </style>
+
+  <script>
+    function initialize() {
+      //console.log("oauth callback");
+      
+      //window.opener.OAuthHelper.checkOAuthResponse(window.location.href);
+      window.opener.oAuthHelper.checkOAuthResponse(window.location.href);
+      window.close();
+    }
+  </script>
+</head>
+
+<body onload="initialize();">
+  <!--OAuth Popup Callback-->
+</body>
+</html>
