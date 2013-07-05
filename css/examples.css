@@ -299,6 +299,22 @@ a:hover {
   overflow-y: scroll;
 }
 
+/*** Esri IdentityManager ***/
+.esriSignInDialog {
+  padding: 10px;
+  background: white;
+   -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+  border: 1px rgba(150, 150, 150, 0.50) solid;
+  background: rgba(255, 255, 255, 0.90);
+}
+.input .dijitReset .dijitInputField .dijitValidationIcon .dijitValidationInner, .dijitReset .dijitInputInner {
+  padding: 4px;
+  margin: 0;
+}
+
+
 /*** Loading image ***/
 .progress {
   position: absolute;

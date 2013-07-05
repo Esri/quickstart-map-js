@@ -7,12 +7,14 @@
   <title>Directions</title>
   <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.5/js/dojo/dijit/themes/tundra/tundra.css">
+
   <!-- Load the library references for ArcGIS API for JavaScript -->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
     require(["esri/map", "esri/tasks/locator", "esri/tasks/RouteTask", "esri/tasks/RouteParameters", "esri/tasks/FeatureSet", "esri/SpatialReference",
-      "esri/units", "esri/graphic", "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "../../js/utils.js", "dojo/promise/all","dojo/on", "dojo/dom", "dojo/domReady!"], 
-      function(Map, Geocode, Directions, RouteParameters, FeatureSet, SpatialReference, Units, Graphic, SimpleLineSymbol, InfoTemplate, utils, all, on, dom) {     
+      "esri/units", "esri/graphic", "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "../../js/oAuth/oAuthHelper.js", "../../js/utils.js", "dojo/promise/all","dojo/on", "dojo/dom", "dojo/domReady!"], 
+      function(Map, Geocode, Directions, RouteParameters, FeatureSet, SpatialReference, Units, Graphic, SimpleLineSymbol, InfoTemplate, oAuthHelper, utils, all, on, dom) {     
         "use strict"    
         var geocodeService;
         var directionsService;
@@ -27,13 +29,34 @@
             zoom: 5
         });
         utils.autoRecenter(map);
+
+        // Create oAuthHelper 
+        oAuthHelper.init({
+          appId:      "if7hHDRDdyRbz0fs",
+          //redirect_uri: "http://localhost/GitHub/quickstart-map-js/js/oAuth/oauth-callback.html",  // local testing only
+          redirect_uri: "http://esri.github.io/GitHub/quickstart-map-js/js/oauth/oauth-callback.html",
+          portal:     "http://www.arcgis.com",
+          expiration: (14 * 24 * 60), // 2 weeks, in minutes
+          popup:      true
+        });
+        
+        function signIn() {
+          if (oAuthHelper.isSignedIn()) {
+            geocodeAddresses();
+          } else {
+            oAuthHelper.signIn().then( function(){
+              geocodeAddresses();
+            });
+          }          
+        }
         
         // Create geocode service
         geocodeService = new Geocode("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
         on(geocodeService, "error", errorHandler);
         
         // Create directions service
-        directionsService = new Directions("http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route");
+        //directionsService = new Directions("http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route");  // this will expire
+        directionsService = new Directions("http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World");  // new ArcGIS Services
         on(directionsService, "solve-complete", showRoute);
         on(directionsService, "error", errorHandler);
         
@@ -48,7 +71,7 @@
        
         // Find directions for Start and Stop addresses/places
         function getDirections() {
-          geocodeAddresses();
+          signIn();
         }
         
         // Geocode first
@@ -255,6 +278,7 @@
         <button id="btnFindAddress" class="btn btn-primary">Go</button>
         <button id="btnClear" class="btn">Clear</button>
       </div>
+      <p>NOTE: This app uses advanced ArcGIS services.  Please <a href="https://developers.arcgis.com/en/sign-up">sign up</a> for an ArcGIS Developer Subscription to access this sample.</p>
     </div>
     <div id="infoPanel" class="info-panel hidden">
       <span id="infoLabel" class="info-label">Results:</span>
@@ -264,5 +288,7 @@
   </div>
   <div id="mapDiv"></div>
   <div id="progress" class="progress hidden"></div>
+  <div id="signIn"></div>
+</div>
 </body>
 </html>
