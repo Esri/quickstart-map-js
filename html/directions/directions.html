@@ -7,13 +7,12 @@
   <title>Directions</title>
   <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.5/js/dojo/dijit/themes/tundra/tundra.css">
 
   <!-- Load the library references for ArcGIS API for JavaScript -->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
   <script>
     require(["esri/map", "esri/tasks/locator", "esri/tasks/RouteTask", "esri/tasks/RouteParameters", "esri/tasks/FeatureSet", "esri/SpatialReference",
-      "esri/units", "esri/graphic", "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "../../js/oAuth/oAuthHelper.js", "../../js/utils.js", "dojo/promise/all","dojo/on", "dojo/dom", "dojo/domReady!"], 
+      "esri/units", "esri/graphic", "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "../../js/oauth/oAuthHelper.js", "../../js/utils.js", "dojo/promise/all","dojo/on", "dojo/dom", "dojo/domReady!"], 
       function(Map, Geocode, Directions, RouteParameters, FeatureSet, SpatialReference, Units, Graphic, SimpleLineSymbol, InfoTemplate, oAuthHelper, utils, all, on, dom) {     
         "use strict"    
         var geocodeService;
