@@ -56,11 +56,24 @@
             ];
 
             function findBasemapType(btn) {
-              for (var i=0; i < basemaps.length; i++) {
+              var length = basemaps.length;
+              for (var i=0; i < length; i++) {
                 if (btn.id == basemaps[i].btn.id) {
-                  return basemaps[i].type;
+                    return basemaps[i].type;
                 }
               }
+            }
+
+            function setButtonColors(btn) {
+                var length = basemaps.length;
+                for (var i=0; i < length; i++) {
+                    if (btn.id == basemaps[i].btn.id) {
+                        dom.byId(btn.id).style.color = "red";
+                    }
+                    else{
+                        dom.byId(basemaps[i].btn.id).style.color = "white";
+                    }
+                }
             }
             
             // setup handlers
@@ -68,6 +81,7 @@
               var basemapType = basemaps[i].type;
               on(basemaps[i].btn, "click", function () {
                   m.setBasemap(findBasemapType(this));  // check!
+                  setButtonColors(this);
               });       
             }
             on(dom.byId("back"), "click", function() {
