@@ -43,43 +43,44 @@
           index: 0,
           mapLocations: null,
           timerHandle: 0,
+          basemaps : [{btn: dom.byId("basemap0"),type:'gray'},
+            {btn:dom.byId("basemap1"), type:'streets'},
+            {btn:dom.byId("basemap2"), type:'hybrid'},
+            {btn:dom.byId("basemap3"), type:'topo'},
+            {btn:dom.byId("basemap4"), type:'national-geographic'},
+            {btn:dom.byId("basemap5"), type:'oceans'}
+            ],
 
           init: function(mapRef) {
             this.map = mapRef;
             this.mapLocations = model.mapLocations;
-            var basemaps = [{btn: dom.byId("basemap0"),type:'gray'},
-              {btn:dom.byId("basemap1"), type:'streets'},
-              {btn:dom.byId("basemap2"), type:'hybrid'},
-              {btn:dom.byId("basemap3"), type:'topo'},
-              {btn:dom.byId("basemap4"), type:'national-geographic'},
-              {btn:dom.byId("basemap5"), type:'oceans'}
-            ];
+
 
             function findBasemapType(btn) {
-              var length = basemaps.length;
+              var length = m.basemaps.length;
               for (var i=0; i < length; i++) {
-                if (btn.id == basemaps[i].btn.id) {
-                    return basemaps[i].type;
+                if (btn.id == m.basemaps[i].btn.id) {
+                    return m.basemaps[i].type;
                 }
               }
             }
 
             function setButtonColors(btn) {
-                var length = basemaps.length;
+                var length = m.basemaps.length;
                 for (var i=0; i < length; i++) {
-                    if (btn.id == basemaps[i].btn.id) {
-                        dom.byId(btn.id).style.color = "red";
+                    if (btn.id == m.basemaps[i].btn.id) {
+                        dom.byId(btn.id).style.color = "#111111";
                     }
                     else{
-                        dom.byId(basemaps[i].btn.id).style.color = "white";
+                        dom.byId(m.basemaps[i].btn.id).style.color = "white";
                     }
                 }
             }
             
             // setup handlers
-            for (var i=0; i< basemaps.length; i++) {
-              var basemapType = basemaps[i].type;
-              on(basemaps[i].btn, "click", function () {
+            for (var i=0; i< this.basemaps.length; i++) {
+              var basemapType = this.basemaps[i].type;
+              on(this.basemaps[i].btn, "click", function () {
                   m.setBasemap(findBasemapType(this));  // check!
                   setButtonColors(this);
               });       
@@ -95,6 +96,18 @@
             });
           },
 
+          setButtonColorsByType:function(type) {
+              var length = this.basemaps.length;
+              for (var i=0; i < length; i++) {
+                  if (type === this.basemaps[i].type) {
+                      dom.byId(this.basemaps[i].btn.id).style.color = "#111111";
+                  }
+                  else{
+                      dom.byId(this.basemaps[i].btn.id).style.color = "white";
+                  }
+              }
+          },
+
           setBasemap:function(type) {
             // Disable playmode
             dom.byId("tour").checked = false;
@@ -104,7 +117,9 @@
         
           showBasemap:function (index,moveLocation) {
             // set map and location
-            this.map.setBasemap(this.mapLocations[this.index][0]);
+            var mapType = this.mapLocations[this.index][0];
+            this.map.setBasemap(mapType);
+            this.setButtonColorsByType(mapType);
             if (moveLocation)
               this.map.centerAndZoom(this.mapLocations[this.index][1],this.mapLocations[this.index][2]);
           },
