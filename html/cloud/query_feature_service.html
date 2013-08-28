@@ -8,9 +8,18 @@
   <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact"></script>
+  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.6compact"></script>
   <script> 
-    define("app",["../../js/utils.js", "esri/layers/graphics","esri/layers/FeatureLayer","esri/symbols/SimpleMarkerSymbol", "esri/renderers/SimpleRenderer", "esri/InfoTemplate", "esri/tasks/query", "dojo/on", "dojo/dom", "dojo/domReady!"], 
+    define("app",["../../js/utils.js", 
+      "esri/layers/graphics",
+      "esri/layers/FeatureLayer",
+      "esri/symbols/SimpleMarkerSymbol", 
+      "esri/renderers/SimpleRenderer", 
+      "esri/InfoTemplate", 
+      "esri/tasks/query", 
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/domReady!"], 
       function(utils, Graphics, FeatureLayer, SimpleMarkerSymbol, SimpleRenderer, InfoTemplate, Query, on, dom) { 
         "use strict"
 
