@@ -11,6 +11,13 @@
 		<!--link href="css/examples.css" rel="stylesheet"/-->
 		<link href="css/bootstrap.css" rel="stylesheet"/>
 		<link href="css/bootstrap-responsive.css" rel="stylesheet"/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="js/bootstrap.js"></script>
+		<script>
+		$(function() {
+			$('[rel=popover]').popover();
+		});
+		</script>
 		<style type="text/css">
 			.container-narrow {
 				margin: 0 auto;
@@ -40,10 +47,10 @@
 					<div class="well well-small">
   					<h3 class="text-center">Maps</h3>
   					<ul class="unstyled text-center">
-		  				<li><a href='html/basemaps/basemaps.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemaps</a></li>
-							<li><a href='html/basemaps/basemaps_widget.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemaps Widget</a></li>
-							<li><a href='html/basemaps/basemap_watercolor.html') class="btn btn-primary btn-wide-75 btn-max-width">Watercolor Basemap</a></li>
-							<li><a href='html/basemaps/basemaptour.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemap Tour</a></li>
+		  				<li><a href='html/basemaps/basemaps.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Selecting a basemap based on the setBasemap function." data-placement="left" data-trigger="hover">Basemaps</a></li>
+						<li><a href='html/basemaps/basemaps_widget.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Using the BasemapGallery class to set up a widget." data-placement="left" data-trigger="hover">Basemaps Widget</a></li>
+						<li><a href='html/basemaps/basemap_watercolor.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Use the WebTiledlayer class to create custom basemaps." data-placement="left" data-trigger="hover">Watercolor Basemap</a></li>
+						<li><a href='html/basemaps/basemaptour.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Select a basemap and go for a tour around the world." data-placement="left" data-trigger="hover">Basemap Tour</a></li>
   					</ul>
   				</div>
 				</div>
@@ -51,10 +58,10 @@
 					<div class="well well-small">
   					<h3 class="text-center">Geocoding</h3>
   					<ul class="unstyled text-center">
-							<li><a href='html/geocode/geosearch.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Places</a></li>
-							<li><a href='html/geocode/geosearch_widget.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Places Widget</a></li>
-							<li><a href='html/geocode/reversegeocode.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Address</a></li>
-						</ul>
+						<li><a href='html/geocode/geosearch.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Use the Geocoder class to do a geosearch from a geocoder service." data-placement="right" data-trigger="hover">Find Places</a></li>
+						<li><a href='html/geocode/geosearch_widget.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Use the Geocoder class to create a geocoder widget." data-placement="right" data-trigger="hover">Find Places Widget</a></li>
+						<li><a href='html/geocode/reversegeocode.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Use reverse geocoding to find an adress based on location." data-placement="right" data-trigger="hover">Find Address</a></li>
+					</ul>
   				</div>
 				</div>
 			</div>
@@ -63,23 +70,23 @@
 					<div class="well well-small">
   					<h3 class="text-center">Directions</h3>
   					<ul class="unstyled text-center">
-							<li><a href='html/directions/directions.html') class="btn btn-primary btn-wide-75 btn-max-width">Directions</a></li>
-							<li><a href='html/directions/directions_widget.html') class="btn btn-primary btn-wide-75 btn-max-width">Directions Widget</a></li>
-							<li><a href='html/drivetime/drivetime.html') class="btn btn-primary btn-wide-75 btn-max-width">Drive Time</a></li>
-							<li><a href='html/routing/routes_and_barriers.html') class="btn btn-primary btn-wide-75 btn-max-width">Routes & Barriers</a></li>
-							<!--li><a href='html/routing/traffic.html') class="btn btn-primary btn-wide-75 btn-max-width">World Traffic</a></li-->
-						</ul>
+						<li><a href='html/directions/directions.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Use the Directions class to create a route from A to B. This app uses advanced ArcGIS services" data-placement="left" data-trigger="hover">Directions</a></li>
+						<li><a href='html/directions/directions_widget.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Use the Direction class to create a widget to do a route from A to B." data-placement="left" data-trigger="hover">Directions Widget</a></li>
+						<li><a href='html/drivetime/drivetime.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Use the Geoprocessor class to find out how far you can get by car in 1,2 and 3 minutes." data-placement="left" data-trigger="hover">Drive Time</a></li>
+						<li><a href='html/routing/routes_and_barriers.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Use the RouteTask class select stops and barriers for a route." data-placement="left" data-trigger="hover">Routes & Barriers</a></li>
+						<!--li><a href='html/routing/traffic.html') class="btn btn-primary btn-wide-75 btn-max-width">World Traffic</a></li-->
+					</ul>
   				</div>
 				</div>
 				<div class="span6">
 					<div class="well well-small">
   					<h3 class="text-center">Data and Services</h3>
   					<ul class="unstyled text-center">
-							<li><a href='html/maps/webmapbyid.html') class="btn btn-primary btn-wide-75 btn-max-width">Load Webmap</a></li>
-							<li><a href='html/cloud/load_feature_service.html') class="btn btn-primary btn-wide-75 btn-max-width">Load Feature Service</a></li>
-							<li><a href='html/cloud/query_feature_service.html') class="btn btn-primary btn-wide-75 btn-max-width">Query Feature Service</a></li>
-							<li><a href='html/data/load_flickr_json.html') class="btn btn-primary btn-wide-75 btn-max-width">Load Flickr JSON</a></li>
-						</ul>
+						<li><a href='html/maps/webmapbyid.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Load a webmap by using it's ID." data-placement="right" data-trigger="hover">Load Webmap</a></li>
+						<li><a href='html/cloud/load_feature_service.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Load a feature service on the fly by typing in it's adress." data-placement="right" data-trigger="hover">Load Feature Service</a></li>
+						<li><a href='html/cloud/query_feature_service.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Do a query on a feature service." data-placement="right" data-trigger="hover">Query Feature Service</a></li>
+						<li><a href='html/data/load_flickr_json.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Load images from flicker trough JSON data." data-placement="right" data-trigger="hover">Load Flickr JSON</a></li>
+					</ul>
   				</div>
 				</div>
 			</div>
@@ -88,17 +95,17 @@
 					<div class="well well-small">
   					<h3 class="text-center">Graphics</h3>
   					<ul class="unstyled text-center">
-							<li><a href='html/graphics/graphics.html') class="btn btn-primary btn-wide-75 btn-max-width">Draw Graphics</a></li>
-							<li><a href='html/graphics/graphics_toolbar.html') class="btn btn-primary btn-wide-75 btn-max-width">Draw Graphics Widget</a></li>
-						</ul>
+						<li><a href='html/graphics/graphics.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Draw points, lines and polygons on the map." data-placement="left" data-trigger="hover">Draw Graphics</a></li>
+						<li><a href='html/graphics/graphics_toolbar.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Draw points, lines and polygons on the map using the draw widget." data-placement="left" data-trigger="hover">Draw Graphics Widget</a></li>
+					</ul>
   				</div>
 				</div>
 				<div class="span6">
 					<div class="well well-small">
   					<h3 class="text-center">Misc</h3>
   					<ul class="unstyled text-center">
-							<li><a href='html/geolocation/geolocation.html') class="btn btn-primary btn-wide-75 btn-max-width">HTML 5 Geolocation</a></li>
-						</ul>
+						<li><a href='html/geolocation/geolocation.html') class="btn btn-primary btn-wide-75 btn-max-width" rel="popover" data-content="Display your Geolocation using HTML 5." data-placement="right" data-trigger="hover">HTML 5 Geolocation</a></li>
+					</ul>
   				</div>
 				</div>
 			</div>
