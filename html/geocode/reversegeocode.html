@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" >
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Find Address</title>
-  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css" />
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.6/js/esri/css/esri.css" />
   <link rel="stylesheet" href="../../css/examples.css" />
   <!-- Load the library references for ArcGIS API for JavaScript -->    
-  <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.6compact"></script>
+  <script src="http://js.arcgis.com/3.6compact"></script>
   <script>
     require(["esri/map", 
       "esri/tasks/locator", 
@@ -38,13 +38,6 @@
         var geocodeService = new Geocoder("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
         on(geocodeService, "location-to-address-complete", reverseGeocodeResults); 
         on(geocodeService, "error", geocodeError);
-
-        // Get center of the map
-        function findCenter() {
-          var evt = {};
-          evt.mapPoint = map.extent.getCenter();
-          onClickReverseGeocode(evt);
-        }
         
         // Reverse geocode when user clicks on the map
         function onClickReverseGeocode(evt) {
@@ -64,7 +57,7 @@
             pt = place.location;
             place.address = standardizeAddress(place);
             attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
-            infoTemplate = new InfoTemplate("Reverse Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score:${score}<span class='popupZoom' onclick='zoomToPlace(" + pt.x + "," + pt.y + ",16)';>Zoom To</span>");
+            infoTemplate = new InfoTemplate("Reverse Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score:${score}");
             graphic = new Graphic(pt,symbol,attributes,infoTemplate);
             map.graphics.add(graphic);  
             // Show pop-up
