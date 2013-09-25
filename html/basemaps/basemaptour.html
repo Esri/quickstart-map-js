@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">   
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Basemap Tour</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.6/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
   <!-- Load my JavaScript and CSS -->
   <link rel="stylesheet" type="text/css" href="../../css/examples.css">
-  <script src="http://js.arcgis.com/3.6compact"></script>
+  <script src="http://js.arcgis.com/3.7compact"></script>
   <script>
     define("model",[],function () {
       var mapLocations = init();
@@ -65,24 +65,13 @@
               }
             }
 
-            function setButtonColors(btn) {
-                var length = m.basemaps.length;
-                for (var i=0; i < length; i++) {
-                    if (btn.id == m.basemaps[i].btn.id) {
-                        dom.byId(btn.id).style.color = "#111111";
-                    }
-                    else{
-                        dom.byId(m.basemaps[i].btn.id).style.color = "white";
-                    }
-                }
-            }
-            
             // setup handlers
             for (var i=0; i< this.basemaps.length; i++) {
               var basemapType = this.basemaps[i].type;
               on(this.basemaps[i].btn, "click", function () {
                   m.setBasemap(findBasemapType(this));  // check!
-                  setButtonColors(this);
+                  //setButtonColors(this);
+                  m.setSelected(this);
               });       
             }
             on(dom.byId("back"), "click", function() {
@@ -96,14 +85,23 @@
             });
           },
 
+          setSelected:function(button) {
+            var elements = document.getElementsByClassName('btn btn-primary');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].className = "btn btn-primary";
+            }
+            var element = document.getElementsByClassName('btn btn-primary active');
+            if (element)
+              element.className = "btn btn-primary";
+            if (button)
+              button.className = "btn btn-primary active";
+          },
+
           setButtonColorsByType:function(type) {
               var length = this.basemaps.length;
               for (var i=0; i < length; i++) {
                   if (type === this.basemaps[i].type) {
-                      dom.byId(this.basemaps[i].btn.id).style.color = "#111111";
-                  }
-                  else{
-                      dom.byId(this.basemaps[i].btn.id).style.color = "white";
+                      m.setSelected(this.basemaps[i].btn);
                   }
               }
           },
