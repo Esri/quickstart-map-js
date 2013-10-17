@@ -24,7 +24,7 @@
                
         // Create map
         var map = new Map("mapDiv", {
-          basemap: "streets",
+          basemap: "gray",
           center: [-122.69, 45.52], //long, lat
           zoom: 3
         });
@@ -87,7 +87,7 @@
           alert("Sorry, place or address not found!");
         }
 
-        var sym = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24);
+        var sym = utils.createPictureSymbol("../../images/green-pin.png", 0, 0, 24);
         var selSym = utils.createPictureSymbol("../../images/red-pin.png", 0, 0, 24);
         var lastSel;
 
