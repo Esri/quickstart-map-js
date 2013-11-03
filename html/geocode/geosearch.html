@@ -24,7 +24,7 @@
                
         // Create map
         var map = new Map("mapDiv", {
-          basemap: "streets",
+          basemap: "gray",
           center: [-122.69, 45.52], //long, lat
           zoom: 3
         });
@@ -37,7 +37,6 @@
         on(map, "load", function() {
           on(geocodeService, "address-to-locations-complete", geocodeResults);
           on(geocodeService, "error", geocodeError);
-          on(map.graphics,"click", geocodeSelect);          
           on(dom.byId("placeInput"), "keypress", placeInput_onKeyPress);
           on(dom.byId("btnSearch"),"click", geoSearch);
           on(dom.byId("btnClear"),"click", clearFindGraphics);
@@ -88,18 +87,6 @@
         }
 
         var sym = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24);
-        var selSym = utils.createPictureSymbol("../../images/red-pin.png", 0, 0, 24);
-        var lastSel;
-
-        function geocodeSelect(item) {
-          // Create and add a selected graphic with pop-up
-          item = (item.graphic ? item.graphic : item.feature);
-          if (lastSel) {
-            lastSel.setSymbol(sym);
-          }
-          item.setSymbol(selSym);
-          lastSel = item;
-        }
 
         // Listen for enter key
         function placeInput_onKeyPress(e) {

@@ -34,10 +34,7 @@
         var geocoder = new Geocoder({
           value: 'starbucks',
           autoNavigate: false,
-          showResults: true,
           maxLocations: 25,
-          minCharacters: 3,
-          searchDelay: 150,
           autoComplete: true,
           arcgisGeocoder: true,
           map: map
@@ -46,16 +43,19 @@
 
         // Wire events
         on(map, "load", function() {
-          on(geocoder, "select", geocodeSelect);
-          on(geocoder, "findResults", geocodeResults);
-          on(map.graphics,"click", geocodeSelect);
+          geocoder.on("select", geocodeSelect);
+          geocoder.on("findResults", geocodeResults);
+          geocoder.on("clear", clearFindGraphics);
           // Wire UI events
           on(dom.byId("btnGeosearch"),"click", geosearch);
           on(dom.byId("btnClear"),"click", clearFindGraphics);
         });
          
         function geosearch() {
-          geocoder.find();
+          var def = geocoder.find();
+          def.then(function(res){
+           geocodeResults(res);
+          });
         }
         
         function geocodeResults(places) {
@@ -77,17 +77,13 @@
         }
           
         var sym = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24);
-        var selSym = utils.createPictureSymbol("../../images/red-pin.png", 0, 0, 24);
-        var lastSel;
 
         function geocodeSelect(item) {
           // Create and add a selected graphic with pop-up
-          item = (item.graphic ? item.graphic : item.feature);
-          if (lastSel) {
-            lastSel.setSymbol(sym);
-          }
-          item.setSymbol(selSym);
-          lastSel = item;
+          var g = (item.graphic ? item.graphic : item.result.feature);
+          g.setSymbol(sym);
+          //clearFindGraphics();
+          addPlaceGraphic(item.result,g.symbol);
         }
 
         function addPlaceGraphic(item,symbol)  {
