@@ -5,11 +5,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Directions</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
 
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.7compact"></script>
+  <script src="http://js.arcgis.com/3.8compact"></script>
   <script>
     require(["esri/map", 
       "esri/tasks/locator", 
@@ -41,6 +41,8 @@
             center: [-117, 34],
             zoom: 5
         });
+
+        utils.setPopup(map, "top", -1, 34);
         utils.autoRecenter(map);
 
         // Create oAuthHelper 
@@ -160,9 +162,9 @@
         function addPtGraphic(type,place) {
           var symbol;
           if (type == "Start")
-              symbol = utils.createPictureSymbol("../../images/green-pin.png", 0, 10, 24);
+              symbol = utils.createPictureSymbol("../../images/GreenCircle36.png", 6, 15, 27); 
           else
-              symbol = utils.createPictureSymbol("../../images/red-pin.png", 0, 10, 24);
+              symbol = utils.createPictureSymbol("../../images/RedCircle36.png", 6, 15, 27); 
           // Add graphic to map 
           var attributes = { address:place.address, score:place.score, lat:place.location.y.toFixed(2), lon:place.location.x.toFixed(2) };   
           var infoTemplate = new InfoTemplate(type,"${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='zoomToPlace(" + place.location.x.toFixed(2) + "," + place.location.y.toFixed(2) + ",15)';>Zoom To</span>");

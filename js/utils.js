@@ -1,9 +1,9 @@
-define(["esri/map","esri/symbols/PictureMarkerSymbol","dojo/on"], 
-	function(Map,PictureMarkerSymbol, on) {
+define(["esri/map","esri/symbols/PictureMarkerSymbol","esri/dijit/Popup", "dojo/dom-construct", "dojo/on", "dojo/dom"], 
+	function(Map, PictureMarkerSymbol, Popup, domConstruct, on, dom) {
       "use strict"
       var resizeDelay = 200;
       return {
-			 autoRecenter:function(map) {
+			autoRecenter:function(map) {
 	      on(map, 'load', function (map) {
 	        on(window, 'resize', map, map.resize);
 	      });
@@ -13,6 +13,13 @@ define(["esri/map","esri/symbols/PictureMarkerSymbol","dojo/on"],
 	          map.centerAt(map.__resizeCenter);
 	        }, resizeDelay);
 	      });
+	    },
+	    setPopup:function(map,anchorPos,xOffset,yOffset) {
+        var popup = new Popup({anchor:anchorPos, offsetX:xOffset, offsetY:yOffset}, dojo.create("div"));
+        popup.startupDijits();
+        map.infoWindow = popup;
+				//map.infoWindow.set("highlight", false);
+				popup.domNode.style.marginLeft = xOffset+"px";
 	    },
 			createPictureSymbol:function(url, xOffset, yOffset, size) {
 	      return new PictureMarkerSymbol(
