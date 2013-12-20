@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Find Places</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.7compact"></script>
+  <script src="http://js.arcgis.com/3.8compact"></script>
   <script>
     require(["esri/map", 
       "esri/tasks/locator", 
@@ -21,14 +21,18 @@
       "dojo/domReady!"], 
       function(Map, Geocoder, InfoTemplate, Graphic, Multipoint, utils, on, dom) {  
         "use strict"      
-               
+
         // Create map
         var map = new Map("mapDiv", {
-          basemap: "gray",
+          basemap: "streets",
           center: [-122.69, 45.52], //long, lat
           zoom: 3
         });
+
         utils.autoRecenter(map);
+        utils.setPopup(map, "top", -1, 34);
+
+        var sym = utils.createPictureSymbol("../../images/BlueCircle36.png", 6, 15, 27); 
 
         // Create geoservice
         var geocodeService = new Geocoder("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
@@ -86,8 +90,6 @@
           alert("Sorry, place or address not found!");
         }
 
-        var sym = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24);
-
         // Listen for enter key
         function placeInput_onKeyPress(e) {
           if (e.keyCode == 13 || e.keyCode == "13") {
@@ -100,7 +102,7 @@
           for (var i = 0; i < places.length; i++) {
               multiPoint.addPoint(places[i].location);
           }
-          map.setExtent(multiPoint.getExtent().expand(2.0));
+          map.setExtent(multiPoint.getExtent().expand(1.2));
         }
 
         function clearFindGraphics() {

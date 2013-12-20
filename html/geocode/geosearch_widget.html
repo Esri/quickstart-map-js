@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Find Places Widget</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css"> 
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"> 
   <link rel="stylesheet" href="../../css/examples.css"> 
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.7compact"></script>
+  <script src="http://js.arcgis.com/3.8compact"></script>
   <script>
     require(["esri/map", 
       "esri/dijit/Geocoder", 
@@ -28,7 +28,11 @@
           center: [-122.69, 45.52], //long, lat
           zoom: 13
         });
+
+        utils.setPopup(map, "top", -1, 34);
         utils.autoRecenter(map);
+
+        var sym = utils.createPictureSymbol("../../images/BlueCircle36.png", 6, 15, 27);
 
         // Create widget
         var geocoder = new Geocoder({
@@ -75,8 +79,6 @@
             alert("Sorry, address or place not found.");
           }
         }
-          
-        var sym = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24);
 
         function geocodeSelect(item) {
           // Create and add a selected graphic with pop-up
