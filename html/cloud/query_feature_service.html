@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Cloud</title> 
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.7compact"></script>
+  <script src="http://js.arcgis.com/3.8compact"></script>
   <script> 
     define("app",["../../js/utils.js", 
       "esri/layers/graphics",
@@ -42,9 +42,9 @@
                 infoTemplate: infoTemplate
             });
             // Setup symbols for layer
-            var symbol = utils.createPictureSymbol("../../images/blue-dot-small.png", 0, 1, 12);
+            var symbol = utils.createPictureSymbol("../../images/blue-dot-small.png", 0, 6, 12, 12);
             featureLayer.renderer = new SimpleRenderer(symbol);
-            var selectSymbol = utils.createPictureSymbol("../../images/red-dot-small.png", 0, 1, 12);
+            var selectSymbol = utils.createPictureSymbol("../../images/red-dot-small.png", 0, 6, 12, 12);
             featureLayer.setSelectionSymbol(selectSymbol);
             // Add cloud layer
             m.map.addLayer(featureLayer); 

@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Geolocation</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">   
   <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.7compact"></script>
+  <script src="http://js.arcgis.com/3.8compact"></script>
   <script>
     require(["esri/map", 
       "esri/InfoTemplate", 
@@ -27,7 +27,11 @@
           center: [-100, 53],
           zoom: 3
         });
+
+        utils.setPopup(map, "top", -1, 26);
         utils.autoRecenter(map);
+
+        var symbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 12, 13, 24); 
 
         // Wire events
         on(dom.byId("btnGeolocation"),"click",showGeolocation);
@@ -46,7 +50,6 @@
           // Create a point
           var pt = new Point(position.coords.longitude,position.coords.latitude);
           // Create a symbol and pop-up template and add the graphic to the map
-          var symbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24); 
           var attributes = {"lat":pt.y.toFixed(2),"lon":pt.x.toFixed(2)};
           var infoTemplate = new InfoTemplate("My Location","Latitude: ${lat} <br/>Longitude: ${lon}");
           var graphic = new Graphic(pt,symbol,attributes,infoTemplate);

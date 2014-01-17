@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Multiple Routing</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript-->
   <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/"></script>
@@ -43,6 +43,8 @@
             zoom: 15
           });
 
+          utils.autoRecenter(map);
+
           // Create route task
           routeTask = new RouteTask("http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route");
           routeParams = new RouteParameters();
@@ -60,8 +62,8 @@
           on(dom.byId("btnClearRoutes"), "click", clearAll);
 
           // Create symbols
-          stopSymbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 0, 24); 
-          barrierSymbol = utils.createPictureSymbol("../../images/red-dot-small.png", 0, 0, 16);  
+          stopSymbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 12, 13, 24); 
+          barrierSymbol = utils.createPictureSymbol("../../images/red-dot-small.png", 0, 0, 16, 16);  
           routeSymbols = {
             "Route 1": new SimpleLineSymbol().setColor(new Color([0,0,255,0.5])).setWidth(5),
             "Route 2": new SimpleLineSymbol().setColor(new Color([0,255,0,0.5])).setWidth(5),
