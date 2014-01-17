@@ -42,7 +42,7 @@
             zoom: 5
         });
 
-        utils.setPopup(map, "top", -1, 34);
+        utils.setPopup(map, "top", -1, 26);
         utils.autoRecenter(map);
 
         // Create oAuthHelper 
@@ -162,9 +162,9 @@
         function addPtGraphic(type,place) {
           var symbol;
           if (type == "Start")
-              symbol = utils.createPictureSymbol("../../images/GreenCircle36.png", 6, 15, 27); 
+              symbol = utils.createPictureSymbol("../../images/green-pin.png", 0, 6, 13, 24); 
           else
-              symbol = utils.createPictureSymbol("../../images/RedCircle36.png", 6, 15, 27); 
+              symbol = utils.createPictureSymbol("../../images/RedCircle36.png", 0, 6, 13, 24); 
           // Add graphic to map 
           var attributes = { address:place.address, score:place.score, lat:place.location.y.toFixed(2), lon:place.location.x.toFixed(2) };   
           var infoTemplate = new InfoTemplate(type,"${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='zoomToPlace(" + place.location.x.toFixed(2) + "," + place.location.y.toFixed(2) + ",15)';>Zoom To</span>");

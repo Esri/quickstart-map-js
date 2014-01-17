@@ -43,7 +43,7 @@
           // Create a point
           var pt = new Point(position.coords.longitude,position.coords.latitude);
           // Create a symbol and pop-up template and add the graphic to the map
-          var symbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 10, 24); //0, 10, 24
+          var symbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 12, 13, 24); //0, 10, 24
           var attributes = {"lat":pt.y.toFixed(2),"lon":pt.x.toFixed(2)};
           var infoTemplate = new InfoTemplate("My Geolocation","Latitude: ${lat} <br/>Longitude: ${lon}");
           var graphic = new Graphic(pt,symbol,attributes,infoTemplate);
