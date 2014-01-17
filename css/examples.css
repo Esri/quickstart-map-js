@@ -209,11 +209,16 @@ a:hover {
 }
 
 /*** Esri Pop-up ***/
+.esriPopup {
+  /*margin-left: 10px;*/
+}
+
 .esriPopup, .esriPopup .contentPane {
 	font-size: 10px;
 	line-height: 12px;
-	/*padding: 6px;*/  /*offsets pointer!*/
+	/*padding: 12px;*/  /*offsets pointer!*/  
 }
+
 
 .esriPopup .sizer {
 	width: 200px;

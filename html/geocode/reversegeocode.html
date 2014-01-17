@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" >
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Find Address</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css" />
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css" />
   <link rel="stylesheet" href="../../css/examples.css" />
   <!-- Load the library references for ArcGIS API for JavaScript -->    
-  <script src="http://js.arcgis.com/3.7compact"></script>
+  <script src="http://js.arcgis.com/3.8compact"></script>
   <script>
     require(["esri/map", 
       "esri/tasks/locator", 
@@ -28,7 +28,11 @@
           center: [-79.40, 43.65],
           zoom: 13,
         });
+
+        utils.setPopup(map, "top", -1, 26);
         utils.autoRecenter(map);
+
+        var symbol = utils.createPictureSymbol("../../images/green-pin.png", 0, 12, 13, 24); 
 
         // Wire events
         on(map, "click", onClickReverseGeocode);
@@ -51,7 +55,6 @@
           if (place) {
             //clearFindGraphics();
             // Objects for the graphic
-            var symbol = utils.createPictureSymbol("../../images/orange-pin.png", 0, 10, 24);
             var place,attributes,infoTemplate,pt,graphic;
             // Create and add graphics with pop-ups
             pt = place.location;
@@ -64,7 +67,7 @@
             map.infoWindow.setTitle("Reverse Geocode Result");
             map.infoWindow.setContent(graphic.getContent());
             map.infoWindow.show(pt);
-            zoomToPlace(pt.x,pt.y, 16);
+            //zoomToPlace(pt.x,pt.y, 16);
           } else {
             alert("Sorry, address or place not found.");
           }

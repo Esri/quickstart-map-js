@@ -5,10 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Drive Times</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
   <link rel="stylesheet" href="../../css/examples.css">
   <!-- Load the library references for ArcGIS API for JavaScript-->
-  <script src="http://js.arcgis.com/3.7compact"></script>
+  <script src="http://js.arcgis.com/3.8compact"></script>
   <script>
     require(["esri/map",
       "esri/tasks/Geoprocessor", 
@@ -31,6 +31,10 @@
           center: [-122.31, 47.67],
           zoom: 12,
         });
+
+        utils.autoRecenter(map);
+
+        var pointSymbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 12, 13, 24); 
 
         //Here is the spatial analysis service that creates the drive time polygons. 
         gp = new Geoprocessor("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Network/ESRI_DriveTime_US/GPServer/CreateDriveTimePolygons");
@@ -56,7 +60,6 @@
           map.graphics.clear();
 
           // Add point to the map based on click event which returns the evt point
-          var pointSymbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 10, 24);
           pointGraphic = new Graphic(ptServiceArea, pointSymbol);
           map.graphics.add(pointGraphic);
 
