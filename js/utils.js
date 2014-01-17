@@ -18,17 +18,17 @@ define(["esri/map","esri/symbols/PictureMarkerSymbol","esri/dijit/Popup", "dojo/
         var popup = new Popup({anchor:anchorPos, offsetX:xOffset, offsetY:yOffset}, dojo.create("div"));
         popup.startupDijits();
         map.infoWindow = popup;
-				//map.infoWindow.set("highlight", false);
+				map.infoWindow.set("highlight", false);
 				popup.domNode.style.marginLeft = xOffset+"px";
 	    },
-			createPictureSymbol:function(url, xOffset, yOffset, size) {
+			createPictureSymbol:function(url, xOffset, yOffset, xWidth, yHeight) {
 	      return new PictureMarkerSymbol(
 	      {
 	          "angle": 0,
 	          "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
 	          "url": url,  
 	          "contentType": "image/png",
-	          "width":size, "height": size
+	          "width":xWidth, "height": yHeight
 	      });
 	    },
       setSelected:function (button) {

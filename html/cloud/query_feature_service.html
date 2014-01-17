@@ -42,9 +42,9 @@
                 infoTemplate: infoTemplate
             });
             // Setup symbols for layer
-            var symbol = utils.createPictureSymbol("../../images/blue-dot-small.png", 0, 1, 12);
+            var symbol = utils.createPictureSymbol("../../images/blue-dot-small.png", 0, 6, 12, 12);
             featureLayer.renderer = new SimpleRenderer(symbol);
-            var selectSymbol = utils.createPictureSymbol("../../images/red-dot-small.png", 0, 1, 12);
+            var selectSymbol = utils.createPictureSymbol("../../images/red-dot-small.png", 0, 6, 12, 12);
             featureLayer.setSelectionSymbol(selectSymbol);
             // Add cloud layer
             m.map.addLayer(featureLayer); 

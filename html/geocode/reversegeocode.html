@@ -29,10 +29,10 @@
           zoom: 13,
         });
 
-        utils.setPopup(map, "top", -1, 34);
+        utils.setPopup(map, "top", -1, 26);
         utils.autoRecenter(map);
 
-        var symbol = utils.createPictureSymbol("../../images/GreenCircle36.png", 6, 15, 27); 
+        var symbol = utils.createPictureSymbol("../../images/green-pin.png", 0, 12, 13, 24); 
 
         // Wire events
         on(map, "click", onClickReverseGeocode);
@@ -67,7 +67,7 @@
             map.infoWindow.setTitle("Reverse Geocode Result");
             map.infoWindow.setContent(graphic.getContent());
             map.infoWindow.show(pt);
-            zoomToPlace(pt.x,pt.y, 16);
+            //zoomToPlace(pt.x,pt.y, 16);
           } else {
             alert("Sorry, address or place not found.");
           }
