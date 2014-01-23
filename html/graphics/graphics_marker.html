@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Align Marker Symbol</title>
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+  <link rel="stylesheet" href="../../css/examples.css">
+  <!-- Load the library references for ArcGIS API for JavaScript -->
+  <style type="text/css">
+    .inputW {
+      width: 34px;
+    }
+  </style>
+  <script src="http://js.arcgis.com/3.8compact"></script>
+  <script>
+    var map;
+    require(["esri/map", 
+      "esri/tasks/locator", 
+      "esri/InfoTemplate", 
+      "esri/graphic", 
+      "esri/geometry/Multipoint", 
+      "esri/symbols/SimpleMarkerSymbol", 
+      "esri/symbols/SimpleLineSymbol",
+      "dojo/_base/Color",
+      "../../js/utils.js", 
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/_base/lang",
+      "dojo/domReady!"], 
+      function(Map, Geocoder, InfoTemplate, Graphic, Multipoint, SimpleMarkerSymbol, SimpleLineSymbol, Color, utils, on, dom, lang) {  
+        "use strict"      
+
+        // Create map
+        map = new Map("mapDiv", {
+          basemap: "gray",
+          center: [-122.69, 45.52], //long, lat
+          zoom: 3
+        });
+
+        utils.autoRecenter(map);
+        utils.setPopup(map, "top", 0, 30);
+
+        var symMarker;
+
+        var symSimple = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CROSS, 40,
+                  new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                      new Color([0, 0, 0]), 1));
+
+        // Wire events
+        map.on("click", addGraphics);
+        map.on("load", function() {
+          var evt = {};
+          evt.mapPoint = map.extent.getCenter();
+          addGraphics(evt);
+        });
+        //on(document,"keyup", lang.hitch(this,update));
+        on(document,"keyup", update);
+
+        function update(e) {
+          if (e.keyCode > 47 && e.keyCode < 58) {
+            var evt = {};
+            evt.mapPoint = map.graphics.graphics[0].geometry;
+            addGraphics(evt);
+          }
+        }
+
+        function addGraphics(evt) {
+            map.graphics.clear();
+
+            var pt = evt.mapPoint;
+            // Create marker symbol
+            //sym = utils.createPictureSymbol("../../images/Test_Pins_H60.png", 0, 0, 30, 17); 
+            symMarker = utils.createPictureSymbol(dom.byId("pinUrl").value, 
+              dom.byId("symXOffset").value, dom.byId("symYOffset").value, dom.byId("symWidth").value, dom.byId("symHeight").value);
+            var infoTemplate = new InfoTemplate("Symbol",evt.mapPoint.x + " " + evt.mapPoint.y);
+            var pictureGraphic = new Graphic(pt, symMarker, null, infoTemplate);
+            map.graphics.add(pictureGraphic);
+
+            // Setup popup
+            //utils.setPopup(map, "top", dom.byId("popXoffset").value, dom.byId("popYoffset").value);
+            if (map.infoWindow.isShowing) {
+              map.infoWindow.show(pt);
+            }
+
+            var graphic = new Graphic(pt, symSimple);
+            map.graphics.add(graphic);
+        }
+      }
+    );
+  </script>
+</head>
+<body>
+  <div class="panel">
+    <div class="titlearea"><span id="titleMessage" class="title-message">Align Marker Symbol</span></div>
+    <div class="controls">
+      <div class="buttons"> 
+        <input id="pinUrl" class="" type="text" value="../../images/blue-pin.png" placeholder="../../images/blue-pin.png"/>
+        <!--label>popupX:</label><input id="popXoffset" class="inputW" type="text" value="0" placeholder="0"/>
+        <label>popupY:</label><input id="popYoffset" class="inputW" type="text" value="30" placeholder="30"/-->
+        <label>width:</label><input id="symWidth" class="inputW" type="text" value="19" placeholder="10"/>
+        <label>xOffset:</label><input id="symXOffset" class="inputW" type="text" value="0" placeholder="0"/><br>
+        <label>height:</label><input id="symHeight" class="inputW" type="text" value="36" placeholder="36"/>
+        <label>yOffset:</label><input id="symYOffset" class="inputW" type="text" value="18" placeholder="18"/>
+      </div>
+    </div>
+  </div>
+  <div id="mapDiv"></div>  
+</body>
+</html>
