@@ -164,7 +164,7 @@
           if (type == "Start")
               symbol = utils.createPictureSymbol("../../images/green-pin.png", 0, 6, 13, 24); 
           else
-              symbol = utils.createPictureSymbol("../../images/red-pine.png", 0, 6, 13, 24); 
+              symbol = utils.createPictureSymbol("../../images/red-pin.png", 0, 6, 13, 24); 
           // Add graphic to map 
           var attributes = { address:place.address, score:place.score, lat:place.location.y.toFixed(2), lon:place.location.x.toFixed(2) };   
           var infoTemplate = new InfoTemplate(type,"${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='zoomToPlace(" + place.location.x.toFixed(2) + "," + place.location.y.toFixed(2) + ",15)';>Zoom To</span>");
