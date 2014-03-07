@@ -35,7 +35,7 @@ A set of simple samples that show you how to accomplish different mapping and GI
 
 ## Issues
 
-Find a bug or want to request a new feature?  Please let us know by submitting an issue.
+Find a bug or want to request a new feature?  Please let us know by submitting an issue.  Thank you!
 
 ## Contributing
 
