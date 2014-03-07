@@ -49,7 +49,7 @@ html, body {
 }
 
 .titlearea {
-  background-color: rgba(0, 112, 255, 0.17);
+  background-color: rgba(225, 225, 225, 1);
 }
 
 .message {
@@ -57,7 +57,7 @@ html, body {
 }
 
 .title-message,.user-message {
-	vertical-align: middle;  
+	vertical-align: middle;
 	color: #333;
 }
 
@@ -133,7 +133,7 @@ html, body {
 .info-item {
     margin-left: 2px;
     padding: 3px 3px;
-    cursor:pointer;    
+    cursor:pointer;
 }
 
 a {
@@ -216,7 +216,7 @@ a:hover {
 .esriPopup, .esriPopup .contentPane {
 	font-size: 10px;
 	line-height: 12px;
-	/*padding: 12px;*/  /*offsets pointer!*/  
+	/*padding: 12px;*/  /*offsets pointer!*/
 }
 
 
@@ -253,7 +253,7 @@ a:hover {
 	color: #000;
 	background-color: #fff;
 	font-size: 10px;*/
-	
+
 }
 
 .esriBasemapGallerySelectedNode .esriBasemapGalleryThumbnail {
@@ -333,7 +333,7 @@ a:hover {
 	width: 32px;
 	height: 32px;
     z-index: 100;
-	background: url("../images/progress.gif") no-repeat; 
+	background: url("../images/progress.gif") no-repeat;
 }
 
 /*** misc ***/
@@ -444,7 +444,7 @@ input[type="color"],
      -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
        -o-transition: border linear 0.2s, box-shadow linear 0.2s;
           transition: border linear 0.2s, box-shadow linear 0.2s;
-		  
+
 	padding: 1px 4px; //
 }
 
