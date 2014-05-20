@@ -5,20 +5,31 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Geolocation</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">   
-  <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     require(["esri/map", 
       "esri/InfoTemplate", 
       "esri/geometry/Point", 
       "esri/graphic", 
-      "../../js/utils.js", 
+      "esri/symbols/PictureMarkerSymbol", 
       "dojo/on", 
       "dojo/dom", 
       "dojo/domReady!"], 
-      function(Map, InfoTemplate, Point, Graphic, utils, on, dom) {
+      function(Map, InfoTemplate, Point, Graphic, PictureMarkerSymbol, on, dom) {
         "use strict"
 
         // Create map
@@ -28,11 +39,15 @@
           zoom: 3
         });
 
-        utils.setPopup(map, "top", -1, 26);
-        utils.autoRecenter(map);
-
-        var symbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 12, 13, 24); 
-
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+        popup.domNode.style.marginTop = "-20px";
+        
+        // Get symbol
+        var symbol = new createPictureSymbol("//esri.github.io/quickstart-map-js/images/blue-pin.png", 0, 12, 13, 24);
+        
         // Wire events
         on(dom.byId("btnGeolocation"),"click",showGeolocation);
         on(dom.byId("btnClear"), "click", clearGeolocationGraphics);
@@ -51,7 +66,7 @@
           var pt = new Point(position.coords.longitude,position.coords.latitude);
           // Create a symbol and pop-up template and add the graphic to the map
           var attributes = {"lat":pt.y.toFixed(2),"lon":pt.x.toFixed(2)};
-          var infoTemplate = new InfoTemplate("My Location","Latitude: ${lat} <br/>Longitude: ${lon}");
+          var infoTemplate = new InfoTemplate("Your Location","Latitude: ${lat} <br/>Longitude: ${lon}");
           var graphic = new Graphic(pt,symbol,attributes,infoTemplate);
           map.graphics.add(graphic);
           // Position the map
@@ -73,21 +88,30 @@
           map.infoWindow.hide();
           map.graphics.clear();       
         }
-      }
-    );
+
+        function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
+          return new PictureMarkerSymbol(
+          {
+            "angle": 0,
+            "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+            "url": url,  
+            "contentType": "image/png",
+            "width":xWidth, "height": yHeight
+          });
+        }
+    });
   </script>
 </head>
 <body>
-  <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Display your Geolocation</span></div>
-      <div class="controls">
-         <div class="buttons"> 
-          <button id="btnGeolocation" class="btn btn-primary">Go</button>
-          <button id="btnClear" class="btn">Clear</button>
-        </div>
-      </div>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">HTML5 Geolocation</h3>
+    </div>
+    <div class="panel-body">
+      <button id="btnGeolocation" class="btn btn-success">Go</button>
+      <button id="btnClear" class="btn btn-default">Clear</button>
+    </div>
   </div>
   <div id="mapDiv"></div>
-  <div id="progress" class="progress hidden"></div>
 </body>
 </html>

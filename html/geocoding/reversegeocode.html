@@ -5,21 +5,32 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" >
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Find Address</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css" />
-  <link rel="stylesheet" href="../../css/examples.css" />
-  <!-- Load the library references for ArcGIS API for JavaScript -->    
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     require(["esri/map", 
       "esri/tasks/locator", 
       "esri/InfoTemplate", 
       "esri/graphic", 
+      "esri/symbols/PictureMarkerSymbol",
       "esri/geometry/Multipoint", 
-      "../../js/utils.js", 
       "dojo/on", 
       "dojo/dom", 
       "dojo/domReady!"], 
-      function(Map, Geocoder, InfoTemplate, Graphic, Multipoint, utils, on, dom) {  
+      function(Map, Geocoder, InfoTemplate, Graphic, PictureMarkerSymbol, Multipoint, on, dom) {  
         "use strict"             
 
         // Create map
@@ -29,10 +40,14 @@
           zoom: 13,
         });
 
-        utils.setPopup(map, "top", -1, 26);
-        utils.autoRecenter(map);
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+        popup.domNode.style.marginTop = "-20px";
 
-        var symbol = utils.createPictureSymbol("../../images/green-pin.png", 0, 12, 13, 24); 
+        // Get symbol
+        var symbol = new createPictureSymbol("//esri.github.io/quickstart-map-js/images/blue-pin.png", 0, 12, 13, 24);
 
         // Wire events
         on(map, "click", onClickReverseGeocode);
@@ -46,8 +61,7 @@
         // Reverse geocode when user clicks on the map
         function onClickReverseGeocode(evt) {
           geocodeService.locationToAddress(evt.mapPoint, 100);
-          utils.setStyle("progress", "progress visible");
-          }
+        }
         
         // Reverse geocode result
         function reverseGeocodeResults(place) {
@@ -59,19 +73,17 @@
             // Create and add graphics with pop-ups
             pt = place.location;
             place.address = standardizeAddress(place);
-            attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(2), lon:pt.x.toFixed(2) };   
-            infoTemplate = new InfoTemplate("Reverse Geocode Result","${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score:${score}");
+            attributes = { address:place.address, score:place.score, lat:pt.y.toFixed(5), lon:pt.x.toFixed(5) }; 
+            infoTemplate = new InfoTemplate("Reverse Geocode","${address}<br/>Lat/Lon: ${lat},${lon}<br/>Score: ${score}"+"<br/><a href='#' onclick='window.zoomToPlace(" + pt.x + "," + pt.y + ")'>Zoom</a>");
             graphic = new Graphic(pt,symbol,attributes,infoTemplate);
             map.graphics.add(graphic);  
             // Show pop-up
-            map.infoWindow.setTitle("Reverse Geocode Result");
+            map.infoWindow.setTitle("Reverse Geocode");
             map.infoWindow.setContent(graphic.getContent());
             map.infoWindow.show(pt);
-            //zoomToPlace(pt.x,pt.y, 16);
           } else {
             alert("Sorry, address or place not found.");
           }
-            utils.setStyle("progress", "progress hidden");
         }
         
         function standardizeAddress(place) {
@@ -100,33 +112,45 @@
         }
 
         function geocodeError(errorInfo) {
-          utils.setStyle("progress", "progress hidden");
           alert("Sorry, place or address not found!");
         }
 
-        function zoomToPlace(lon,lat,scale) {
-          map.centerAndZoom([lon,lat],scale);
+        window.zoomToPlace = function zoomToPlace(lon,lat) {
+          var level = map.getLevel();
+          level = level < 14 ? 14 : level + 1;
+          map.centerAndZoom([lon,lat],level);
         }
 
         function clearFindGraphics() {
           map.infoWindow.hide();
           map.graphics.clear();
         }
-      }
-    );
+
+        function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
+          return new PictureMarkerSymbol(
+          {
+            "angle": 0,
+            "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+            "url": url,  
+            "contentType": "image/png",
+            "width":xWidth, "height": yHeight
+          });
+        }
+    });
   </script>
 </head>
 <body>
-  <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Find an Address</span></div>
-    <div class="controls">
-      <div class="buttons"> 
-        <button id="btnClear" class="btn">Clear</button>
-      </div>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Find Address</h3>
     </div>
-    <div class="message"><span id="userMessage" class="user-message">Click the map to geocode locations.</span></div>
+    <div class="panel-body">
+      <p>
+        Click on the map to geocode a location.
+      </p>
+        <button id="btnClear" class="btn btn-default">Clear</button>   
+    </div>
   </div>
-  <div id="progress" class="progress hidden"></div>
   <div id="mapDiv"></div>  
 </body>
 </html>

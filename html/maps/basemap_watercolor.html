@@ -5,23 +5,32 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Watercolor Basemap</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">
-  <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     require(["esri/map",
       "esri/layers/WebTiledLayer",
-      "../../js/utils.js",
       "dojo/domReady!"],
-      function(Map, WebTiledLayer, utils) {
+      function(Map, WebTiledLayer) {
         // Create map
         var map = new Map("mapDiv",{
           //basemap: "gray",  // Do not specify default basemap
           center: [-122.69, 45.52],
           zoom: 3
         });
-        utils.autoRecenter(map);
 
         // Setup references for tile layer
         var url = "http://{subDomain}.tile.stamen.com/watercolor/{level}/{col}/{row}.jpg";
@@ -37,9 +46,13 @@
   </script>
 </head>
   <body>
-    <div class="panel">
-      <div class="titlearea"><span id="titleMessage" class="title-message">Watercolor Basemap</span></div>
-      <div class="message"><span id="userMessage" class="user-message">Stamen Watercolor tile set as a custom basemap.</span></div>
+    <div class="panel panel-primary panel-fixed">
+      <div class="panel-heading">
+        <h3 class="panel-title">Watercolor Basemap</h3>
+      </div>
+      <div class="panel-body">
+        <p>Stamen Watercolor tile set as a custom basemap.</p>
+      </div>
     </div>
     <div id="mapDiv"></div>
   </body>
