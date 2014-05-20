@@ -42,7 +42,6 @@
       display: inline-block;
       margin-left: -20px;
       max-height: 300px;
-      overflow-y: auto;
       font-size: 12px;
       line-height: 14px;
     }
@@ -257,9 +256,7 @@
            var lbl = dom.byId("infoTotals");
            lbl.innerHTML = formatDistance(directions.totalLength, "mile(s)") + " " + formatTime(directions.totalTime);
            
-           // utils.setStyle("infoPanel", "info-panel visible");
-           // utils.setStyle("mapDiv","map infoPosition");
-            query("#infoPanel").addClass("show");
+            query("#infoPanel").removeClass("hidden").addClass("show");
             query("#mapDiv").addClass("infoPosition");
 
            map.resize();
@@ -328,9 +325,7 @@
         }
 
         function clearDirectionGraphics() {
-            // utils.setStyle("infoPanel", "info-panel hidden");
-            // utils.setStyle("mapDiv","map");
-            query("#infoPanel").removeClass("show");
+            query("#infoPanel").removeClass("show").addClass("hidden");
             query("#mapDiv").removeClass("infoPosition");
 
             map.resize();
