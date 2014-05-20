@@ -4,11 +4,22 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  <title>Drive Times</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">
-  <!-- Load the library references for ArcGIS API for JavaScript-->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <title>Find Drive Times</title>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     require(["esri/map",
       "esri/tasks/Geoprocessor", 
@@ -16,11 +27,11 @@
       "esri/tasks/FeatureSet", 
       "esri/symbols/SimpleLineSymbol", 
       "esri/symbols/SimpleFillSymbol", 
-      "../../js/utils.js", 
+      "esri/symbols/PictureMarkerSymbol",
       "dojo/on", 
       "dojo/dom", 
       "dojo/domReady!"], 
-      function(Map, Geoprocessor, Graphic, FeatureSet, SimpleLineSymbol, SimpleFillSymbol, utils, on, dom) {
+      function(Map, Geoprocessor, Graphic, FeatureSet, SimpleLineSymbol, SimpleFillSymbol, PictureMarkerSymbol, on, dom) {
         "use strict"
         var gp, pointGraphic;
         var driveTimes = "1 2 3";
@@ -32,36 +43,22 @@
           zoom: 12,
         });
 
-        utils.autoRecenter(map);
-
-        var pointSymbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 12, 13, 24); 
-
         //Here is the spatial analysis service that creates the drive time polygons. 
         gp = new Geoprocessor("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Network/ESRI_DriveTime_US/GPServer/CreateDriveTimePolygons");
         gp.setOutputSpatialReference(map.spatialReference); //Set the coordinate system to match the map which is Web Mercator
+        
         //Listen for the click event on the map then call computeServiceArea function
-        on(map, "click", onClickComputeServiceArea);
+        on(map, "click", computeServiceArea);
+        
         // Wire UI events
         on(dom.byId("btnClear"), "click", clearGraphics);
 
         // Returns the map coordinates where the user clicked, it draws the point, and sets the two parameters for the service.   
-        function onClickComputeServiceArea(evt) {
-          computeServiceArea(evt.mapPoint);
-        }
-
         function computeServiceArea(evt) {
-          var ptServiceArea;
-          if (evt.type == "point") {
-            ptServiceArea = evt;
-          }
-          else {
-            ptServiceArea = map.extent.getCenter();
-          }
           map.graphics.clear();
-
-          // Add point to the map based on click event which returns the evt point
-          pointGraphic = new Graphic(ptServiceArea, pointSymbol);
-          map.graphics.add(pointGraphic);
+          
+          var ptServiceArea = evt.mapPoint;
+          var pointGraphic = new Graphic(ptServiceArea, null);
 
           //Here we use the FeautureSet class as an input for the graphic location which is then used as a parameter for variable param.
           var features = [];
@@ -74,7 +71,6 @@
 
           //The spatial analysis service is a synchronous so you only need to supply the input parameters and callback function to handle the results.
           gp.execute(params, getDriveTimePolys, errorHandler);
-          utils.setStyle("progress", "progress");
         }
 
         //Function for the results of the service are returned as an array. It loops through one FeatureSet returned by the service and add the features to the map. 
@@ -110,34 +106,29 @@
           //if (pointGraphic.getDojoShape()) // - TODO
           //  pointGraphic.getDojoShape().moveToTop();
               
-          map.graphics.remove(pointGraphic);
-          map.graphics.add(pointGraphic);
-          utils.setStyle("progress", "progress hidden");
         }
                 
         function errorHandler(error) {
-          utils.setStyle("progress", "progress hidden");
+          alert(error);
         }
         
         function clearGraphics() {
           map.graphics.clear();
-          utils.setStyle("progress", "progress hidden");
+          map.infoInwindow.hide();
         }
-      }
-    );
+    });
   </script>
 </head>
 <body>
-  <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Find Drive Times</span></div>
-    <div class="controls">
-      <div class="buttons"> 
-        <button id="btnClear" class="btn">Clear</button>
-      </div>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Get Drive Times</h3>
     </div>
-    <div class="message"><span id="userMessage" class="user-message">Click on the map to calculate 1,2 and 3 minute drive times.</span></div>
+    <div class="panel-body">
+      <p>Click on the map to create a drivetime polygon of 1, 2 and 3 minutes.</p>
+      <button id="btnClear" class="btn btn-default">Clear</button>
     </div>
+  </div>
   <div id="mapDiv"></div>
-  <div id="progress" class="progress hidden"></div>
 </body>
 </html>

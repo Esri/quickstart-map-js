@@ -4,15 +4,24 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  <title>Directions Widget</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">
-  <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <title>Directions Widget</title> <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     require(["esri/map", 
       "esri/dijit/Directions", 
-      "../../js/utils.js", 
       "dojo/domReady!"], 
       function(Map, Directions, utils) {         
        
@@ -22,13 +31,18 @@
           center:[-98.56,39.82],
           zoom: 4
         });
-        utils.autoRecenter(map);
 
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+      
         // Create Directions widget - NOTE: The routeTaskUrl service will be expiring at the end of 2013 and should be replaced 
         // with the world network service that requires an ArcGIS account to access
         var directions = new Directions({
           map: map,
-          routeTaskUrl: "http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route"
+          routeTaskUrl: "http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route",
+          geocoderOptions: {autoComplete:true, autoNavigate:false}
+
         },"dir");
         directions.startup();
       }
@@ -36,13 +50,14 @@
   </script>
 </head>
 <body>
-  <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Directions Widget</span></div>
-    <div class="controls">
+ <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Directions Widget</h3>
+    </div>
+    <div class="panel-body">
       <div id="dir"></div>
     </div>
   </div>
   <div id="mapDiv"></div>
-  <div id="progress" class="progress hidden"></div>
 </body>
 </html>

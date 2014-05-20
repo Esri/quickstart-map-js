@@ -1,0 +1,128 @@
+<!DOCTYPE html> 
+<html>  
+<head> 
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Load Feature Service</title>  
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
+  <script> 
+    require(["esri/map",
+      "esri/layers/graphics", 
+      "esri/layers/FeatureLayer", 
+      "esri/InfoTemplate", 
+      "esri/graphicsUtils",
+      "dojo/keys",
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/domReady!"], 
+      function(Map, Graphics, FeatureLayer, InfoTemplate, graphicsUtils, keys, on, dom) {
+        "use strict"
+        
+        // Create map
+        var map = new Map("mapDiv", { 
+          basemap: "gray",
+          center: [-28,40],
+          zoom: 3
+        }); 
+
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+        popup.domNode.style.marginTop = "-5px";
+        
+        // Wire map events
+        map.on("layer-add-result", layerAdded);
+
+        // Wire UI events
+        on(dom.byId("btnAdd"), "click", addFeatureService);        
+        on(dom.byId("btnRemove"), "click", removeFeatureService);      
+        on(dom.byId("inputUrl"), "keydown", function(event) {
+          if (event.keyCode == keys.ENTER) {
+            addFeatureService();
+          }
+        });
+
+        var featureLayer;
+
+        // Create a feature layer to get feature service
+        function addFeatureService() {
+          removeFeatureService();
+          var infoTemplate = new InfoTemplate("Feature Data", "${*}");
+          var url = dom.byId("inputUrl").value.trim();    
+          featureLayer = new FeatureLayer(url, {
+            mode: FeatureLayer.MODE_ONDEMAND,
+            outFields: ["*"],
+            infoTemplate: infoTemplate
+          });
+          map.addLayer(featureLayer);
+          
+        }
+        // Remove existing service
+        function removeFeatureService() {
+          if (featureLayer) {  
+            map.removeLayer(featureLayer);
+            map.infoWindow.hide();
+          }
+        }
+        // Listen for enter key
+        function addService_onKeyPress(e) {
+          if (e.keyCode == 13 || e.keyCode == "13") {
+            addFeatureService();
+          }
+        }
+        // Zoom to layer and update url
+        function layerAdded(layer) {
+          if (typeof layer.error !== 'undefined') {
+            alert("Feature service could not be loaded. Check URL.");
+          } else {
+            if (featureLayer){
+              var layerUpdated = featureLayer.on("update-end", function(result) {
+                // Zoom to all of the features   
+                var extent = graphicsUtils.graphicsExtent(result.target.graphics);   
+                map.setExtent(extent);
+                // Only do this once
+                layerUpdated.remove();
+                dom.byId("inputUrl").value = result.target.url;    
+              });
+            }
+          }
+        }
+    });
+  </script>
+</head>
+<body>
+   <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Load Feature Service</h3>
+    </div>
+    <div class="panel-body">
+      <p>ArcGIS REST endpoint:</p>
+      <div class="form-group">
+        <textarea id="inputUrl" class="form-control" rows="3" 
+          placeholder="http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0"  
+          value="http://services3.arcgis.com/7LJujXVDAGlq47mO/arcgis/rest/services/Portland_Coffee_Shops/FeatureServer/0">http://services3.arcgis.com/7LJujXVDAGlq47mO/arcgis/rest/services/Portland_Coffee_Shops/FeatureServer/0
+        </textarea>
+      </div>
+      <button id="btnAdd" class="btn btn-success">Add</button>
+      <button id="btnRemove" class="btn btn-default">Remove</button>
+    </div>
+  </div>
+  <div id="mapDiv"></div>
+</body>
+</html>

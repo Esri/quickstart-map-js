@@ -5,10 +5,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">   
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Basemap Tour</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <!-- Load my JavaScript and CSS -->
-  <link rel="stylesheet" type="text/css" href="../../css/examples.css">
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     define("model",[],function () {
       var mapLocations = init();
@@ -55,7 +66,6 @@
             this.map = mapRef;
             this.mapLocations = model.mapLocations;
 
-
             function findBasemapType(btn) {
               var length = m.basemaps.length;
               for (var i=0; i < length; i++) {
@@ -86,15 +96,15 @@
           },
 
           setSelected:function(button) {
-            var elements = document.getElementsByClassName('btn btn-primary');
+            var elements = document.getElementsByClassName('btn btn-default');
             for (var i = 0; i < elements.length; i++) {
-                elements[i].className = "btn btn-primary";
+                elements[i].className = "btn btn-default";
             }
-            var element = document.getElementsByClassName('btn btn-primary active');
+            var element = document.getElementsByClassName('btn btn-default active');
             if (element)
-              element.className = "btn btn-primary";
+              element.className = "btn btn-default";
             if (button)
-              button.className = "btn btn-primary active";
+              button.className = "btn btn-default active";
           },
 
           setButtonColorsByType:function(type) {
@@ -155,7 +165,7 @@
     );
 
     // Load map and app
-    require(["esri/map", "app", "../../js/utils.js", "dojo/domReady!"], 
+    require(["esri/map", "app", "dojo/domReady!"], 
       function(Map, app, utils) {  
         "use-strict"
         var map = new Map("mapDiv",{ 
@@ -163,29 +173,38 @@
           center: [-100, 50],
           zoom: 3
         });
-        utils.autoRecenter(map);        
         app.init(map);
-      }
-    ); 
+    }); 
   </script>
 </head>
   <body>
-    <div class="panel">
-      <div class="titlearea"><span id="titleMessage" class="title-message">Basemap World Tour</span></div>
-      <div class="controls"> 
-        <div class="buttons">
-          <button id="basemap0" class="btn btn-primary">Gray</button>
-          <button id="basemap1" class="btn btn-primary">Streets</button>
-          <button id="basemap2" class="btn btn-primary">Satellite</button>
-          <button id="basemap3" class="btn btn-primary">Topo</button>
-          <button id="basemap4" class="btn btn-primary">Nat Geo</button>
-          <button id="basemap5" class="btn btn-primary">Oceans</button>
+    <div class="panel panel-primary panel-fixed">
+      <div class="panel-heading">
+        <h3 class="panel-title">Basemaps World Tour</h3>
+      </div>
+      <div class="panel-body">
+        <div class="btn-toolbar">
+          <div class="btn-group">
+            <button id="basemap0" class="btn btn-default">Gray</button>
+            <button id="basemap1" class="btn btn-default">Streets</button>
+            <button id="basemap2" class="btn btn-default">Satellite</button>
+          </div>
+        </div>
+        <div class="form-group btn-toolbar">
+          <div class="btn-group">
+            <button id="basemap3" class="btn btn-default">Topo</button>
+            <button id="basemap4" class="btn btn-default">Nat Geo</button>
+            <button id="basemap5" class="btn btn-default">Oceans</button>
+          </div>
+        </div>
+        <div class="form-inline form-group">
+         <button id="back" class="btn btn-sm"><span class="glyphicon glyphicon-chevron-left"></span></button>
+          <div class="checkbox">
+            <label><input type="checkbox" id="tour"> Start Tour</label>
+          </div>  
+         <button id="forward" class="btn btn-sm"><span class="glyphicon glyphicon-chevron-right"></span></button>  
         </div>
       </div>
-      <div class="controls">
-        <button id="back" class="btn move-left">&lt;</button><label><input type="checkbox" id="tour">Start Tour</label><button id="forward" class="btn move-right">&gt;</button>  
-      </div>
-      <div class="message"><span id="userMessage" class="user-message"></span></div>
     </div>
     <div id="mapDiv"></div>
   </body>

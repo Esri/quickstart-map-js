@@ -1,0 +1,153 @@
+<!DOCTYPE html> 
+<html>  
+<head> 
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Query Feature Service</title> 
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
+  <script>     
+    require(["esri/map", 
+      "esri/layers/graphics",
+      "esri/symbols/PictureMarkerSymbol",
+      "esri/layers/FeatureLayer",
+      "esri/symbols/SimpleMarkerSymbol", 
+      "esri/renderers/SimpleRenderer", 
+      "esri/InfoTemplate", 
+      "esri/tasks/query", 
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/domReady!"], 
+      function(Map, Graphics, PictureMarkerSymbol, FeatureLayer, SimpleMarkerSymbol, SimpleRenderer, InfoTemplate, Query, on, dom) {
+        "use strict"
+
+        // Create map
+        var map = new Map("mapDiv", { 
+                basemap: "gray",
+                center: [-28,40],
+                zoom: 3
+        });
+
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = true;
+        popup.titleInBody = false;
+        popup.domNode.style.marginTop = "-20px";
+           
+        // Wire UI events
+        on(dom.byId("btnClear"), "click", clearCloudGraphics);
+        on(dom.byId("btnAddCities"), "click", AddCities);
+        on(dom.byId("selCountry"), "change", searchBySQL);
+
+        var featureLayer; 
+ 
+        function AddCities() {
+          if (featureLayer){
+            return;   
+          }
+          // Create a feature layer
+          var infoTemplate = new InfoTemplate("Feature Data", "Name: ${NAME}</br>Country: ${COUNTRY}</br>Population: ${POPULATION}");
+          featureLayer = new FeatureLayer("http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0", {
+              mode: FeatureLayer.MODE_ONDEMAND,
+              outFields: ["*"],
+              opacity: .90,
+              infoTemplate: infoTemplate
+          });
+          // Setup symbols for layer
+          var symbol = createPictureSymbol("http://esri.github.io/quickstart-map-js/images/blue-pin.png", 0, 12, 13, 24);
+          featureLayer.renderer = new SimpleRenderer(symbol);
+          var selectSymbol = createPictureSymbol("http://esri.github.io/quickstart-map-js/images/red-pin.png", 0, 12, 13, 24);
+          featureLayer.setSelectionSymbol(selectSymbol);
+          // Add cloud layer
+          map.addLayer(featureLayer); 
+          // Connect to selection event 
+          on(featureLayer,"selection-complete", function (results) {
+            var features = results.features;
+            var extent;
+            for (var i = 0; i < features.length; i++) {
+              if (!extent)
+                  extent = features[i]._extent;
+              else
+                  extent.union(features[i]._extent);
+            }
+            if (extent) {
+              map.setExtent(extent); 
+            }   
+          });
+          var element = dom.byId('selCountry');
+          element.disabled = false;
+        }
+
+        // Select features by SQL query
+        function searchBySQL() {
+          if (!featureLayer) {
+            return;
+          }
+          map.infoWindow.hide();
+          // Select features in the layer
+          var element = dom.byId('selCountry');
+          var sql = element.options[element.selectedIndex].value;
+          var query = new Query();  // Select by sql
+          query.where = sql;
+          featureLayer.selectFeatures(query, FeatureLayer.SELECTION_NEW);
+        }
+
+        function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
+          return new PictureMarkerSymbol(
+          {
+            "angle": 0,
+            "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+            "url": url,  
+            "contentType": "image/png",
+            "width":xWidth, "height": yHeight
+          });
+        }
+
+        // Clear selected graphics
+        function clearCloudGraphics() {
+          map.infoWindow.hide();
+          if (featureLayer) {
+            map.removeLayer(featureLayer);
+          }
+          featureLayer = null;      
+        }
+    });  
+  </script>
+</head>
+<body>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Query Feature Service</h3>
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        <select class="form-control" id="selCountry" disabled>
+          <option selected value="1=0">Select by country</option>
+          <option value="COUNTRY = 'US'">COUNTRY = 'US'</option>
+          <option value="COUNTRY = 'Canada'">COUNTRY = 'Canada'</option>
+          <option value="COUNTRY = 'France'">COUNTRY = 'France'</option>
+          <option value="COUNTRY = 'Australia'">COUNTRY = 'Australia'</option>
+          <option value="COUNTRY = 'Brazil'">COUNTRY = 'Brazil'</option>
+        </select>
+      </div>
+      <button class="btn btn-success" id="btnAddCities">Add World Cities</button>
+      <button class="btn btn-default" id="btnClear">Clear</button>
+    </div>
+  </div>
+  <div id="mapDiv"></div>
+</body>
+</html>
