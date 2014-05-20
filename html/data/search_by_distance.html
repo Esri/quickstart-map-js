@@ -1,0 +1,134 @@
+<!DOCTYPE html> 
+<html>  
+<head> 
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Search By Distance</title>  
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js/images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
+  <script>
+  var map;
+  require([
+    "esri/map", "esri/tasks/QueryTask",
+    "esri/tasks/query", "esri/geometry/Circle",
+    "esri/graphic", "esri/symbols/SimpleMarkerSymbol",
+    "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol",
+    "esri/config", "esri/Color", "dojo/on", "dojo/dom", "dojo/domReady!"
+  ], function(
+      Map, QueryTask,
+      Query, Circle,
+      Graphic, SimpleMarkerSymbol,
+      SimpleLineSymbol, SimpleFillSymbol,
+      esriConfig, Color, on, dom
+      ) {
+    map = new Map("mapDiv", {
+      basemap: "gray",
+      center: [-28,40],
+      zoom: 3
+    });
+
+    // Create a query task pointing at a subset of RTD Bus Stops
+    var queryTask = new QueryTask("http://services.arcgis.com/oKgs2tbjK6zwTdvi/arcgis/rest/services/Major_World_Cities/FeatureServer/0");
+
+    // Symbol used to draw the selected census block points within the buffer polygon
+    var symbol = new SimpleMarkerSymbol(
+        SimpleMarkerSymbol.STYLE_CIRCLE,
+        12,
+        new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_NULL,
+            new Color([247, 34, 101, 0.9]),
+            1
+        ),
+        new Color([207, 34, 171, 0.5])
+    );
+
+    var circleSymb = new SimpleFillSymbol(
+        SimpleFillSymbol.STYLE_NULL,
+        new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
+            new Color([105, 105, 105]),
+            2
+        ), new Color([255, 255, 0, 0.25])
+    );
+
+    // When the map is clicked create a buffer around the click point of the specified distance.
+    map.on("click", searchByDistance);
+    on(dom.byId("distance"), "change", function(){
+      if (map.graphics.graphics.length) {
+        var evt = {};
+        evt.mapPoint = map.graphics.graphics[0].geometry.center;
+        searchByDistance(evt);
+      }
+    });
+
+    function searchByDistance(evt){
+      map.graphics.clear();
+
+      var element = dom.byId("distance");
+      var distance = element.options[element.selectedIndex].value;
+
+      var circle = new Circle({
+        center: evt.mapPoint,
+        geodesic: true,
+        radius: distance,
+        radiusUnit: "esriMiles"
+      });
+      map.graphics.add(new Graphic(circle, circleSymb));
+
+      var query = new Query();
+      query.geometry = evt.mapPoint;
+      query.distance = distance;
+      query.units =  "miles";
+      query.returnGeometry = true;
+      query.outSpatialReference = map.spatialReference;
+      query.spatialRelationship = Query.SPATIAL_REL_CONTAINS;
+
+      queryTask.execute(query, function(response) {
+        var features = response.features;
+
+        for (var i = 0; i < features.length; i++) {
+          var feature = features[i];
+          feature.setSymbol(symbol);
+          map.graphics.add(feature);
+        }
+      }, function(error) {
+        console.log("Got an error " + error);
+      });
+    }
+  });
+  </script>
+</head>
+<body>
+   <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Search By Distance</h3>
+    </div>
+    <div class="panel-body">
+      <p>Click on the map to search for cities.</p>
+      <div class="form-group">
+        <select class="form-control" id="distance">
+          <option value="100">100 miles</option>
+          <option value="250">250 miles</option>
+          <option selected value="500">500 miles</option>
+          <option value="1000">1000 miles</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div id="mapDiv"></div>
+</body>
+</html>
