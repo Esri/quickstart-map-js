@@ -8,8 +8,8 @@
 		<meta name="description" content=""/>
 		<meta name="author" content="Allan Laframboise"/>
 		<title>Mapping Examples</title>
-		<!--link href="css/examples.css" rel="stylesheet"/-->
-		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet"/>
+		<link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"/>
 		<style type="text/css">
 			.container-narrow {
 				margin: 0 auto;
@@ -36,7 +36,7 @@
 		<a href="https://github.com/esri/quickstart-map-js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
 		<div class="container-narrow">
 			<div class="row lead text-center">
-				<h3>ArcGIS JavaScript Quickstart Mapping Examples</h3>
+				<h3>ArcGIS JavaScript Mapping Examples</h3>
 				<p>Simple apps to get you going fast!</p>
 			</div>
 			<div class="row">
@@ -44,10 +44,10 @@
 					<div class="well well-small text-center">
   					<h3>Maps</h3>
   					<p>
-		  				<a href='html/basemaps/basemaps.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemaps</a>
-							<a href='html/basemaps/basemaps_widget.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemaps Widget</a>
-							<a href='html/basemaps/basemap_watercolor.html') class="btn btn-primary btn-wide-75 btn-max-width">Watercolor Basemap</a>
-							<a href='html/basemaps/basemaptour.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemap Tour</a>
+		  				<a href='html/maps/basemaps.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemaps</a>
+							<a href='html/maps/basemaps_widget.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemaps Widget</a>
+							<a href='html/maps/basemap_watercolor.html') class="btn btn-primary btn-wide-75 btn-max-width">Watercolor Basemap</a>
+							<a href='html/maps/basemaptour.html') class="btn btn-primary btn-wide-75 btn-max-width">Basemap Tour</a>
   					</p>
   				</div>
 				</div>
@@ -55,9 +55,9 @@
 					<div class="well well-small text-center">
   					<h3>Geocoding</h3>
   					<p>
-							<a href='html/geocode/geosearch.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Places</a>
-							<a href='html/geocode/geosearch_widget.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Places Widget</a>
-							<a href='html/geocode/reversegeocode.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Address</a>
+							<a href='html/geocoding/geosearch.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Places</a>
+							<a href='html/geocoding/geosearch_widget.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Places Widget</a>
+							<a href='html/geocoding/reversegeocode.html') class="btn btn-primary btn-wide-75 btn-max-width">Find Address</a>
 						</p>
   				</div>
 				</div>
@@ -69,8 +69,8 @@
   					<p>
 							<a href='html/directions/directions.html') class="btn btn-primary btn-wide-75 btn-max-width">Directions</a>
 							<a href='html/directions/directions_widget.html') class="btn btn-primary btn-wide-75 btn-max-width">Directions Widget</a>
-							<a href='html/drivetime/drivetime.html') class="btn btn-primary btn-wide-75 btn-max-width">Drive Time</a>
-							<a href='html/routing/routes_and_barriers.html') class="btn btn-primary btn-wide-75 btn-max-width">Routes & Barriers</a>
+							<a href='html/directions/drivetime.html') class="btn btn-primary btn-wide-75 btn-max-width">Drive Time</a>
+							<a href='html/directions/routes_and_barriers.html') class="btn btn-primary btn-wide-75 btn-max-width">Routes & Barriers</a>
 							<!--li><a href='html/routing/traffic.html') class="btn btn-primary btn-wide-75 btn-max-width">World Traffic</a></li-->
 						</p>
   				</div>
@@ -79,10 +79,10 @@
 					<div class="well well-small text-center">
   					<h3>Data and Services</h3>
   					<p>
-							<a href='html/maps/webmapbyid.html') class="btn btn-primary btn-wide-75 btn-max-width">Load Webmap</a>
-							<a href='html/cloud/load_feature_service.html') class="btn btn-primary btn-wide-75 btn-max-width">Load Feature Service</a>
-							<a href='html/cloud/query_feature_service.html') class="btn btn-primary btn-wide-75 btn-max-width">Query Feature Service</a>
 							<a href='html/data/load_flickr_json.html') class="btn btn-primary btn-wide-75 btn-max-width">Load Flickr JSON</a>
+							<a href='html/data/webmapbyid.html') class="btn btn-primary btn-wide-75 btn-max-width">Load Webmap</a>
+							<a href='html/data/load_feature_service.html') class="btn btn-primary btn-wide-75 btn-max-width">Load Feature Service</a>
+							<a href='html/data/query_feature_service.html') class="btn btn-primary btn-wide-75 btn-max-width">Query Feature Service</a>
 						</p>
   				</div>
 				</div>
@@ -102,7 +102,8 @@
 					<div class="well well-small text-center">
   					<h3>Misc</h3>
   					<p>
-							<a href='html/geolocation/geolocation.html') class="btn btn-primary btn-wide-75 btn-max-width">HTML 5 Geolocation</a>
+							<a href='html/misc/geolocation.html') class="btn btn-primary btn-wide-75 btn-max-width">HTML 5 Geolocation</a>
+							<a href='html/misc/autocenter.html') class="btn btn-primary btn-wide-75 btn-max-width">Auto Center Map</a>
 						</p>
   				</div>
 				</div>

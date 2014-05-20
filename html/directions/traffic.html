@@ -5,13 +5,44 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Traffic</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">
-  <!-- Load the library references for ArcGIS API for JavaScript-->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+
+    #leftPanel, #rightPanel {
+      height: 500px;
+    }
+
+    #leftPanel {
+      overflow: auto;
+      padding: 0 30px;
+    }
+
+    #mapTitle {
+      margin-top: 0;
+    }
+  </style>
+  
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
-    require(["esri/map", "esri/dijit/Legend", "esri/dijit/Scalebar", "esri/arcgis/utils", "../../js/utils.js", "dojo/on", "dojo/_base/connect", "dojo/dom", "dojo/domReady!"],   
-      function(Map, Legend, Scalebar, esriUtils, utils, on, conn, dom) {  
+    require(["esri/map", 
+      "esri/dijit/Legend", 
+      "esri/dijit/Scalebar", 
+      "esri/arcgis/utils", 
+      "dojo/on", 
+      "dojo/_base/connect", 
+      "dojo/dom", 
+      "dojo/domReady!"],   
+      function(Map, Legend, Scalebar, esriUtils, on, conn, dom) {  
         "use strict"
 
         //all requests to traffic.arcgis.com will proxy to the proxyUrl defined in this object.
@@ -20,27 +51,21 @@
           //proxyUrl: "/sproxy"
           proxyUrl: "http://developers.arcgis.com/sproxy"
         });
-        var map = new Map("mapDiv",{ 
-          basemap: "gray",
-          center: [-122.69, 45.52],
-          zoom: 3
-        });
-        utils.autoRecenter(map);
 
-        on(dom.byId("btnWebmap"),"click", createMap);
+        var map;
+        var webmapId = "327687e9b2664d65aa7a7f5c85398cff";
+
+        createMap();
 
         function createMap() {
-          var mapDeferred = esri.arcgis.utils.createMap("327687e9b2664d65aa7a7f5c85398cff", "map");
+          var mapDeferred = esri.arcgis.utils.createMap(webmapId, "mapDiv");
           mapDeferred.then(function(response) {
-            map.removeAllLayers();
-            map.spatialReference = null;
-            map.destroy();
+
+            map = response.map;
 
             dom.byId("mapTitle").innerHTML = response.itemInfo.item.title;
             dom.byId("mapSubTitle").innerHTML = response.itemInfo.item.snippet;
-            
-            map = response.map;
-            
+                        
             //get the layers that will display in the legend. 
             var layers = esriUtils.getLegendLayers(response);  
 
@@ -78,7 +103,18 @@
   </script>
   </head>
   <body>
-      <div class="panel">
+     <div class="row">
+      <div id="leftPanel" class="col-xs-3">
+        <h2 id="mapTitle"></h2><small id="mapSubTitle"></small>
+        <hr>
+        <div id="mapLegend"></div>
+      </div>
+      <div id="rightPanel" class="col-xs-9">
+         <div id="mapDiv"></div>
+      </div>
+    </div>
+
+    <!-- <div class="panel">
       <div id="title" class="titlearea"><span id="subtitle" class="title-message">World Traffic</span></div>
         <controls>
           <div class="buttons">
@@ -95,8 +131,8 @@
           <div id="mapSubTitle" class="map-subtitle"></div>
           <div id="mapLegend"></div>
         </div>
-    </div>
-    <div id="mapDiv"></div>
-    <div id="progress" class="progress hidden"></div>
+    </div> -->
+    <!-- <div id="mapDiv"></div> -->
+    <!-- <div id="progress" class="progress hidden"></div> -->
   </body>
 </html>

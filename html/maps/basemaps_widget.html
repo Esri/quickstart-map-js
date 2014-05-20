@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html> 
+<html>  
+<head> 
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Basemaps Widget</title> 
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico"> 
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
+  <script> 
+    require(["esri/map", 
+      "esri/dijit/BasemapGallery",
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/domReady!"], 
+      function(Map, BasemapGallery, on, dom) {
+        // Create map
+        var map = new Map("mapDiv",{ 
+          basemap: "gray",
+          center: [-122.69, 45.52],
+          zoom: 3
+        });
+
+        // Create and add the maps from ArcGIS.com 
+        var basemapGallery = new BasemapGallery({
+          showArcGISBasemaps: true,
+          map: map
+        }, "basemapGallery");
+        basemapGallery.startup();
+
+        // Listen to the basemap selection and set the title
+        on(basemapGallery, "onSelectionChange", function() {
+          dom.byId("userMessage").innerHTML = basemapGallery.getSelected().title;
+        });
+    });
+  </script> 
+</head> 
+<body>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Basemaps</h3>
+    </div>
+    <div class="panel-body">
+      <div id="basemapGallery"></div>
+    </div>
+  </div>
+  <div id="mapDiv"></div>
+</body> 
+</html>

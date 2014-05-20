@@ -5,30 +5,51 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Auto Center</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">   
-  <!-- Load the library references for ArcGIS API for JavaScript-->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     require(["esri/map",
       "esri/InfoTemplate", 
       "esri/geometry/Point", 
       "esri/graphic", 
-      "../../js/utils.js", 
+      "esri/symbols/PictureMarkerSymbol",
       "dojo/on", 
       "dojo/dom", 
       "dojo/domReady!"], 
-      function(Map, InfoTemplate, Point, Graphic, utils, on, dom) {
+      function(Map, InfoTemplate, Point, Graphic, PictureMarkerSymbol, on, dom) {
         "use strict"
+
         // Create map
         var map = new Map("mapDiv",{ 
             basemap: "streets",
             center: [-100, 53],
             zoom: 3
         });
-        autoRecenter(map);
+
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+        popup.domNode.style.marginTop = "-20px";
+        
         // Wire events
         on(map, 'load', showGeolocation);
+
+        // Auto-recenter map when screen changes size
+        autoRecenter(map);
 
         function showGeolocation() {
           if (navigator.geolocation){
@@ -43,7 +64,7 @@
           // Create a point
           var pt = new Point(position.coords.longitude,position.coords.latitude);
           // Create a symbol and pop-up template and add the graphic to the map
-          var symbol = utils.createPictureSymbol("../../images/blue-pin.png", 0, 12, 13, 24); //0, 10, 24
+          var symbol = new createPictureSymbol("//esri.github.io/quickstart-map-js/images/blue-pin.png", 0, 12, 13, 24);
           var attributes = {"lat":pt.y.toFixed(2),"lon":pt.x.toFixed(2)};
           var infoTemplate = new InfoTemplate("My Geolocation","Latitude: ${lat} <br/>Longitude: ${lon}");
           var graphic = new Graphic(pt,symbol,attributes,infoTemplate);
@@ -85,25 +106,32 @@
             }, resizeDelay);
           });
         }
-      }
-    );
+
+        function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
+          return new PictureMarkerSymbol(
+          {
+            "angle": 0,
+            "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+            "url": url,  
+            "contentType": "image/png",
+            "width":xWidth, "height": yHeight
+          });
+        }
+    });
   </script>
 </head>
 <body>
-<div>
-  <div class="panel">
-  <div class="titlearea"><span id="titleMessage" class="title-message">Map with Auto Centering</span></div>
-    <div class="controls">
-       <div class="buttons"> 
-        <label><input id="useAutoCenter" type="checkbox" checked/>Use Auto Center</label> 
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Auto-recenter Map</h3>
+    </div>
+    <div class="panel-body">
+      <p>Resize the browser or screen.</p>
+      <div class="checkbox"> 
+        <label><input id="useAutoCenter" type="checkbox" checked/> Use Auto Center</label> 
       </div>
     </div>
-  <div class="message"><span id="userMessage" class="user-message">Resize the browser. Try without centering.</span></div>
-
-  </div>
-
   </div>
   <div id="mapDiv"></div>
-  <div id="progress" class="progress hidden"></div>
 </body>
 </html>
