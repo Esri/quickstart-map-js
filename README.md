@@ -52,7 +52,7 @@ NOTE: You should just be able to cut-and-paste and run the examples in JSFiddle!
 
 ## Issues
 
-Find a bug or want to request a new feature?  Please let us know by submitting an issue.
+Find a bug or want to request a new feature?  Please let us know by submitting an issue.  Thank you!
 
 * Directions - Uses OAuth and requires you to sign up for a [free ArcGIS Developer Subscription](https://developers.arcgis.com/en/sign-up/) to use the app.
 
