@@ -5,10 +5,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Graphics</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">
-  <!-- Load the library references for ArcGIS API for JavaScript-->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     require(["esri/map", 
       "esri/geometry/Point", 
@@ -20,12 +31,12 @@
       "esri/symbols/SimpleLineSymbol", 
       "esri/symbols/SimpleFillSymbol", 
       "esri/InfoTemplate", 
-      "../../js/utils.js", 
       "dojo/_base/Color", 
+      "dojo/query",
       "dojo/on", 
       "dojo/dom", 
       "dojo/domReady!"], 
-      function(Map, Point, Multipoint, Polyline, Polygon, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, InfoTemplate, utils, Color, on, dom) {
+      function(Map, Point, Multipoint, Polyline, Polygon, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, InfoTemplate, Color, query, on, dom) {
         "use strict"
 
         var pointSymbol,lineSymbol,polygonSymbol;
@@ -38,7 +49,6 @@
           center: [-79.40, 43.55],
           zoom: 9,
         });
-        utils.autoRecenter(map);
     
         // Create symbols for the graphics
         pointSymbol = createPointSymbol();
@@ -48,17 +58,18 @@
         // Wire events
         on(map,"click", addGraphicCallback);
         on(map,"dbl-click", addGraphicCallback);  // double-click?
+        
         // Wire UI events
         on(dom.byId("addPoint"),"click", setActiveTool);
         on(dom.byId("addLine"),"click", setActiveTool);
         on(dom.byId("addPolygon"),"click", setActiveTool);
         on(dom.byId("clear"),"click", setActiveTool);
 
-        function setActiveTool() {
-          var ctrl = this;
-          activeToolId = (ctrl ? ctrl.id : null);
+        function setActiveTool(e) {
+          var btn = e.target;
+          activeToolId = (btn ? btn.id : null);
           // Lock map to digitize
-          if (ctrl) {
+          if (btn) {
             map.disableDoubleClickZoom();
             map.disablePan();
           } else { 
@@ -68,20 +79,19 @@
           // Set user message
           switch (activeToolId) {
             case "addPoint":
-              utils.setMessage("Click the map to add a point");
+              setMessage("Click the map to add a point");
               break;
             case "addLine":
-              utils.setMessage("Click the map. Double-click to finish line.");
+              setMessage("Click the map. Double-click to finish line.");
               break;
             case "addPolygon":
-              utils.setMessage("Click the map. Double-click to finish polygon.");
+              setMessage("Click the map. Double-click to finish polygon.");
               break;
             default:
-              utils.setMessage("Click a button to start");
+              setMessage("Click a button to start");
               clearAddGraphics();  
           }
-         
-          setSelected(ctrl);
+          setSelected(btn);
         }
 
         // Listen for mouse click events
@@ -199,15 +209,13 @@
         }
 
         function setSelected(button) {
-          var elements = document.getElementsByClassName('btn btn-primary');
-          for (var i = 0; i < elements.length; i++) {
-              elements[i].className = "btn btn-primary";
-          }
-          var element = document.getElementsByClassName('btn btn-primary active');
-          if (element)
-            element.className = "btn btn-primary";
-          if (button)
-            button.className = "btn btn-primary active";
+          query(".btn-group > .btn").removeClass("active");
+          query(button).addClass("active");
+        }
+
+        function setMessage(msg) {
+          var element = document.getElementById("userMessage");
+          element.innerHTML = msg;
         }
 
         function clearAddGraphics() {
@@ -223,17 +231,21 @@
   </script>
 </head>
 <body>
-  <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Draw Graphics</span></div>
-    <div class="controls">
-      <div class="buttons"> 
-        <button class="btn btn-primary" id="addPoint">Add Point</button>
-        <button class="btn btn-primary" id="addLine">Add Line</button>
-        <button class="btn btn-primary" id="addPolygon">Add Polygon</button>
-        <button class="btn" id="clear">Clear</button>
-      </div>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Draw Graphics</h3>
     </div>
-    <div class="message"><span id="userMessage" class="user-message"></span></div>
+    <div class="panel-body">
+      <div class="form-group">
+        <div class="btn-group">
+          <button class="btn btn-success" id="addPoint">Add Point</button>
+          <button class="btn btn-success" id="addLine">Add Line</button>
+          <button class="btn btn-success" id="addPolygon">Add Polygon</button>
+        </div>       
+      </div>
+      <p><button class="btn btn-default" id="clear">Clear</button></p>
+      <div id="userMessage">Click a button to start.</div>
+    </div>
   </div>
   <div id="mapDiv"></div>
 </body>

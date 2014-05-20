@@ -4,59 +4,104 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">   
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  <title>Flickr JSON</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">
-  <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+  <title>Load JSON Service</title>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }  
+   .esriPopup img {
+      max-width: 200px;
+      max-height: 133px;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
-    require(["esri/map","esri/dijit/PopupTemplate", "esri/geometry/Point", "esri/graphic", "esri/request", "../../js/utils.js", "dojo/on", "dojo/dom", "dojo/domReady!"], 
-      function(Map, PopupTemplate, Point, Graphic, Request, utils, on, dom) {
+    require(["esri/map",
+      "esri/dijit/PopupTemplate",
+      "esri/symbols/PictureMarkerSymbol",
+      "esri/geometry/Point", 
+      "esri/graphic", 
+      "esri/graphicsUtils",
+      "esri/request",
+      "dojo/on", 
+      "dojo/keys",
+      "dojo/dom", 
+      "dojo/domReady!"], 
+      function(Map, PopupTemplate, PictureMarkerSymbol, Point, Graphic, GraphicsUtils, Request, on, keys, dom) {
         "use strict"
 
-        var symbol;
-        
         // Create map
         var map = new Map("mapDiv",{ 
           basemap: "gray",
           center: [-40.69, 45.52],
           zoom: 3
         });
-        utils.autoRecenter(map);
+
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+        popup.domNode.style.marginTop = "-20px";
 
         // Wire UI Events
-        on(dom.byId("btnLoadFlickr"), "click", loadPhotos);
-        on(dom.byId("btnClear"), "click", clearGraphics);
+        on(dom.byId("btnGo"), "click", loadPhotos);
+        on(dom.byId("inputSearchTags"), "keydown", function(event) {
+          if (event.keyCode == keys.ENTER) {
+            loadPhotos();
+          }
+        });
 
         // Get symbol
-        symbol = new utils.createPictureSymbol("http://dl.dropbox.com/u/52777651/flickr.png", 0, 12, 24, 24);
+        var symbol = new createPictureSymbol("http://esri.github.io/quickstart-map-js/images/blue-pin.png", 0, 12, 13, 24);
 
         // Request to Flickr service
         function loadPhotos(){
+          clearGraphics();
           var flickrPhotos = Request({
             url: "http://api.flickr.com/services/feeds/geo",
             content:{
                 format:"json",
                 tagmode: "any",
-                tags: "mountain"
+                tags: dom.byId("inputSearchTags").value
             },
             callbackParamName: "jsoncallback"
           });
           flickrPhotos.then(addPhotos);
-          utils.setStyle("progress", "progress");
         }
 
         // Create graphics for each Flickr item
         function addPhotos(data){
-          utils.setStyle("progress", "progress hidden");
           var template = new PopupTemplate({
-            title: "{title}",
+            title: "<b>{title}</b>",
             description:"{description}"
           });
-
-          dojo.forEach(data.items, function(item){
+          for (var i in data.items) {
+            var item = data.items[i];
+            template.setTitle(item.title);
             var loc = new Point(item.longitude, item.latitude);
             map.graphics.add(new Graphic(loc, symbol, item, template));
+          }
+          var extent = GraphicsUtils.graphicsExtent(map.graphics.graphics).expand(1.5);   
+          map.setExtent(extent);
+        }
+
+        function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
+          return new PictureMarkerSymbol(
+          {
+            "angle": 0,
+            "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+            "url": url,  
+            "contentType": "image/png",
+            "width":xWidth, "height": yHeight
           });
         }
 
@@ -64,24 +109,24 @@
           map.graphics.clear();
           map.infoWindow.hide();
         }
-
-      }
-    );
+    });
   </script>   
 </head>
   <body>
-    <div class="panel">
-      <div class="titlearea"><span id="titleMessage" class="title-message">Load Flickr JSON</span></div>
-      <div class="controls"> 
-        <div class="buttons"> 
-          <button id="btnLoadFlickr" class="btn btn-primary">Load Graphics</button>
-          <button id="btnClear" class="btn">Clear</button>
-        </div>
-        <div class="message"><span id="userMessage" class="user-message">Add images to map as graphics.</span></div>
+    <div class="panel panel-primary panel-fixed">
+      <div class="panel-heading">
+        <h3 class="panel-title">Load JSON Service</h3>
       </div>
-      <div class="message"><span id="userMessage" class="user-message"></span></div>
+      <div class="panel-body">
+        <p>Search Flickr and add results as graphics.</p>
+        <div class="input-group"> 
+          <input type="text" class="form-control" id="inputSearchTags" placeholder="world cuisine" value="world cuisine">
+          <span class="input-group-btn">
+            <button id="btnGo" class="btn btn-success">Go!</button>
+          </span>
+        </div>
+      </div>
     </div>
     <div id="mapDiv"></div>
-    <div id="progress" class="progress hidden"></div>
   </body>
 </html>

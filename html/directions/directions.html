@@ -5,11 +5,61 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Directions</title>
-  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-  <link rel="stylesheet" href="../../css/examples.css">
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js//images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
 
-  <!-- Load the library references for ArcGIS API for JavaScript -->
-  <script src="http://js.arcgis.com/3.8compact"></script>
+    .map.infoPosition  {
+      width: auto;
+      margin-right: 290px;
+    }
+
+    .info-panel {
+      padding: 5px;
+      height: 100%;
+      text-align: left;
+    }
+
+    .info-label {
+      margin-left: 5px;
+      font-size:13px;
+    }
+
+    .info-totals {
+      margin-left: 0px;
+      font-size: 12px;
+    }
+
+    .info-list {
+      display: inline-block;
+      margin-left: -20px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 12px;
+      line-height: 14px;
+    }
+
+    .info-list a:hover {
+        color: #000;
+    }
+
+    .info-item {
+        margin-left: 2px;
+        padding: 3px 3px;
+        cursor:pointer;    
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
   <script>
     require(["esri/map", 
       "esri/tasks/locator", 
@@ -20,15 +70,17 @@
       "esri/units", 
       "esri/graphic", 
       "esri/symbols/SimpleLineSymbol", 
+      "esri/symbols/PictureMarkerSymbol",
       "esri/InfoTemplate", 
       "../../js/oauth/oAuthHelper.js", 
-      "../../js/utils.js", 
       "dojo/promise/all",
+      "dojo/query",
       "dojo/on", 
       "dojo/dom", 
       "dojo/domReady!"], 
-      function(Map, Geocode, Directions, RouteParameters, FeatureSet, SpatialReference, Units, Graphic, SimpleLineSymbol, InfoTemplate, oAuthHelper, utils, all, on, dom) {     
-        "use strict"    
+      function(Map, Geocode, Directions, RouteParameters, FeatureSet, SpatialReference, Units, Graphic, SimpleLineSymbol, PictureMarkerSymbol, InfoTemplate, oAuthHelper, all, query, on, dom) {     
+        "use strict"  
+
         var geocodeService;
         var directionsService;
         var directions;
@@ -42,13 +94,10 @@
             zoom: 5
         });
 
-        utils.setPopup(map, "top", -1, 26);
-        utils.autoRecenter(map);
-
         // Create oAuthHelper 
         oAuthHelper.init({
           appId:      "if7hHDRDdyRbz0fs",
-          //redirect_uri: "http://localhost/GitHub/quickstart-map-js/js/oAuth/oauth-callback.html",  // local testing only
+          //redirect_uri: "http://esri.github.io/quickstart-map-js//js/oAuth/oauth-callback.html",  // local testing only
           redirect_uri: "http://esri.github.io/quickstart-map-js/js/oauth/oauth-callback.html",
           portal:     "http://www.arcgis.com",
           expiration: (14 * 24 * 60), // 2 weeks, in minutes
@@ -98,7 +147,6 @@
           var geocodeAddressBCallback = geocodeService.addressToLocations(options);
           // When A and B come back, create the route
           all([geocodeAddressACallback.promise,geocodeAddressBCallback.promise]).then(calculateDirections);
-          utils.setStyle("progress","progress visible");
         }
 
         // Create route and add graphics
@@ -108,7 +156,6 @@
           var stop = geocodeResults[1][0];
           
           if (!start || !stop) {
-            utils.setStyle("progress","progress hidden");
             alert("Sorry, " + (!start ? "Start": "End") + " address not found! Please try again.");
             return;
           } else {
@@ -151,20 +198,18 @@
           else {
             alert("Could not find route.");
           }
-          utils.setStyle("progress", "progress hidden");
         }
         
         function errorHandler(error) {
-          utils.setStyle("progress", "progress hidden");
           alert("Address not found.");
         }
         
         function addPtGraphic(type,place) {
           var symbol;
           if (type == "Start")
-              symbol = utils.createPictureSymbol("../../images/green-pin.png", 0, 6, 13, 24); 
+              symbol = createPictureSymbol("//esri.github.io/quickstart-map-js/images/green-pin.png", 0, 6, 13, 24); 
           else
-              symbol = utils.createPictureSymbol("../../images/red-pin.png", 0, 6, 13, 24); 
+              symbol = createPictureSymbol("//esri.github.io/quickstart-map-js/images/red-pin.png", 0, 6, 13, 24); 
           // Add graphic to map 
           var attributes = { address:place.address, score:place.score, lat:place.location.y.toFixed(2), lon:place.location.x.toFixed(2) };   
           var infoTemplate = new InfoTemplate(type,"${address}<br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Score: ${score}<span class='popupZoom' onclick='zoomToPlace(" + place.location.x.toFixed(2) + "," + place.location.y.toFixed(2) + ",15)';>Zoom To</span>");
@@ -212,8 +257,11 @@
            var lbl = dom.byId("infoTotals");
            lbl.innerHTML = formatDistance(directions.totalLength, "mile(s)") + " " + formatTime(directions.totalTime);
            
-           utils.setStyle("infoPanel", "info-panel visible");
-           utils.setStyle("mapDiv","map infoPosition");
+           // utils.setStyle("infoPanel", "info-panel visible");
+           // utils.setStyle("mapDiv","map infoPosition");
+            query("#infoPanel").addClass("show");
+            query("#mapDiv").addClass("infoPosition");
+
            map.resize();
         }
 
@@ -268,42 +316,59 @@
           return d + " " + units;
         }
 
+        function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
+          return new PictureMarkerSymbol(
+          {
+            "angle": 0,
+            "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
+            "url": url,  
+            "contentType": "image/png",
+            "width":xWidth, "height": yHeight
+          });
+        }
+
         function clearDirectionGraphics() {
-            utils.setStyle("progress", "progress hidden");
-            utils.setStyle("infoPanel", "info-panel hidden");
-            utils.setStyle("mapDiv","map");
+            // utils.setStyle("infoPanel", "info-panel hidden");
+            // utils.setStyle("mapDiv","map");
+            query("#infoPanel").removeClass("show");
+            query("#mapDiv").removeClass("infoPosition");
+
             map.resize();
             directionsList.innerHTML = "";
             map.infoWindow.hide();
             map.graphics.clear();
             segmentGraphic = null;
         }
-      
-      }
-    );
+    });
   </script>
 </head>
 <body>
-  <div class="panel">
-    <div class="titlearea"><span id="titleMessage" class="title-message">Directions</span></div>
-    <div class="controls">
-      <div class="buttons"> 
-        <label>Start:</label> <input id="addressInputA" class="input-medium" type="text" value="San Francisco, CA" placeholder="San Francisco, CA"/></br>
-        <label>End:</label> <input id="addressInputB" class="input-medium" type="text" value="Redlands, CA" placeholder="Redlands, CA"/></br>
-        <button id="btnFindAddress" class="btn btn-primary">Go</button>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Get Directions</h3>
+    </div>
+    <div class="panel-body">
+      <div class="form-group form-inline">
+        <label>Start </label>
+        <input id="addressInputA" class="form-control" type="text" value="San Francisco, CA" placeholder="San Francisco, CA"/>
+      </div>
+      <div class="form-group form-inline">
+        <label>End </label>
+        <input id="addressInputB" class="form-control" type="text" value="Redlands, CA" placeholder="Redlands, CA"/>
+      </div>
+      <div class="form-group">
+        <button id="btnFindAddress" class="btn btn-success">Go</button>
         <button id="btnClear" class="btn">Clear</button>
       </div>
       <p>NOTE: This app uses advanced ArcGIS services and OAuth.  Please <a href="https://developers.arcgis.com/en/sign-up">sign up</a> for a free <a href="https://developers.arcgis.com/en/sign-up">ArcGIS Developer Subscription</a> to run this sample.</p>
-    </div>
-    <div id="infoPanel" class="info-panel hidden">
-      <span id="infoLabel" class="info-label">Results:</span>
-      <span id="infoTotals" class="info-totals"></span>
-      <ol id="directionsList" class="info-list"></ol>
+      <div id="infoPanel" class="info-panel hidden">
+        <span id="infoLabel" class="info-label">Results:</span>
+        <span id="infoTotals" class="info-totals"></span>
+        <ol id="directionsList" class="info-list"></ol>
+      </div>
     </div>
   </div>
   <div id="mapDiv"></div>
-  <div id="progress" class="progress hidden"></div>
   <div id="signIn"></div>
-</div>
 </body>
 </html>
