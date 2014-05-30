@@ -21,21 +21,21 @@
   <!-- ArcGIS API for JavaScript library references -->
   <script src="//js.arcgis.com/3.9compact"></script>
   <script>
-  var map;
   require([
     "esri/map", "esri/tasks/QueryTask",
     "esri/tasks/query", "esri/geometry/Circle",
     "esri/graphic", "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol",
-    "esri/config", "esri/Color", "dojo/on", "dojo/dom", "dojo/domReady!"
-  ], function(
-      Map, QueryTask,
+    "esri/config", "esri/Color", "dojo/keys", "dojo/on", "dojo/dom", "dojo/domReady!"
+  ], function (
+    Map, QueryTask,
       Query, Circle,
       Graphic, SimpleMarkerSymbol,
       SimpleLineSymbol, SimpleFillSymbol,
-      esriConfig, Color, on, dom
+      esriConfig, Color, keys, on, dom
       ) {
-    map = new Map("mapDiv", {
+    
+    var map = new Map("mapDiv", {
       basemap: "gray",
       center: [-28,40],
       zoom: 3
@@ -66,8 +66,28 @@
     );
 
     // When the map is clicked create a buffer around the click point of the specified distance.
+    var active = false;
+    var done = true;
+
+    // Wire map events
+    map.on("load", function () { map.disablePan(); });
     map.on("click", searchByDistance);
-    on(dom.byId("distance"), "change", function(){
+    map.on("mouse-drag-start", function(evt) {
+      active = true;
+      done = true;
+    });
+    map.on("mouse-drag-end", function(evt) {
+      active = false;
+      done = true;
+    });
+    map.on("mouse-drag", function(evt) {
+      if (active && done) {
+        done = false;
+        setTimeout(searchByDistance(evt), 100);
+      }
+    });
+
+    on(dom.byId("distance"), "change", function () {
       if (map.graphics.graphics.length) {
         var evt = {};
         evt.mapPoint = map.graphics.graphics[0].geometry.center;
@@ -105,8 +125,10 @@
           feature.setSymbol(symbol);
           map.graphics.add(feature);
         }
+        done = true;  // done
       }, function(error) {
         console.log("Got an error " + error);
+        done = true;  // done
       });
     }
   });
@@ -118,7 +140,7 @@
       <h3 class="panel-title">Search By Distance</h3>
     </div>
     <div class="panel-body">
-      <p>Click on the map to search for cities.</p>
+      <p>Drag on the map to search for cities.</p>
       <div class="form-group">
         <select class="form-control" id="distance">
           <option value="100">100 miles</option>
