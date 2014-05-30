@@ -28,6 +28,93 @@ NOTE: All examples are built with [Bootstrap 3.x styles](http://getbootstrap.com
 
 NOTE: You should just be able to cut-and-paste and run the examples in JSFiddle!
 
+## Example
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">   
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Basemaps</title>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js/images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
+  <script>
+    require(["esri/map", 
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/domReady!"], 
+      function(Map, on, dom) {
+        // Create map
+        var map = new Map("mapDiv",{ 
+          basemap: "gray",
+          center: [-122.69, 45.52],
+          zoom: 3
+        });
+
+        // Wire UI Events
+        on(dom.byId("btnStreets"),"click", function() { 
+          map.setBasemap("streets");
+        });
+        on(dom.byId("btnSatellite"),"click", function() { 
+          map.setBasemap("satellite");
+        });
+        on(dom.byId("btnHybrid"),"click", function() { 
+          map.setBasemap("hybrid");
+        });
+        on(dom.byId("btnTopo"),"click", function() { 
+          map.setBasemap("topo");
+        });
+        on(dom.byId("btnGray"),"click", function() { 
+          map.setBasemap("gray");
+        });
+        on(dom.byId("btnNatGeo"),"click", function() { 
+          map.setBasemap("national-geographic");
+        });
+    });
+  </script>   
+</head>
+  <body>
+    <div class="panel panel-primary panel-fixed">
+      <div class="panel-heading">
+        <h3 class="panel-title">Basemaps</h3>
+      </div>
+      <div class="panel-body">
+        <div class="btn-toolbar">
+          <div class="btn-group">
+            <button id="btnStreets" class="btn btn-default">Streets</button>
+            <button id="btnSatellite" class="btn btn-default">Satellite</button>
+            <button id="btnHybrid" class="btn btn-default">Hybrid</button>
+            <button id="btnTopo" class="btn btn-default">Topo</button>
+          </div>  
+        </div>
+        <div class="btn-toolbar">
+          <div class="btn-group">
+            <button id="btnGray" class="btn btn-default">Gray</button>
+            <button id="btnNatGeo" class="btn btn-default">National Geographic</button>
+          </div>  
+        </div>
+      </div>
+    </div>
+    <div id="mapDiv"></div>
+  </body>
+</html>
+```
+
 ## Requirements
 
 * Notepad or your favorite HTML editor
