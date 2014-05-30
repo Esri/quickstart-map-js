@@ -20,7 +20,7 @@
 
   <!-- ArcGIS API for JavaScript library references -->
   <script src="//js.arcgis.com/3.9compact"></script>
-  <script> 
+  <script>
     require(["esri/map",
       "esri/layers/graphics", 
       "esri/layers/FeatureLayer", 
@@ -53,7 +53,7 @@
         on(dom.byId("btnAdd"), "click", addFeatureService);        
         on(dom.byId("btnRemove"), "click", removeFeatureService);      
         on(dom.byId("inputUrl"), "keydown", function(event) {
-          if (event.keyCode == keys.ENTER) {
+          if (event.keyCode === keys.ENTER) {
             addFeatureService();
           }
         });
@@ -75,7 +75,7 @@
         }
         // Remove existing service
         function removeFeatureService() {
-          if (featureLayer) {  
+          if (featureLayer) {
             map.removeLayer(featureLayer);
             map.infoWindow.hide();
           }
