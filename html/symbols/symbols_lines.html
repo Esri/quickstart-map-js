@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Line Symbols</title>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js/images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
+  <script>
+  /*
+  */
+    require(["esri/map",
+      "esri/InfoTemplate",
+      "esri/layers/FeatureLayer",
+      "esri/Color",
+      "esri/renderers/UniqueValueRenderer",
+      "esri/symbols/SimpleLineSymbol",
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/domReady!"], 
+      function(Map, InfoTemplate, FeatureLayer, Color, UniqueValueRenderer, SimpleLineSymbol, on, dom) {  
+        "use strict"
+
+        var originalRenderer;
+
+        // Create map
+        var map = new Map("mapDiv", {
+          basemap: "topo",
+          center: [-122.6561, 45.5210], //long, lat
+          zoom: 15
+        });
+
+        var bikeLanes = new FeatureLayer("http://services.arcgis.com/uCXeTVveQzP4IIcx/arcgis/rest/services/bike_rte/FeatureServer/0", {outFields: ["*"]});
+        
+        var defaultSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+          //color and width of outline
+          new Color([0,255,0]), 4);
+
+        var sharrowSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+          //color and width of outline
+          new Color([0,0,255]), 4);
+
+        var laneSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+          //color and width of outline
+          new Color([255,255,0]), 4);
+
+        var categoryRenderer = new UniqueValueRenderer(defaultSymbol, "BIKEMODE");
+
+        categoryRenderer.addValue("High traffic through street" ,sharrowSymbol);
+        categoryRenderer.addValue("Bike lane" ,laneSymbol);
+
+        bikeLanes.setInfoTemplate(new InfoTemplate("type:", "${BIKEMODE}"));
+        map.addLayer(bikeLanes);
+        
+        bikeLanes.on("load", function(evt) {
+          originalRenderer = evt.layer.renderer;
+          evt.layer.setRenderer(categoryRenderer);
+          evt.layer.refresh();
+        });
+
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+
+        //wire an event listener to detect when someone has selected a new dropdown value
+        on(dom.byId("symbol"), "change", changeSymbol);
+
+        function changeSymbol() {
+          map.infoWindow.hide();
+          var e = dom.byId("symbol");
+          var sym = e.options[e.selectedIndex].value;
+
+          switch (sym) {            
+            case "cat":              
+              //substitute a unique value renderer to draw the graphics
+              bikeLanes.setRenderer(categoryRenderer);
+              break
+            case "default":
+              map.infoWindow.hide();
+              //replace the clientside renderer with what was originally defined for the service
+              bikeLanes.setRenderer(originalRenderer);              
+              break      
+          }
+          bikeLanes.refresh();
+        }
+      }
+    );
+  </script>
+</head>
+<body>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Lines</h3>
+    </div>
+    <div class="panel-body">      
+      <div class="form-inline">
+        <div>
+        Apply different symbols based on feature attributes<br><br>
+        </div>
+        <div class="form-group">
+        <select class="form-control" id="symbol">
+          <option value="cat" selected="selected">bike lanes (by type)</option>
+          <option value="default" >default (defined in service)</option>
+        </select>    
+      </div>
+      </div>
+    </div>
+  </div>
+  <div id="mapDiv"></div>  
+</body>
+</html>
