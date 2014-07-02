@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Point Symbols</title>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js/images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.9compact"></script>
+  <script>
+  /*
+  */
+    require(["esri/map",
+      "esri/InfoTemplate",
+      "esri/layers/FeatureLayer",
+      "esri/Color",
+      "esri/renderers/SimpleRenderer",
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/symbols/SimpleLineSymbol",
+      "esri/symbols/PictureMarkerSymbol",
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/domReady!"], 
+      function(Map, InfoTemplate, FeatureLayer, Color, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, on, dom) {  
+        "use strict"
+
+        var originalRenderer;
+
+        // Create map
+        var map = new Map("mapDiv", {
+          basemap: "osm",
+          center: [-94.58, 39.10], //long, lat
+          zoom: 14
+        });
+
+        var pointFL = new FeatureLayer("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/0", {outFields: ["*"]});
+        
+        //we can define an image resource to use as an alternative symbol (within a simple renderer)
+        var bmpSymbol = new PictureMarkerSymbol("http://webarchive.okfn.org/okfn.org/201404/assets.okfn.org/p/opengovernment/img/icon-512.png", 12, 12);
+        var bmpRenderer = new SimpleRenderer(bmpSymbol);
+
+        //we can also define a simple SVG symbol for all points (green diamond with blue outline)
+        var markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_DIAMOND, 12,
+          new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+          //color and width of outline
+          new Color([0,0,255]), 1.5),
+          //color of fill (r,g,b,alpha/transparency)
+          new Color([0,255,0,0.50]));
+
+        //if all features should be symobolized the same we use a simple renderer, other renderers give us the ability to differentiate based on attributess
+        var simpleRenderer = new SimpleRenderer(markerSymbol);
+
+        pointFL.setInfoTemplate(new InfoTemplate("Census Block: ${TRACT}/${BLOCK}", "Pop. in 2000: ${POP2000}"));
+        map.addLayer(pointFL);
+        
+        pointFL.on("load", function(evt) {
+          //once the feature layer has loaded, we can retrieve the renderer defined for the service itself (which displays larger circles )
+          originalRenderer = evt.layer.renderer;
+        });
+
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+
+        //wire an event listener to detect when someone has selected a new dropdown value
+        on(dom.byId("symbol"), "change", changeSymbol);
+
+        function changeSymbol() {
+          var e = dom.byId("symbol");
+          var sym = e.options[e.selectedIndex].value;
+
+          switch (sym) {            
+            case "bmp":
+              //substitute a PictureMarkerSymbol to draw the graphics
+              pointFL.setRenderer(bmpRenderer);
+              pointFL.refresh();
+              break
+            case "svg":
+              //substitute a SimpleMarkerSymbol to draw the graphics
+              pointFL.setRenderer(simpleRenderer);
+              pointFL.refresh();
+              break
+            case "default":
+              //replace the original renderer using the class breaks defined in the service itself
+              pointFL.setRenderer(originalRenderer);
+              pointFL.refresh();
+              break      
+          }          
+        }
+      }
+    );
+  </script>
+</head>
+<body>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Points</h3>
+    </div>
+    <div class="panel-body">      
+      <div class="form-inline">
+        <div>
+        Apply different symbols to point graphics in the map<br><br>
+        </div>
+        <div class="form-group">
+        <select class="form-control" id="symbol">
+          <option value="default" selected="selected">default (defined in service)</option>
+          <option value="bmp">Picture Image</option>
+          <option value="svg">SVG Marker</option>          
+        </select>    
+      </div>
+      </div>
+    </div>
+  </div>
+  <div id="mapDiv"></div>  
+</body>
+</html>
