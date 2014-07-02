@@ -29,11 +29,10 @@
       "esri/graphic", 
       "dojo/_base/Color", 
       "dojo/query",
-      "dojo/on", 
-      "dojo/_base/connect", 
+      "dojo/on",
       "dojo/dom", 
       "dojo/domReady!"], 
-      function(Map, Draw, SimpleMarkerSymbol, SimpleLineSymbol, CartographicLineSymbol, Graphic, color, query, on, conn, dom) {
+      function(Map, Draw, SimpleMarkerSymbol, SimpleLineSymbol, CartographicLineSymbol, Graphic, color, query, on, dom) {
         "use strict"
 
         var tb; 
@@ -57,7 +56,7 @@
         function initToolbar() {
           tb = new Draw(map);
           // Do something after graphics are sketched on the map 
-          conn.connect(tb, "onDrawEnd", addGraphic);
+          tb.on("draw-end", addGraphic);
           // Override the default marker symbol
           tb.markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 7, 
             new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new color([255,0,0]), 1), 
@@ -99,7 +98,8 @@
         }
 
         // Add the graphic with symbol
-        function addGraphic(geometry) {
+        function addGraphic(evt) {
+          var geometry = evt.geometry;
           var symbol = dom.byId("symbol").value;
           if (symbol) {
             symbol = eval(symbol);
