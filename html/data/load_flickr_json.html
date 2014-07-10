@@ -60,6 +60,14 @@
           }
         });
 
+        map.on("extent-change", function(e) {
+          if (map.infoWindow.isShowing) {
+            // map.infoWindow.hide();
+            // map.infoWindow.show();
+            map.infoWindow.reposition();
+          }
+        });
+
         // Get symbol
         var symbol = new createPictureSymbol("http://esri.github.io/quickstart-map-js/images/blue-pin.png", 0, 12, 13, 24);
 
