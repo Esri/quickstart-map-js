@@ -60,10 +60,9 @@
           }
         });
 
+        // Popup reposition's automatically when extent changes
         map.on("extent-change", function(e) {
           if (map.infoWindow.isShowing) {
-            // map.infoWindow.hide();
-            // map.infoWindow.show();
             map.infoWindow.reposition();
           }
         });
