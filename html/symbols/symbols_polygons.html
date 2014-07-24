@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Polygon Symbols</title>
+  <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js/images/favicon.ico">
+  <!-- ArcGIS API for JavaScript CSS-->
+  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <style>
+    html, body, #mapDiv {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  
+  <!-- ArcGIS API for JavaScript library references -->
+  <script src="//js.arcgis.com/3.10compact"></script>
+  <script>
+    require([
+      "esri/map",
+      "esri/layers/ArcGISTiledMapServiceLayer",
+      "esri/layers/FeatureLayer",
+      "esri/InfoTemplate",
+      "esri/Color",
+      "esri/symbols/SimpleLineSymbol",
+      "esri/symbols/SimpleFillSymbol",      
+      "esri/renderers/ClassBreaksRenderer",
+      "dojo/on", 
+      "dojo/dom", 
+      "dojo/domReady!"], 
+      function(Map, ArcGISTiledMapServiceLayer, FeatureLayer, InfoTemplate, Color, SimpleLineSymbol, SimpleFillSymbol, ClassBreaksRenderer, on, dom) {  
+        "use strict"
+
+        // Create map
+        var map = new Map("mapDiv", {
+          center: [-98.8, 39], //long, lat
+          zoom: 3
+        });
+
+        var darkBasemap = new ArcGISTiledMapServiceLayer("//tiles1.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Dark_Gray_Base_Beta/MapServer");
+        map.addLayer(darkBasemap);
+
+        //the default symbology for this service draws each state identically.  in this app, we'd like to define different symbology for individual features based on the value stored in a particular attribute field
+        var states = new FeatureLayer("//sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3", {
+            outFields: [ "STATE_NAME", "MED_AGE" ]
+          });
+        
+        //first we define a generic default symbol to use.
+        var defaultSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+          new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+            new Color([60, 60, 60]), 1), new Color([0, 0, 0, 0.2])
+        );
+
+        //next we define two renderers and define the attribute column that will determine which symbol is used to draw an individual feature
+        var redBreaksRenderer = new ClassBreaksRenderer(defaultSymbol, "MED_AGE");
+        var greenBreaksRenderer = new ClassBreaksRenderer(defaultSymbol, "MED_AGE");
+
+        var over35Symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+          new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+            new Color([60, 60, 60]), 1), new Color([255, 0, 0, 0.3])
+        );
+
+        var under35Symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+          new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+            new Color([60, 60, 60]), 1), new Color([0, 255, 0, 0.3])
+        );
+
+        //the renderer which is applied when the page loads differentiates states with a median age higher than 35 from the rest.  this renderer could support additional breaks if desired.
+        redBreaksRenderer.addBreak({minValue:35, maxValue:100, symbol: over35Symbol});
+        
+        //our second renderer, which can be substituted via a toggle, alternatively differentiates states with a median age lower than 35 from the others
+        greenBreaksRenderer.addBreak({minValue:0, maxValue:35, symbol: under35Symbol});
+
+        states.setInfoTemplate(new InfoTemplate("median age in ${STATE_NAME} (2000):", "${MED_AGE}"));
+
+        map.addLayer(states);
+        
+        states.on("load", function(evt) {
+          //lets use our first clientside class breaks renderers to symbolize the data
+          evt.layer.setRenderer(redBreaksRenderer);
+          evt.layer.refresh();
+        });
+
+        // Set popup
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+
+        //wire an event listener to detect when someone has selected a new dropdown value
+        on(dom.byId("symbol"), "change", changeSymbol);
+
+        function changeSymbol() {
+          map.infoWindow.hide();
+          var e = dom.byId("symbol");
+          var sym = e.options[e.selectedIndex].value;
+
+          switch (sym) {            
+            case "red":              
+              states.setRenderer(redBreaksRenderer);
+              break
+            case "green":
+              map.infoWindow.hide();
+              //replace the clientside renderer
+              states.setRenderer(greenBreaksRenderer);              
+              break      
+          }
+          states.refresh();
+        }
+      }
+    );
+  </script>
+</head>
+<body>
+  <div class="panel panel-primary panel-fixed">
+    <div class="panel-heading">
+      <h3 class="panel-title">Polygons</h3>
+    </div>
+    <div class="panel-body">      
+      <div class="form-inline">
+        <div>
+          Apply symbols to features based on an attribute threshold.
+          <br><br>
+          Here we use the median age from the 2000 Census.
+          <br>
+          <br>
+        </div>
+        <div class="form-group">
+        <select class="form-control" id="symbol">
+          <option value="red" selected="selected">over 35 years old</option>
+          <option value="green" >under 35</option>
+        </select>    
+      </div>
+      </div>
+    </div>
+  </div>
+  <div id="mapDiv"></div>  
+</body>
+</html>
