@@ -2,142 +2,143 @@
 <html>
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
-		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<meta name="description" content=""/>
-		<meta name="author" content="Allan Laframboise"/>
-		<title>Mapping Examples</title>
-		<link rel="shortcut icon" href="//esri.github.io/quickstart-map-js/images/favicon.ico">
-		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"/>
-		<style type="text/css">
-			.container-narrow {
-				margin: 0 auto;
-				max-width: 700px;
-			}
-			.well-small {
-				max-width: 300px;
-				margin: 0 auto 10px;
-			}
-			.btn-max-width {
-				/*max-width: 250px;*/
-				margin-bottom: 5px;
-			}
-			.btn-wide-75 {
-				width: 65%;
-			}
-			h3 {
-				margin-top: 10px;
-				margin-bottom: 15px;
-			}
-		</style>
-	</head>
-	<body>
-		<a href="https://github.com/esri/quickstart-map-js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
-		<div class="container-narrow">
-			<div class="row lead text-center">
-				<h3>ArcGIS JavaScript Mapping Examples</h3>
-				<p>Simple apps to get you going fast!</p>
-			</div>
-			<div class="row">
-				<div class="col-sm-6">
-					<div class="well well-small text-center">
-  						<h3>Maps</h3>
-  						<p>
-		  					<a href="./html/maps/basemaps.html" class="btn btn-primary btn-wide-75 btn-max-width">Basemaps</a>
-							<a href="./html/maps/basemaps_widget.html" class="btn btn-primary btn-wide-75 btn-max-width">Basemaps Widget</a>
-							<a href="./html/maps/basemap_watercolor.html" class="btn btn-primary btn-wide-75 btn-max-width">Watercolor Basemap</a>
-							<a href="./html/maps/basemaptour.html" class="btn btn-primary btn-wide-75 btn-max-width">Basemap Tour</a>
-							<a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/basemap" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
-  						</p>
-  				</div>
-				</div>
-				<div class="col-sm-6">
-					<div class="well well-small text-center">
-  						<h3>Geocoding</h3>
-  						<p>
-							<a href="./html/geocoding/geosearch.html" class="btn btn-primary btn-wide-75 btn-max-width">Find Places</a>
-							<a href="./html/geocoding/geosearch_widget.html" class="btn btn-primary btn-wide-75 btn-max-width">Find Places Widget</a>
-							<a href="./html/geocoding/reversegeocode.html" class="btn btn-primary btn-wide-75 btn-max-width">Find Address</a>
-							<a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/geocode" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
-						</p>
-  					</div>
-				</div>
-			</div>
-  		<div class="row">
-				<div class="col-sm-6">
-					<div class="well well-small text-center">
-  						<h3>Directions</h3>
-  						<p>
-							<a href="./html/directions/directions.html" class="btn btn-primary btn-wide-75 btn-max-width">Directions</a>
-							<a href="./html/directions/directions_widget.html" class="btn btn-primary btn-wide-75 btn-max-width">Directions Widget</a>
-							<a href="./html/directions/drivetime.html" class="btn btn-primary btn-wide-75 btn-max-width">Drive Time</a>
-							<a href="./html/directions/routes_and_barriers.html" class="btn btn-primary btn-wide-75 btn-max-width">Routes & Barriers</a>
-							<a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/directions" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
-						</p>
-  					</div>
-				</div>
-				<div class="col-sm-6">
-					<div class="well well-small text-center">
-  						<h3>Data and Services</h3>
-  						<p>
-  							<a href="./html/data/load_geojson.html" class="btn btn-default btn-wide-75 btn-max-width">Load GeoJSON</a>
-							<a href="./html/data/load_flickr_json.html" class="btn btn-primary btn-wide-75 btn-max-width">Load Flickr JSON</a>
-							<a href="./html/data/webmapbyid.html" class="btn btn-primary btn-wide-75 btn-max-width">Load Webmap</a>
-							<a href="./html/data/load_feature_service.html" class="btn btn-primary btn-wide-75 btn-max-width">Load Feature Service</a>
-							<a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/feature service" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
-						</p>
-  					</div>
-				</div>
-			</div>
-	 		<div class="row">
-	 			<div class="col-sm-6">
-					<div class="well well-small text-center">
-  						<h3>Query</h3>
-  						<p>	  						
-							<a href="./html/data/draw_select_features.html" class="btn btn-default btn-wide-75 btn-max-width">Shape Query</a>
-							<a href="./html/data/query_feature_service.html" class="btn btn-primary btn-wide-75 btn-max-width">SQL Query</a>
-							<a href="./html/data/search_by_distance.html" class="btn btn-primary btn-wide-75 btn-max-width">Search By Distance</a>
-	  						<a href="./html/data/show_table_features.html" class="btn btn-default btn-wide-75 btn-max-width">Show Table</a>
-							<a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/query" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
-						</p>
-  					</div>
-				</div>
-				<div class="col-sm-6">
-					<div class="well well-small text-center">
-  						<h3>Colors and Symbols</h3>
-  						<p>
-							<a href="./html/symbols/symbols_pts.html" class="btn btn-primary btn-wide-75 btn-max-width">Point Symbols</a>
-							<a href="./html/symbols/symbols_lines.html" class="btn btn-primary btn-wide-75 btn-max-width">Line Symbols</a>
-							<a href="./html/symbols/symbols_polygons.html" class="btn btn-primary btn-wide-75 btn-max-width">Polygon Symbols</a>
-							<a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/renderer" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
-						</p>
-  					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-sm-6">
-					<div class="well well-small text-center">
-  						<h3>Graphics</h3>
-  						<p>
-							<a href="./html/graphics/graphics.html" class="btn btn-primary btn-wide-75 btn-max-width">Draw Graphics</a>
-							<a href="./html/graphics/graphics_toolbar.html" class="btn btn-primary btn-wide-75 btn-max-width">Draw Graphics Widget</a>
-							<a href="./html/graphics/graphics_marker.html" class="btn btn-primary btn-wide-75 btn-max-width">Align Marker Symbol</a>
-							<a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/graphics" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
-						</p>
-  					</div>
-				</div>
-				<div class="col-sm-6">
-					<div class="well well-small text-center">
-  						<h3>Misc</h3>
-  						<p>
-							<a href="./html/misc/geolocation.html" class="btn btn-primary btn-wide-75 btn-max-width">HTML 5 Geolocation</a>
-							<a href="./html/misc/autocenter.html" class="btn btn-primary btn-wide-75 btn-max-width">Auto Center Map</a>
-							<a href="./html/misc/show_panel.html" class="btn btn-primary btn-wide-75 btn-max-width">Show Hide Panel</a>
-						</p>
-  				</div>
-				</div>
-			</div>
-		</div>
-	</body>
+    <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content="Allan Laframboise"/>
+    <title>Mapping Examples</title>
+    <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js/images/favicon.ico">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"/>
+    <style type="text/css">
+      .container-narrow {
+        margin: 0 auto;
+        max-width: 700px;
+      }
+      .well-small {
+        max-width: 300px;
+        margin: 0 auto 10px;
+      }
+      .btn-max-width {
+        /*max-width: 250px;*/
+        margin-bottom: 5px;
+      }
+      .btn-wide-75 {
+        width: 65%;
+      }
+      h3 {
+        margin-top: 10px;
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="https://github.com/esri/quickstart-map-js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+    <div class="container-narrow">
+      <div class="row lead text-center">
+        <h3>ArcGIS JavaScript Mapping Examples</h3>
+        <p>Simple apps to get you going fast!</p>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="well well-small text-center">
+              <h3>Maps</h3>
+              <p>
+              <a href="./html/maps/basemaps.html" class="btn btn-primary btn-wide-75 btn-max-width">Basemaps</a>
+              <a href="./html/maps/basemaps_widget.html" class="btn btn-primary btn-wide-75 btn-max-width">Basemaps Widget</a>
+              <a href="./html/maps/basemap_watercolor.html" class="btn btn-primary btn-wide-75 btn-max-width">Watercolor Basemap</a>
+              <a href="./html/maps/basemaptour.html" class="btn btn-primary btn-wide-75 btn-max-width">Basemap Tour</a>
+              <a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/basemap" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
+              </p>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="well well-small text-center">
+              <h3>Geocoding</h3>
+              <p>
+              <a href="./html/geocoding/geosearch.html" class="btn btn-primary btn-wide-75 btn-max-width">Find Places</a>
+              <a href="./html/geocoding/geosearch_widget.html" class="btn btn-primary btn-wide-75 btn-max-width">Find Places Widget</a>
+              <a href="./html/geocoding/reversegeocode.html" class="btn btn-primary btn-wide-75 btn-max-width">Find Address</a>
+              <a href="./html/geocoding/geosearch_category.html" class="btn btn-primary btn-wide-75 btn-max-width">Find by Category</a>
+              <a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/geocode" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
+            </p>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="well well-small text-center">
+              <h3>Directions</h3>
+              <p>
+              <a href="./html/directions/directions.html" class="btn btn-primary btn-wide-75 btn-max-width">Directions</a>
+              <a href="./html/directions/directions_widget.html" class="btn btn-primary btn-wide-75 btn-max-width">Directions Widget</a>
+              <a href="./html/directions/drivetime.html" class="btn btn-primary btn-wide-75 btn-max-width">Drive Time</a>
+              <a href="./html/directions/routes_and_barriers.html" class="btn btn-primary btn-wide-75 btn-max-width">Routes & Barriers</a>
+              <a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/directions" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
+            </p>
+            </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="well well-small text-center">
+              <h3>Data and Services</h3>
+              <p>
+              <a href="./html/data/load_geojson.html" class="btn btn-default btn-wide-75 btn-max-width">Load GeoJSON</a>
+              <a href="./html/data/load_flickr_json.html" class="btn btn-primary btn-wide-75 btn-max-width">Load Flickr JSON</a>
+              <a href="./html/data/webmapbyid.html" class="btn btn-primary btn-wide-75 btn-max-width">Load Webmap</a>
+              <a href="./html/data/load_feature_service.html" class="btn btn-primary btn-wide-75 btn-max-width">Load Feature Service</a>
+              <a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/feature service" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
+            </p>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="well well-small text-center">
+              <h3>Query</h3>
+              <p>               
+              <a href="./html/data/draw_select_features.html" class="btn btn-default btn-wide-75 btn-max-width">Shape Query</a>
+              <a href="./html/data/query_feature_service.html" class="btn btn-primary btn-wide-75 btn-max-width">SQL Query</a>
+              <a href="./html/data/search_by_distance.html" class="btn btn-primary btn-wide-75 btn-max-width">Search By Distance</a>
+              <a href="./html/data/show_table_features.html" class="btn btn-default btn-wide-75 btn-max-width">Show Table</a>
+              <a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/query" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
+            </p>
+            </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="well well-small text-center">
+              <h3>Colors and Symbols</h3>
+              <p>
+              <a href="./html/symbols/symbols_pts.html" class="btn btn-primary btn-wide-75 btn-max-width">Point Symbols</a>
+              <a href="./html/symbols/symbols_lines.html" class="btn btn-primary btn-wide-75 btn-max-width">Line Symbols</a>
+              <a href="./html/symbols/symbols_polygons.html" class="btn btn-primary btn-wide-75 btn-max-width">Polygon Symbols</a>
+              <a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/renderer" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
+            </p>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="well well-small text-center">
+              <h3>Graphics</h3>
+              <p>
+              <a href="./html/graphics/graphics.html" class="btn btn-primary btn-wide-75 btn-max-width">Draw Graphics</a>
+              <a href="./html/graphics/graphics_toolbar.html" class="btn btn-primary btn-wide-75 btn-max-width">Draw Graphics Widget</a>
+              <a href="./html/graphics/graphics_marker.html" class="btn btn-primary btn-wide-75 btn-max-width">Align Marker Symbol</a>
+              <a target="_blank" href="https://developers.arcgis.com/javascript/jssamples/#search/graphics" class="btn btn-link btn-wide-75 btn-max-width">More Samples...</a>
+            </p>
+            </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="well well-small text-center">
+              <h3>Misc</h3>
+              <p>
+              <a href="./html/misc/geolocation.html" class="btn btn-primary btn-wide-75 btn-max-width">HTML 5 Geolocation</a>
+              <a href="./html/misc/autocenter.html" class="btn btn-primary btn-wide-75 btn-max-width">Auto Center Map</a>
+              <a href="./html/misc/show_panel.html" class="btn btn-primary btn-wide-75 btn-max-width">Show Hide Panel</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
