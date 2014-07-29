@@ -64,32 +64,29 @@
           on(dom.byId("cat"), "change", function(event) {
             geoSearch();
           });
-
-          //lets add our category manually
-          esriRequest.setRequestPreCallback(addCategory);
         });
-
-        /*
-          the world geocoding service now supports category searches, but there's nothing in the JS API yet to help submit the requests so for the time being we can add the parameter manually.
-        */
-        function addCategory(ioArgs) {
-          var url = location.protocol + "//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates";
-          if (ioArgs.url == url) {
-            ioArgs.content.category = dom.byId("cat").value;
-          }
-          return ioArgs;
-        }
 
         // Geocode against the user input
         function geoSearch() {
-          //you can combine category searches and actual search strings, but for now lets just search by categories
-          var searchString = "";
           var boundingBox;
           if (dom.byId('useMapExtent').checked)
             boundingBox = map.extent;
           // Set geocode options
           var options = {
-            address:{"SingleLine": searchString},
+            /*you can combine multiple categories in a single search and even combine category searches and normal search strings:
+          
+            address:{
+                "SingleLine": "Pacific",
+                "category": "Aquarium, Tourist Attraction"
+            },
+          
+            but for now lets just search on a single category
+
+            https://developers.arcgis.com/javascript/jsapi/locator-amd.html#addresstolocations       
+            */
+            address:{
+              "category": dom.byId("cat").value
+            },
             outFields:["Place_addr", "PlaceName"],  
             searchExtent: boundingBox,
             location: map.extent.getCenter(),
@@ -185,7 +182,7 @@
         </div>        
         <button class="btn btn-success" id="btnSearch">Go</button>
         <button id="btnClear" class="btn btn-default">Clear</button>
-        <br><br>More info can be found <a href="https://developers.arcgis.com/rest/geocode/api-reference/geocoding-category-filtering.htm" target="_blank">here</a>
+        <br><br>More information on categories<br> can be found <a href="https://developers.arcgis.com/rest/geocode/api-reference/geocoding-category-filtering.htm" target="_blank">here</a>
       </div>
     </div>
   </div>
