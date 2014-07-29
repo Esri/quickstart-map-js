@@ -30,26 +30,26 @@
     }
 
   </style>
-  
+
   <!-- ArcGIS API for JavaScript library references -->
   <script src="//js.arcgis.com/3.10compact"></script>
   <script>
-    require(["esri/map", 
+    require(["esri/map",
       "esri/dijit/Popup",
-      "esri/dijit/Scalebar", 
-      "esri/dijit/Legend", 
+      "esri/dijit/Scalebar",
+      "esri/dijit/Legend",
       "esri/arcgis/utils",
-      "dojo/dom", 
-      "dojo/on", 
-      "dojo/query", 
-      "dojo/domReady!"], 
-      function(Map, Popup, Scalebar, Legend, esriUtils, dom, on, query) {  
+      "dojo/dom",
+      "dojo/on",
+      "dojo/query",
+      "dojo/domReady!"],
+      function(Map, Popup, Scalebar, Legend, esriUtils, dom, on, query) {
         "use strict"
-        
+
         var map;
         var scalebar;
         var legend;
-    
+
         // Wire UI events
         on(dom.byId("btnWebmap"),"click", loadWebmap);
         on(dom.byId("webmapInput"),"keypress",function(event) {
@@ -79,7 +79,7 @@
             }
           });
 
-          mapDeferred.then(function(response) {   
+          mapDeferred.then(function(response) {
             map = response.map;
             // Set popup
             var popup = map.infoWindow;
@@ -90,14 +90,14 @@
             dom.byId("mapTitle").innerHTML = response.itemInfo.item.title;
             dom.byId("mapSubTitle").innerHTML = response.itemInfo.item.snippet;
             // Add scalebar and legend
-            var layers = esriUtils.getLegendLayers(response);  
+            var layers = esriUtils.getLegendLayers(response);
             initMapParts(layers);
           },function(error){
             alert("Sorry, couldn't load webmap!");
-            console.log("Error loading webmap: " & dojo.toJson(error));           
+            console.log("Error loading webmap: " & dojo.toJson(error));
           });
         }
-        
+
         function initMapParts(layers){
          //add a scalebar
           scalebar = new Scalebar({
@@ -120,7 +120,7 @@
 
         // Clean up map
         function resetMap() {
-          if (map) { 
+          if (map) {
             map.removeAllLayers();
             map.spatialReference = null;
             map.destroy();
@@ -129,7 +129,7 @@
            scalebar.destroy();
           if (legend) {
             dom.byId("mapLegend").innerHTML = "";
-          }        
+          }
           dom.byId("mapTitle").innerHTML = "";
           dom.byId("mapSubTitle").innerHTML = "";
         }
@@ -148,8 +148,8 @@
           <div class="panel-body">
             <div class="form-inline">
               <input type="text" class="form-control" id="webmapInput"
-                placeholder="42fdce6c0d9e4225aa68f0bfb442cb93"
-                value="42fdce6c0d9e4225aa68f0bfb442cb93">          
+                placeholder="e81165b1d87b44b58ac2f746a11634d2"
+                value="e81165b1d87b44b58ac2f746a11634d2">
               </input>
               <button id="btnWebmap" class="btn btn-success">Add</button>
             </div>
@@ -174,4 +174,3 @@
   </div>
 </body>
 </html>
- 
