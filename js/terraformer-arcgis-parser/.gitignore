@@ -1,0 +1,21 @@
+# Ignore complexity output
+complexity.xml
+
+# Ignore Coverage output
+coverage
+
+# Ignore Grunt temp files
+.grunt
+
+# Mac
+.DS_Store
+Icon
+._*
+.Spotlight-V100
+# SublimeText
+/*.sublime-project
+*.sublime-workspace
+
+#Node
+node_modules
+npm-debug.log
