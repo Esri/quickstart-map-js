@@ -7,7 +7,7 @@
   <title>Load JSON Service</title>
   <link rel="shortcut icon" href="//esri.github.io/quickstart-map-js/images/favicon.ico">
   <!-- ArcGIS API for JavaScript CSS-->
-  <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+  <link rel="stylesheet" href="//js.arcgis.com/3.10/js/esri/css/esri.css">
   <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
@@ -23,7 +23,7 @@
   </style>
 
   <!-- ArcGIS API for JavaScript library references -->
-  <script src="//js.arcgis.com/3.9compact"></script>
+  <script src="//js.arcgis.com/3.10compact"></script>
   <script>
     require(["esri/map",
       "esri/dijit/PopupTemplate",
@@ -50,7 +50,7 @@
         var popup = map.infoWindow;
         popup.highlight = false;
         popup.titleInBody = false;
-        popup.domNode.style.marginTop = "-20px";
+        
 
         // Wire UI Events
         on(dom.byId("btnGo"), "click", loadPhotos);
