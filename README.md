@@ -2,7 +2,7 @@
 
 A simple set of examples that illustrate how to accomplish different mapping (and GIS) tasks with the [ArcGIS API for JavaScript](http://developers.arcgis.com) and [ArcGIS Online Services](https://developers.arcgis.com/en/features/). Also, learn how to style your apps nicely with the [Bootstrap 3.x framework](http://getbootstrap.com).
 
-[View the samples live here](http://esri.github.com/quickstart-map-js/index.html)
+[View the samples](http://esri.github.com/quickstart-map-js/index.html)
 
 ![App](https://raw.github.com/Esri/quickstart-map-js/master/quickstart-map-js.png)
 
@@ -30,7 +30,7 @@ NOTE: You should just be able to cut-and-paste and run the examples in JSFiddle!
 
 ## Example
 
-```
+``` HTML
 <!DOCTYPE html>
 <html>
 <head>

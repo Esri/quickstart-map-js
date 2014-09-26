@@ -75,6 +75,7 @@
         var popup = map.infoWindow;
         popup.highlight = false;
         popup.titleInBody = false;
+        popup.domNode.className += " light";
 
         //wire an event listener to detect when someone has selected a new dropdown value
         on(dom.byId("symbol"), "change", changeSymbol);

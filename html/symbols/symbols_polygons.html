@@ -76,7 +76,7 @@
         //our second renderer, which can be substituted via a toggle, alternatively differentiates states with a median age lower than 35 from the others
         greenBreaksRenderer.addBreak({minValue:0, maxValue:35, symbol: under35Symbol});
 
-        states.setInfoTemplate(new InfoTemplate("median age in ${STATE_NAME} (2000):", "${MED_AGE}"));
+        states.setInfoTemplate(new InfoTemplate("Median Age 2000", "${STATE_NAME}<br>${MED_AGE}"));
 
         map.addLayer(states);
         
@@ -88,8 +88,9 @@
 
         // Set popup
         var popup = map.infoWindow;
-        popup.highlight = false;
+        popup.highlight = true;
         popup.titleInBody = false;
+        popup.domNode.className += " light";
 
         //wire an event listener to detect when someone has selected a new dropdown value
         on(dom.byId("symbol"), "change", changeSymbol);
