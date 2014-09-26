@@ -85,6 +85,7 @@
             var popup = map.infoWindow;
             popup.set("highlight",true);
             popup.set("titleInBody",false);
+            popup.domNode.className += " light";
             // Add titles
             dom.byId("mapTitle").innerHTML = response.itemInfo.item.title;
             dom.byId("mapSubTitle").innerHTML = response.itemInfo.item.snippet;

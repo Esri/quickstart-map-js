@@ -63,7 +63,7 @@
         categoryRenderer.addValue("High traffic through street" ,sharrowSymbol);
         categoryRenderer.addValue("Bike lane" ,laneSymbol);
 
-        bikeLanes.setInfoTemplate(new InfoTemplate("type:", "${BIKEMODE}"));
+        bikeLanes.setInfoTemplate(new InfoTemplate(" ", "Street: ${STREETNAME}<br>Type: ${BIKEMODE}"));
         map.addLayer(bikeLanes);
         
         bikeLanes.on("load", function(evt) {
@@ -74,8 +74,9 @@
 
         // Set popup
         var popup = map.infoWindow;
-        popup.highlight = false;
+        popup.highlight = true;
         popup.titleInBody = false;
+        popup.domNode.className += " light";
 
         //wire an event listener to detect when someone has selected a new dropdown value
         on(dom.byId("symbol"), "change", changeSymbol);
