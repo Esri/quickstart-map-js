@@ -47,6 +47,11 @@
           zoom: 3
         });
 
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+        popup.domNode.className += " light";
+
         var symMarker;
 
         var symSimple = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CROSS, 40,

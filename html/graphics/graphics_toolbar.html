@@ -44,6 +44,11 @@
           zoom: 8
         });
 
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+        popup.domNode.className += " light";
+
         // Wire events
         on(map, "load", initToolbar);
         // Wire UI events

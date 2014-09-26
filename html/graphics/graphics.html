@@ -49,6 +49,11 @@
           center: [-79.40, 43.55],
           zoom: 9,
         });
+
+        var popup = map.infoWindow;
+        popup.highlight = false;
+        popup.titleInBody = false;
+        popup.domNode.className += " light";
     
         // Create symbols for the graphics
         pointSymbol = createPointSymbol();

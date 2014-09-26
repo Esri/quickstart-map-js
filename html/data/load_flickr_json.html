@@ -10,7 +10,9 @@
   <link rel="stylesheet" href="//js.arcgis.com/3.10/js/esri/css/esri.css">
   <!-- Web Framework CSS - Bootstrap (getbootstrap.com) and Bootstrap-map-js (github.com/esri/bootstrap-map-js) -->
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
+  <!-- <link rel="stylesheet" href="//esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css"> -->
+  <link rel="stylesheet" href="http://localhost/GitHub/bootstrap-map-js/src/css/bootstrapmap.css">
+
   <style>
     html, body, #mapDiv {
       height: 100%;
@@ -50,14 +52,30 @@
         var popup = map.infoWindow;
         popup.highlight = false;
         popup.titleInBody = false;
+        popup.domNode.style.marginTop = "-20px";  
+        popup.domNode.className += " light";
         
 
         // Wire UI Events
         on(dom.byId("btnGo"), "click", loadPhotos);
         on(dom.byId("inputSearchTags"), "keydown", function(event) {
-          if (event.keyCode == keys.ENTER) {
+          if (event.keyCode === keys.ENTER) {
             loadPhotos();
           }
+        });
+
+        function showInfoWindow(graphic) {
+          map.infoWindow.setTitle(graphic.attributes.title);
+          map.infoWindow.setContent(graphic.attributes.description);
+          map.infoWindow.show(graphic.geometry);
+        }
+
+        // Map loaded
+        map.on("load", function () {
+          // Manually show popup instead of using template
+          map.graphics.on("click", function (e) {
+            showInfoWindow(e.graphic);
+          });
         });
 
         // Popup reposition when extent changes
@@ -87,19 +105,22 @@
 
         // Create graphics for each Flickr item
         function addPhotos(data){
-          var template = new PopupTemplate({
-            title: "<b>{title}</b>",
-            description:"{description}"
-          });
+          // Optional way to format and show popup content
+          // var template = new PopupTemplate({
+          //   title: "<b>{title}</b>",
+          //   description:"{description}"
+          // });
           for (var i in data.items) {
             var item = data.items[i];
-            template.setTitle(item.title);
+            //template.setTitle(item.title);
             var loc = new Point(item.longitude, item.latitude);
-            map.graphics.add(new Graphic(loc, symbol, item, template));
+            //map.graphics.add(new Graphic(loc, symbol, item, template));
+            map.graphics.add(new Graphic(loc, symbol, item, null));
           }
           var extent = GraphicsUtils.graphicsExtent(map.graphics.graphics).expand(1.5);   
           map.setExtent(extent);
         }
+
 
         function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
           return new PictureMarkerSymbol(
