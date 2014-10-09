@@ -35,9 +35,12 @@
       "esri/request",
       "dojo/on", 
       "dojo/keys",
+      "dojo/_base/fx", 
+      "dojo/fx/easing",
+      "dojo/dom-style",
       "dojo/dom", 
       "dojo/domReady!"], 
-      function(Map, PopupTemplate, PictureMarkerSymbol, Point, Graphic, GraphicsUtils, Request, on, keys, dom) {
+      function(Map, PopupTemplate, PictureMarkerSymbol, Point, Graphic, GraphicsUtils, Request, on, keys, fx, easing, domStyle, dom) {
         "use strict"
 
         // Create map
@@ -64,9 +67,10 @@
         });
 
         function showInfoWindow(graphic) {
-          map.infoWindow.setTitle(graphic.attributes.title);
-          map.infoWindow.setContent(graphic.attributes.description);
-          map.infoWindow.show(graphic.geometry);
+          if (map.infoWindow.selectedIndex === -1 || graphic !== map.infoWindow.features[map.infoWindow.selectedIndex]) {
+            map.infoWindow.setFeatures([graphic]);
+            map.infoWindow.show(graphic.geometry);
+          }
         }
 
         // Map loaded
@@ -74,6 +78,17 @@
           // Manually show popup instead of using template
           map.graphics.on("click", function (e) {
             showInfoWindow(e.graphic);
+          });
+
+          map.graphics.on("mouse-over", function (e) {
+            showInfoWindow(e.graphic);           
+          });
+
+          map.infoWindow.on("selection-change", function () {
+              domStyle.set(map.infoWindow.domNode, "opacity", 0);
+              fx.fadeIn({node: map.infoWindow.domNode, 
+                duration:350,
+                easing: easing.quadIn}).play();
           });
         });
 
@@ -104,17 +119,15 @@
 
         // Create graphics for each Flickr item
         function addPhotos(data){
-          // Optional way to format and show popup content
-          // var template = new PopupTemplate({
-          //   title: "<b>{title}</b>",
-          //   description:"{description}"
-          // });
+          // Format popup content
+          var template = new PopupTemplate({
+            title: "<b>{title}</b>",
+            description:"{description}"
+          });
           for (var i in data.items) {
             var item = data.items[i];
-            //template.setTitle(item.title);
             var loc = new Point(item.longitude, item.latitude);
-            //map.graphics.add(new Graphic(loc, symbol, item, template));
-            map.graphics.add(new Graphic(loc, symbol, item, null));
+            map.graphics.add(new Graphic(loc, symbol, item, template));
           }
           var extent = GraphicsUtils.graphicsExtent(map.graphics.graphics).expand(1.5);   
           map.setExtent(extent);
