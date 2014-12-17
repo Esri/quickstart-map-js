@@ -17,23 +17,23 @@
       width: 100%;
     }
   </style>
-  
+
   <!-- ArcGIS API for JavaScript library references -->
   <script src="//js.arcgis.com/3.10compact"></script>
   <script>
     require(["esri/map",
       "esri/tasks/locator",
       "esri/request",
-      "esri/InfoTemplate", 
-      "esri/graphic", 
+      "esri/InfoTemplate",
+      "esri/graphic",
       "esri/symbols/PictureMarkerSymbol",
       "esri/geometry/Multipoint",
       "dojo/keys",
-      "dojo/on", 
-      "dojo/dom", 
-      "dojo/domReady!"], 
-      function(Map, Locator, esriRequest, InfoTemplate, Graphic, PictureMarkerSymbol, Multipoint, keys, on, dom) {  
-        "use strict"      
+      "dojo/on",
+      "dojo/dom",
+      "dojo/domReady!"],
+      function(Map, Locator, esriRequest, InfoTemplate, Graphic, PictureMarkerSymbol, Multipoint, keys, on, dom) {
+        "use strict"
 
         // Create map
         var map = new Map("mapDiv", {
@@ -54,13 +54,13 @@
 
         // Create geoservice
         var geocodeService = new Locator("//geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
-        
+
         // Wire events
         on(map, "load", function() {
           on(geocodeService, "address-to-locations-complete", geocodeResults);
           on(geocodeService, "error", geocodeError);
           on(dom.byId("btnSearch"),"click", geoSearch);
-          on(dom.byId("btnClear"),"click", clearFindGraphics);          
+          on(dom.byId("btnClear"),"click", clearFindGraphics);
           on(dom.byId("cat"), "change", function(event) {
             geoSearch();
           });
@@ -90,7 +90,7 @@
           // Set geocode options
           var options = {
             address:{"SingleLine": searchString},
-            outFields:["Place_addr", "PlaceName"],  
+            outFields:["Place_addr", "PlaceName"],
             searchExtent: boundingBox,
             location: map.extent.getCenter(),
             distance: 1
@@ -98,7 +98,7 @@
           // Execute geosearch
           geocodeService.addressToLocations(options);
         }
-        
+
         // Geocode results
         function geocodeResults(places) {
           if (places.addresses.length > 0) {
@@ -110,17 +110,17 @@
               place = places.addresses[i];
               pt = place.location;
               placeName = place.attributes.Place_addr ? "${address}<br/>" : '';
-              attributes = { name:place.attributes.PlaceName, address:place.attributes.Place_addr, score:place.score, lat:pt.y.toFixed(5), lon:pt.x.toFixed(5) };   
+              attributes = { name:place.attributes.PlaceName, address:place.attributes.Place_addr, score:place.score, lat:pt.y.toFixed(5), lon:pt.x.toFixed(5) };
               infoTemplate = new InfoTemplate("${name}", placeName+"Lat/Lon: ${lat},${lon}<br/>Score: ${score}"+"<br/><a href='#' onclick='window.zoomToPlace(" + pt.x + "," + pt.y + ")'>Zoom</a>");
               graphic = new Graphic(pt,symbol,attributes,infoTemplate);
-              map.graphics.add(graphic);  
+              map.graphics.add(graphic);
             }
             zoomToPlaces(places.addresses);
           } else {
             alert("Sorry, address or place not found.");
           }
         }
-      
+
         function geocodeError(errorInfo) {
           alert("Sorry, place or address not found!");
         }
@@ -149,7 +149,7 @@
           {
             "angle": 0,
             "xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
-            "url": url,  
+            "url": url,
             "contentType": "image/png",
             "width":xWidth, "height": yHeight
           });
@@ -182,13 +182,13 @@
           <label>
             <input id="useMapExtent" type="checkbox" checked/> Search map only
           </label>
-        </div>        
+        </div>
         <button class="btn btn-success" id="btnSearch">Go</button>
         <button id="btnClear" class="btn btn-default">Clear</button>
         <br><br>More info can be found <a href="https://developers.arcgis.com/rest/geocode/api-reference/geocoding-category-filtering.htm" target="_blank">here</a>
       </div>
     </div>
   </div>
-  <div id="mapDiv"></div>  
+  <div id="mapDiv"></div>
 </body>
 </html>
