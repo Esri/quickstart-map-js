@@ -17,9 +17,9 @@
       width: 100%;
     }
   </style>
-  
+
   <!-- ArcGIS API for JavaScript library references -->
-  <script src="//js.arcgis.com/3.10compact"></script>
+  <script src="//js.arcgis.com/3.14compact"></script>
   <script>
     require([
       "esri/map",
@@ -28,28 +28,26 @@
       "esri/InfoTemplate",
       "esri/Color",
       "esri/symbols/SimpleLineSymbol",
-      "esri/symbols/SimpleFillSymbol",      
+      "esri/symbols/SimpleFillSymbol",
       "esri/renderers/ClassBreaksRenderer",
-      "dojo/on", 
-      "dojo/dom", 
-      "dojo/domReady!"], 
-      function(Map, ArcGISTiledMapServiceLayer, FeatureLayer, InfoTemplate, Color, SimpleLineSymbol, SimpleFillSymbol, ClassBreaksRenderer, on, dom) {  
+      "dojo/on",
+      "dojo/dom",
+      "dojo/domReady!"],
+      function(Map, ArcGISTiledMapServiceLayer, FeatureLayer, InfoTemplate, Color, SimpleLineSymbol, SimpleFillSymbol, ClassBreaksRenderer, on, dom) {
         "use strict"
 
         // Create map
         var map = new Map("mapDiv", {
           center: [-98.8, 39], //long, lat
-          zoom: 3
+          zoom: 3,
+          basemap: 'dark-gray'
         });
-
-        var darkBasemap = new ArcGISTiledMapServiceLayer("//tiles1.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Dark_Gray_Base_Beta/MapServer");
-        map.addLayer(darkBasemap);
 
         //the default symbology for this service draws each state identically.  in this app, we'd like to define different symbology for individual features based on the value stored in a particular attribute field
         var states = new FeatureLayer("//sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3", {
             outFields: [ "STATE_NAME", "MED_AGE" ]
           });
-        
+
         //first we define a generic default symbol to use.
         var defaultSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
           new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
@@ -72,14 +70,14 @@
 
         //the renderer which is applied when the page loads differentiates states with a median age higher than 35 from the rest.  this renderer could support additional breaks if desired.
         redBreaksRenderer.addBreak({minValue:35, maxValue:100, symbol: over35Symbol});
-        
+
         //our second renderer, which can be substituted via a toggle, alternatively differentiates states with a median age lower than 35 from the others
         greenBreaksRenderer.addBreak({minValue:0, maxValue:35, symbol: under35Symbol});
 
         states.setInfoTemplate(new InfoTemplate("Median Age 2000", "${STATE_NAME}<br>${MED_AGE}"));
 
         map.addLayer(states);
-        
+
         states.on("load", function(evt) {
           //lets use our first clientside class breaks renderers to symbolize the data
           evt.layer.setRenderer(redBreaksRenderer);
@@ -100,15 +98,15 @@
           var e = dom.byId("symbol");
           var sym = e.options[e.selectedIndex].value;
 
-          switch (sym) {            
-            case "red":              
+          switch (sym) {
+            case "red":
               states.setRenderer(redBreaksRenderer);
               break
             case "green":
               map.infoWindow.hide();
               //replace the clientside renderer
-              states.setRenderer(greenBreaksRenderer);              
-              break      
+              states.setRenderer(greenBreaksRenderer);
+              break
           }
           states.refresh();
         }
@@ -121,7 +119,7 @@
     <div class="panel-heading">
       <h3 class="panel-title">Polygons</h3>
     </div>
-    <div class="panel-body">      
+    <div class="panel-body">
       <div class="form-inline">
         <div>
           Apply symbols to features based on an attribute threshold.
@@ -134,11 +132,11 @@
         <select class="form-control" id="symbol">
           <option value="red" selected="selected">over 35 years old</option>
           <option value="green" >under 35</option>
-        </select>    
+        </select>
       </div>
       </div>
     </div>
   </div>
-  <div id="mapDiv"></div>  
+  <div id="mapDiv"></div>
 </body>
 </html>
