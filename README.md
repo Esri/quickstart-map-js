@@ -17,7 +17,7 @@ A simple set of examples that illustrate how to accomplish different mapping (an
 * Cloud - Draw and query features stored in the ArcGIS Online cloud
 * Data - Load JSON services
 * Popups - Format and position info windows and your own map pins
-* Map Pins - Use new Esri markers for point locations
+* Map Pins - You can use new Esri markers for point locations
 
 NOTE: All examples are built with [Bootstrap 3.x styles](http://getbootstrap.com). To build fully responsive maps for all devices, see [Bootstrap-map-js](http://github.com/esri/bootstrap-map-js).
 
